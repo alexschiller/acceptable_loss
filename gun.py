@@ -9,7 +9,7 @@ from collide import * # noqa
 
 
 class Bullet(object):
-    def __init__(self, base, start_x, start_y, target_x, target_y, chits=[]):
+    def __init__(self, base, start_x, start_y, target_x, target_y, chips=[]):
         # Base stats
         self.base = base
         self.damage = self.base['damage']
@@ -44,18 +44,16 @@ class Bullet(object):
 
 
 class Gun(object):
-    def __init__(self, enemy, base, pistol=None, chips=[]): # noqa
-        self.enemy = enemy
+    def __init__(self, master, hits, base, chips=[]): # noqa
         self.rof = 60 / base['rof']
         self.rofl = 0
         self.bullets = []
         self.base = base
-        self.pistol = pistol
+        self.hits = hits
+        self.master = master
         self.energy_cost = base['energy_cost']
         self.gun_fire_sound = base['gun_fire_sound']
         self.on_hit_sound = base['on_hit_sound']
-        print self.gun_fire_sound
-        print self.on_hit_sound
 
     def fire(self, start_x, start_y, target_x, target_y):
         if self.rofl == self.rof:
@@ -88,7 +86,7 @@ class Gun(object):
             bullet.sprite.y += bullet.vel_y
             bullet.travelled = bullet.travelled + abs(bullet.vel_x) + abs(bullet.vel_y)
             try:
-                for e in self.enemy:
+                for e in self.hits:
                     if collide(bullet.collision, e.collision):
                         play_sound(self.on_hit_sound)
                         e.on_hit(bullet)
@@ -101,9 +99,9 @@ class Gun(object):
                         break
                     # self.delete_bullet(bullet)
             except:
-                if collide(bullet.collision, self.enemy.collision):
+                if collide(bullet.collision, self.hits.collision):
                     play_sound(self.on_hit_sound)
-                    self.enemy.on_hit(bullet)
+                    self.hits.on_hit(bullet)
                     bullet.pierce -= 1
                     if bullet.pierce < 0:
                         self.delete_bullet(bullet)
@@ -120,7 +118,7 @@ class Gun(object):
             coord = (0, 0)
             x1 = bullet.sprite.x
             y1 = bullet.sprite.x
-            for e in self.enemy:
+            for e in self.hits:
                 dist = (e.sprite.x - x1) ** 2 + (e.sprite.y - y1) ** 2
                 if dist < min_dist:
                     min_dist = dist
@@ -146,7 +144,8 @@ class GrenadeEffect(object):
         self.shadow = shadow
 
 class Grenade(object):
-    def __init__(self):
+    def __init__(self, master):
+        self.master = master
         self.effects = []
         self.grenades = 1
 

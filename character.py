@@ -27,12 +27,13 @@ class Character(object):
 
 
 class Player(Character):
-    def __init__(self, spriteeffect):
+    def __init__(self, master):
         super(Player, self).__init__(load_image('dreadnaught.png'),
             [50, 50], 1, 4, 4, 100)
+        self.master = master
         self.max_energy = 100
         self.energy = 100
-        self.spriteeffect = spriteeffect
+        self.spriteeffect = master.spriteeffect
 
         self.max_shield = 100
         self.shield = 100
@@ -61,10 +62,12 @@ class Player(Character):
         self.sprite.y += bullet.vel_y * impact
 
 class Ally(Character):
-    def __init__(self, player, enemy, gun):
+    def __init__(self, master, gun):
         self.gun = gun
-        self.player = player
-        self.enemy = enemy
+        self.player = master.player
+        self.enemy = master.enemies
+        self.spriteeffect = master.spriteeffect
+
         coord = [random.randint(-500, 500) + 50, random.randint(-300, 300) + 50]
         super(Ally, self).__init__(load_image('dreadnaught.png'), coord, 1, 4, 4, 100)
 
@@ -106,12 +109,10 @@ class Ally(Character):
 
 
 class Cannon(Ally):
-    def __init__(self, player, enemy, gun, spriteeffect):
-        self.spriteeffect = spriteeffect
+    def __init__(self, master, gun):
+        self.spriteeffect = master.spriteeffect
 
-        super(Cannon, self).__init__(player, enemy, gun)
-        self.player = player
-        self.gun = gun
+        super(Cannon, self).__init__(master, gun)
         self.sprite = pyglet.sprite.Sprite(load_image('cannon.png'),
             int(700) + random.randint(-600, 600), int(400) + random.randint(-400, 400),
             batch=gfx_batch)
@@ -154,11 +155,16 @@ class Cannon(Ally):
 
 
 class Healer(Ally):
-    def __init__(self, player, enemy, gun, spriteeffect):
-        self.spriteeffect = spriteeffect
-        super(Healer, self).__init__(player, enemy, gun)
+    def __init__(self, master, gun):
+        super(Healer, self).__init__(master, gun)
+        # self.master = master
+        self.spriteeffect = master.spriteeffect
+        self.enemy = master.enemies
+        self.player = master.player
+
         self.sprite = pyglet.sprite.Sprite(load_image('healer.png'),
-            int(player.sprite.x) + 50, int(player.sprite.y) + 50, batch=gfx_batch)
+            int(self.player.sprite.x) + 50,
+            int(self.player.sprite.y) + 50, batch=gfx_batch)
         self.speed = 1
         self.collision = SpriteCollision(self.sprite)
         self.health = 100
@@ -195,10 +201,10 @@ class Healer(Ally):
 
 
 class Enemy(object):
-    def __init__(self, player, enemy, spriteeffect, gun):
-        self.enemy = enemy
-        self.player = player
-        self.spriteeffect = spriteeffect
+    def __init__(self, master, gun):
+        self.enemy = master.enemies
+        self.player = master.player
+        self.spriteeffect = master.spriteeffect
         self.sprite = pyglet.sprite.Sprite(load_image('big_slime.png'),
             random.randint(50, 1350), random.randint(50, 750), batch=gfx_batch)
         self.touch_damage = 10
@@ -219,7 +225,7 @@ class Enemy(object):
         self.animation = itertools.cycle(anim)
 
     def on_death(self):
-        self.enemy.append(Enemy(self.player, self.enemy, self.spriteeffect, self.gun))
+        self.enemy.append(Enemy(master, self.gun))
         self.spriteeffect.explosion(self.sprite.x, self.sprite.y, 30, 50)
         try:
             self.sprite.delete()
@@ -263,10 +269,10 @@ class Enemy(object):
             self.on_death()
 
 class Soldier(object):
-    def __init__(self, player, enemy, spriteeffect, gun):
-        self.enemy = enemy
-        self.player = player
-        self.spriteeffect = spriteeffect
+    def __init__(self, master, gun):
+        self.enemy = master.enemies
+        self.player = master.player
+        self.spriteeffect = master.spriteeffect
         self.sprite = pyglet.sprite.Sprite(load_image('soldier.png'),
             random.randint(50, 1350), random.randint(50, 750), batch=gfx_batch)
         self.touch_damage = 0
@@ -287,7 +293,7 @@ class Soldier(object):
         # self.animation = itertools.cycle(anim)
 
     def on_death(self):
-        self.enemy.append(Soldier(self.player, self.enemy, self.spriteeffect, self.gun))
+        self.enemy.append(Soldier(master, self.gun))
         self.spriteeffect.blood(self.sprite.x, self.sprite.y, 30, 50)
         try:
             self.sprite.delete()

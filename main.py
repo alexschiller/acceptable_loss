@@ -14,29 +14,36 @@ from button import Manager, Button,TextBox, DraggableButton, foo # noqa
 
 window = pyglet.window.Window(window_width, window_height)
 states = []
-spriteeffect = SpriteEffect()
-player = Player(spriteeffect)
-soldier_gun = Gun(player, base=exgun)
-enemy = []
-pg = [shotgun]
-pistol = Gun(enemy, base=exgun,)
-player_gun = Gun(enemy, base=random.choice(pg), pistol=pistol)
-cannon_gun = Gun(enemy, base=shotgun)
-enemy_gun = Gun(player, base=slimegun)
+master.spriteeffect = SpriteEffect()
 
-guns = [player_gun, cannon_gun, enemy_gun, pistol, soldier_gun]
+master.player = Player(master)
+
+# todo: Gun 'hits' (e.g., master.enemies, master.player) needs refactor to two subclasses,
+# one that hits friends, one that hits enemies
+gun_dict = {'pistol': Gun(master, master.enemies, base=exgun),
+            'player_gun': Gun(master, master.enemies, base=red_laser),
+            'cannon_gun': Gun(master, master.enemies, base=shotgun),
+            'enemy_gun': Gun(master, master.player, base=slimegun),
+            'soldier_gun': Gun(master, master.player, base=exgun),
+            }
+player_gun = gun_dict['player_gun']
+
+# guns = [player_gun, cannon_gun, enemy_gun, pistol, soldier_gun]
 # for i in range(2):
-    # enemy.append(Enemy(player, enemy, spriteeffect, enemy_gun))
+    # enemy.append(Enemy(master, gun_dict['enemy_gun'])) # noqa
 
 for i in range(10):
-    enemy.append(Soldier(player, enemy, spriteeffect, soldier_gun))
+    master.enemies.append(Soldier(master, gun_dict['soldier_gun'])) # noqa
 
-grenade = Grenade()
+grenade = Grenade(master)
 
-friends = [
-    Healer(player, enemy, cannon_gun, spriteeffect),
+master.friends = [
+    Healer(master, gun_dict['cannon_gun']), # noqa
     # Cannon(player, enemy, gun, spriteeffect)
 ]
+for k in gun_dict.keys():
+    master.guns.append(gun_dict[k])
+
 key_handler = key.KeyStateHandler()
 
 glEnable(GL_BLEND)
@@ -147,30 +154,30 @@ class MainState():
         pass
 
     def on_mouse_press(self, x, y, button, modifiers):
-        if player_gun.fire(player.sprite.x, player.sprite.y, mouse_position[0], mouse_position[1]): # noqa
-            ret = calc_vel_xy(player.sprite.x, player.sprite.y, mouse_position[0], mouse_position[1], player_gun.base['recoil']) # noqa
-            player.sprite.x += ret[0]
-            player.sprite.y += ret[1]
+        if player_gun.fire(master.player.sprite.x, master.player.sprite.y, mouse_position[0], mouse_position[1]): # noqa
+            ret = calc_vel_xy(master.player.sprite.x, master.player.sprite.y, mouse_position[0], mouse_position[1], player_gun.base['recoil']) # noqa
+            master.player.sprite.x += ret[0]
+            master.player.sprite.y += ret[1]
 
     def on_mouse_motion(self, x, y, dx, dy):
-        x_dist = x - float(player.sprite.x)
-        y_dist = y - float(player.sprite.y)
+        x_dist = x - float(master.player.sprite.x)
+        y_dist = y - float(master.player.sprite.y)
 
         deg = (math.degrees(math.atan2(y_dist, x_dist)) * -1) + 90
 
-        player.sprite.rotation = deg
+        master.player.sprite.rotation = deg
         # print dx, dy
 
     def on_mouse_drag(self, x, y, dx, dy, buttons, modifiers):
-        x_dist = x - float(player.sprite.x)
-        y_dist = y - float(player.sprite.y)
+        x_dist = x - float(master.player.sprite.x)
+        y_dist = y - float(master.player.sprite.y)
 
         deg = (math.degrees(math.atan2(y_dist, x_dist)) * -1) + 90
-        if player_gun.fire(player.sprite.x, player.sprite.y, mouse_position[0], mouse_position[1]): # noqa
-            ret = calc_vel_xy(player.sprite.x, player.sprite.y, mouse_position[0], mouse_position[1], player_gun.base['recoil']) # noqa
-            player.sprite.x += ret[0]
-            player.sprite.y += ret[1]
-        player.sprite.rotation = deg
+        if player_gun.fire(master.player.sprite.x, master.player.sprite.y, mouse_position[0], mouse_position[1]): # noqa
+            ret = calc_vel_xy(master.player.sprite.x, master.player.sprite.y, mouse_position[0], mouse_position[1], player_gun.base['recoil']) # noqa
+            master.player.sprite.x += ret[0]
+            master.player.sprite.y += ret[1]
+        master.player.sprite.rotation = deg
 
     def on_key_press(self, ts):
         pass
@@ -192,31 +199,31 @@ class MainState():
             my += 1
         if key_handler[key.S]:
             my -= 1
-        player.move(mx, my)
+        master.player.move(mx, my)
 
         if key_handler[key.Q]:
             grenade.throw(
-                player.sprite.x,
-                player.sprite.y, mouse_position[0],
+                master.player.sprite.x,
+                master.player.sprite.y, mouse_position[0],
                 mouse_position[1]
             )
 
-        if key_handler[key.F] and player.energy >= 100:
-            player.energy -= 100
-            spriteeffect.teleport(player.sprite.x, player.sprite.y)
-            player.sprite.x = mouse_position[0]
-            player.sprite.y = mouse_position[1]
-            spriteeffect.teleport(player.sprite.x, player.sprite.y)
+        if key_handler[key.F] and master.player.energy >= 100:
+            master.player.energy -= 100
+            master.spriteeffect.teleport(master.player.sprite.x, master.player.sprite.y)
+            master.player.sprite.x = mouse_position[0]
+            master.player.sprite.y = mouse_position[1]
+            master.spriteeffect.teleport(master.player.sprite.x, master.player.sprite.y)
 
         # Run Updates
-        for g in guns:
+        for g in master.guns:
             g.update()
         grenade.update()
-        spriteeffect.update()
-        player.update()
-        for f in friends:
+        master.spriteeffect.update()
+        master.player.update()
+        for f in master.friends:
             f.update()
-        for e in enemy:
+        for e in master.enemies:
             e.update()
 
         window.invalid = False
@@ -235,7 +242,7 @@ def update(ts):
 def on_draw():
     window.clear()
     pyglet.gl.glClearColor(0.75, 0.75, 0.75, 1)  # gray back
-    player.sprite.draw()
+    master.player.sprite.draw()
     BulletBatch.draw()
     EffectsBatch.draw()
     BarBatch.draw()

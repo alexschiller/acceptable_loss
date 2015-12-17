@@ -8,6 +8,15 @@ from pyglet.window import key # noqa
 from pyglet.window import mouse # noqa
 from collide import * # noqa
 
+class Master(object):
+    def __init__(self):
+        self.player = None
+        self.enemies = []
+        self.friends = []
+        self.guns = []
+        self.spriteeffect = None
+
+master = Master()
 # Window sizes
 window_height = 800
 window_width = 1400
