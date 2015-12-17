@@ -16,7 +16,7 @@ window = pyglet.window.Window(window_width, window_height)
 states = []
 spriteeffect = SpriteEffect()
 player = Player(spriteeffect)
-
+soldier_gun = Gun(player, base=exgun)
 enemy = []
 pg = [shotgun]
 pistol = Gun(enemy, base=exgun,)
@@ -24,9 +24,12 @@ player_gun = Gun(enemy, base=random.choice(pg), pistol=pistol)
 cannon_gun = Gun(enemy, base=shotgun)
 enemy_gun = Gun(player, base=slimegun)
 
-guns = [player_gun, cannon_gun, enemy_gun, pistol]
-for i in range(4):
-    enemy.append(Enemy(player, enemy, spriteeffect, enemy_gun))
+guns = [player_gun, cannon_gun, enemy_gun, pistol, soldier_gun]
+# for i in range(2):
+    # enemy.append(Enemy(player, enemy, spriteeffect, enemy_gun))
+
+for i in range(10):
+    enemy.append(Soldier(player, enemy, spriteeffect, soldier_gun))
 
 grenade = Grenade()
 

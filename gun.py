@@ -205,24 +205,24 @@ shotgun = {
     'recoil': 10,
     'special': None,
     'gun_fire_sound': load_sound('shotgun.wav'),
-    'on_hit_sound': load_sound('on_hit.wav'),
+    'on_hit_sound': load_sound('on_hit_2.wav'),
 }
 
 exgun = {
-    'damage': 5,
-    'travel': 100,
+    'damage': 1,
+    'travel': 500,
     'velocity': 15,
     'accuracy': .85,
-    'spread': 0,
+    'spread': .15,
     'energy_cost': 20,
     'bullets': 1,
     'pierce': 0,
-    'rof': 6000,
+    'rof': 5,
     'knockback': 1.0,
-    'image': load_image('ex.png'),
+    'image': load_image('snipe.png'),
     'recoil': 1,
     'special': False,
-    'gun_fire_sound': load_sound('laser.wav'),
+    'gun_fire_sound': None,
     'on_hit_sound': load_sound('on_hit.wav'),
 }
 
