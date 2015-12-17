@@ -356,8 +356,9 @@ class Effect(object):
 
 
 class SpriteEffect(object):
-    def __init__(self):
+    def __init__(self, master):
         self.effects = []
+        self.master = master
 
     def update(self):
         for effect in self.effects:

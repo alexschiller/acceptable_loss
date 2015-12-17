@@ -14,7 +14,7 @@ from button import Manager, Button,TextBox, DraggableButton, foo # noqa
 
 window = pyglet.window.Window(window_width, window_height)
 states = []
-master.spriteeffect = SpriteEffect()
+master.spriteeffect = SpriteEffect(master)
 
 master.player = Player(master)
 
@@ -35,7 +35,7 @@ player_gun = gun_dict['player_gun']
 for i in range(10):
     master.enemies.append(Soldier(master, gun_dict['soldier_gun'])) # noqa
 
-grenade = Grenade(master)
+master.grenade = Grenade(master)
 
 master.friends = [
     Healer(master, gun_dict['cannon_gun']), # noqa
@@ -202,7 +202,7 @@ class MainState():
         master.player.move(mx, my)
 
         if key_handler[key.Q]:
-            grenade.throw(
+            master.grenade.throw(
                 master.player.sprite.x,
                 master.player.sprite.y, mouse_position[0],
                 mouse_position[1]
@@ -216,16 +216,7 @@ class MainState():
             master.spriteeffect.teleport(master.player.sprite.x, master.player.sprite.y)
 
         # Run Updates
-        for g in master.guns:
-            g.update()
-        grenade.update()
-        master.spriteeffect.update()
-        master.player.update()
-        for f in master.friends:
-            f.update()
-        for e in master.enemies:
-            e.update()
-
+        master.update()
         window.invalid = False
 
 
