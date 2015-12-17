@@ -32,11 +32,6 @@ blue_bar = pyglet.image.create(200, 10, blue_sprite)
 red_sprite = pyglet.image.SolidColorImagePattern(color=(255, 0, 0, 150))
 red_bar = pyglet.image.create(200, 10, red_sprite)
 
-button = pyglet.image.load('button.png')
-buttonhover = pyglet.image.load('buttonhover.png')
-buttondown = pyglet.image.load('buttondown.png')
-
-
 # Image loader function and dict
 image_dict = {}
 
@@ -44,12 +39,28 @@ def load_image(image):
     try:
         return image_dict(image)
     except:
-        img = pyglet.image.load(image)
+        img = pyglet.image.load('images/' + image)
         img.anchor_x = img.width // 2
         img.anchor_y = img.height // 2
         image_dict[image] = img
         return img
 
+def load_sound(file_name):
+    if file_name:
+        return pyglet.media.load('sounds/' + file_name, streaming=False)
+    return False
+
+def play_sound(sound_file):
+    if sound_file:
+        sound = pyglet.media.Player()
+        sound.queue(sound_file)
+        sound.play()
+
+
+# todo move elsewhere
+button = load_image('button.png')
+buttonhover = load_image('buttonhover.png')
+buttondown = load_image('buttondown.png')
 
 def calc_vel_xy(tar_x, tar_y, start_x, start_y, velocity):
     dif_y = tar_y - start_y

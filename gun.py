@@ -54,6 +54,8 @@ class Gun(object):
         self.energy_cost = base['energy_cost']
         self.gun_fire_sound = base['gun_fire_sound']
         self.on_hit_sound = base['on_hit_sound']
+        print self.gun_fire_sound
+        print self.on_hit_sound
 
     def fire(self, start_x, start_y, target_x, target_y):
         if self.rofl == self.rof:
@@ -61,11 +63,7 @@ class Gun(object):
         # if len(self.bullets) > 30 or player.energy < self.energy_cost:
             # return True
         # player.energy -= self.energy_cost
-            if self.gun_fire_sound:
-                sound = pyglet.media.Player()
-                sound.queue(self.gun_fire_sound)
-                sound.play()
-
+            play_sound(self.gun_fire_sound)
             for b in range(self.base['bullets']):
                 self.bullets.append(Bullet(self.base, start_x, start_y, target_x, target_y)) # noqa
             return True
@@ -92,9 +90,7 @@ class Gun(object):
             try:
                 for e in self.enemy:
                     if collide(bullet.collision, e.collision):
-                        sound = pyglet.media.Player()
-                        sound.queue(self.on_hit_sound)
-                        sound.play()
+                        play_sound(self.on_hit_sound)
                         e.on_hit(bullet)
                         bullet.pierce -= 1
                         if bullet.pierce < 0:
@@ -106,17 +102,15 @@ class Gun(object):
                     # self.delete_bullet(bullet)
             except:
                 if collide(bullet.collision, self.enemy.collision):
-                        sound = pyglet.media.Player()
-                        sound.queue(self.on_hit_sound)
-                        sound.play()
-                        self.enemy.on_hit(bullet)
-                        bullet.pierce -= 1
-                        if bullet.pierce < 0:
-                            self.delete_bullet(bullet)
-                    # if bullet.check_collision(e):
-                        # if not bullet.handle_collision():
+                    play_sound(self.on_hit_sound)
+                    self.enemy.on_hit(bullet)
+                    bullet.pierce -= 1
+                    if bullet.pierce < 0:
+                        self.delete_bullet(bullet)
+                # if bullet.check_collision(e):
+                    # if not bullet.handle_collision():
 
-                        break
+                    break
             if bullet.travelled > bullet.calc_travel:
                 self.delete_bullet(bullet)
 
@@ -210,8 +204,8 @@ shotgun = {
     'image': load_image('shotgun.png'),
     'recoil': 10,
     'special': None,
-    'gun_fire_sound': pyglet.media.load("shotgun.wav", streaming=False),
-    'on_hit_sound': pyglet.media.load("on_hit.wav", streaming=False),
+    'gun_fire_sound': load_sound('shotgun.wav'),
+    'on_hit_sound': load_sound('on_hit.wav'),
 }
 
 exgun = {
@@ -228,8 +222,8 @@ exgun = {
     'image': load_image('ex.png'),
     'recoil': 1,
     'special': False,
-    'gun_fire_sound': pyglet.media.load("laser.wav", streaming=False),
-    'on_hit_sound': pyglet.media.load("on_hit.wav", streaming=False),
+    'gun_fire_sound': load_sound('laser.wav'),
+    'on_hit_sound': load_sound('on_hit.wav'),
 }
 
 stargun = {
@@ -246,8 +240,8 @@ stargun = {
     'image': load_image('star.png'),
     'recoil': 1,
     'special': None,
-    'gun_fire_sound': pyglet.media.load("laser.wav", streaming=False),
-    'on_hit_sound': pyglet.media.load("on_hit.wav", streaming=False),
+    'gun_fire_sound': load_sound('laser.wav'),
+    'on_hit_sound': load_sound('on_hit.wav'),
 }
 
 lineshot = {
@@ -264,8 +258,8 @@ lineshot = {
     'image': load_image('lineshot.png'),
     'recoil': 10,
     'special': None,
-    'gun_fire_sound': pyglet.media.load("laser.wav", streaming=False),
-    'on_hit_sound': pyglet.media.load("on_hit.wav", streaming=False),
+    'gun_fire_sound': load_sound('laser.wav'),
+    'on_hit_sound': load_sound('on_hit.wav'),
 }
 
 red_laser = {
@@ -282,8 +276,8 @@ red_laser = {
     'image': load_image('red_laser.png'),
     'recoil': 1,
     'special': None,
-    'gun_fire_sound': pyglet.media.load("laser.wav", streaming=False),
-    'on_hit_sound': pyglet.media.load("on_hit.wav", streaming=False),
+    'gun_fire_sound': load_sound('laser.wav'),
+    'on_hit_sound': load_sound('on_hit.wav'),
 }
 
 
@@ -302,7 +296,7 @@ slimegun = {
     'recoil': 10,
     'special': None,
     'gun_fire_sound': None,
-    'on_hit_sound': pyglet.media.load("on_hit.wav", streaming=False),
+    'on_hit_sound': load_sound('on_hit.wav'),
 }
 
 tracker = {
@@ -319,6 +313,6 @@ tracker = {
     'image': load_image('tracker.png'),
     'recoil': 0,
     'special': True,
-    'gun_fire_sound': pyglet.media.load("laser.wav", streaming=False),
-    'on_hit_sound': pyglet.media.load("on_hit.wav", streaming=False),
+    'gun_fire_sound': load_sound('laser.wav'),
+    'on_hit_sound': load_sound('on_hit.wav'),
 }

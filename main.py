@@ -17,9 +17,6 @@ states = []
 spriteeffect = SpriteEffect()
 player = Player(spriteeffect)
 
-global sound
-sound = pyglet.media.Player()
-
 enemy = []
 pg = [shotgun]
 pistol = Gun(enemy, base=exgun,)
