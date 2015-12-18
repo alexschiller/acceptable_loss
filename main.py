@@ -303,19 +303,24 @@ class StartState(object):
 
     def __init__(self):
         self.batch = pyglet.graphics.Batch()
+        self.shrinking = False
+        # self.label = pyglet.text.Label(
+        #     'Press Start',
+        #     font_name='Times New Roman',
+        #     font_size=32,
+        #     x=window_width / 2 - 250,
+        #     y=window_height / 2,
+        #     anchor_x='center',
+        #     anchor_y='center',
+        #     batch=self.batch
+        # )
 
-        self.label = pyglet.text.Label(
-            'Press Start',
-            font_name='Times New Roman',
-            font_size=32,
-            x=window_width / 2 - 250,
-            y=window_height / 2,
-            anchor_x='center',
-            anchor_y='center',
-            batch=self.batch
-        )
-        self.sprite = pyglet.sprite.Sprite(load_image('title.png'),
-            window_width / 2, window.height / 2, batch=self.batch)
+        img = pyglet.image.load('images/title_2.png')
+        img.anchor_x = 0
+        img.anchor_y = img.height
+
+        self.sprite = pyglet.sprite.Sprite(img,
+            0, window_height, batch=self.batch)
         # self.label = pyglet.text.Label(
         #     'ACCEPTABLE LOSS',
         #     font_name='Times New Roman',
@@ -341,13 +346,19 @@ class StartState(object):
     def on_mouse_press(self, x, y, button, modifiers):
         pass
 
+    def shrink(self):
+        if self.sprite.scale < .01:
+            self.flag = True
+        self.sprite.scale -= .01
+
     def update(self, ts):
         if key_handler[key.ENTER] or key_handler[key.RETURN]:
-            self.flag = True
+            self.shrinking = True
         else:
             if self.flag:
                 states.pop(0)
-
+        if self.shrinking:
+            self.shrink()
         window.invalid = False
 
     def test(self):
@@ -355,7 +366,7 @@ class StartState(object):
 
     def on_draw(self):
         window.clear()
-        pyglet.gl.glClearColor(0.196, 0.196, 0.196, 1)  # gray back
+        pyglet.gl.glClearColor(1, 1, 1, 1)  # gray back
         self.batch.draw()
         window.invalid = False
 
