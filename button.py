@@ -1,10 +1,9 @@
 import pyglet
 from utility import LabelBatch
-from keydict import keydictionary
 
 
 def foo():
-    print "I love dicks, spotted dick pudding i mean!"
+    print "hello"
 
 
 class Manager(object):

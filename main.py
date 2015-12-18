@@ -12,6 +12,34 @@ from utility import * # noqa
 from gun import * # noqa
 from button import Manager, Button,TextBox, DraggableButton, foo # noqa
 
+
+class ProtoKeyStateHandler(key.KeyStateHandler):
+
+    def __init__(self):
+        self.list = []
+        self.active = False
+
+    def on_key_press(self, symbol, modifiers):
+        self[symbol] = True
+        if self.active:
+            self.list.append(symbol)
+
+    def activate(self):
+        self.active = True
+
+    def deactivate(self):
+        self.active = False
+
+    def clear_state(self):
+        self.list = []
+
+    def get_next_item(self):
+        if len(self.list) > 0:
+            return self.list.pop(0)
+        else:
+            return False
+
+
 window = pyglet.window.Window(window_width, window_height)
 states = []
 master.spriteeffect = SpriteEffect(master)
@@ -44,7 +72,7 @@ master.friends = [
 for k in gun_dict.keys():
     master.guns.append(gun_dict[k])
 
-key_handler = key.KeyStateHandler()
+key_handler = ProtoKeyStateHandler()
 
 glEnable(GL_BLEND)
 glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA)
@@ -62,6 +90,7 @@ def jesustakethewheel():
 global mouse_position
 mouse_position = [0, 0]
 
+
 @window.event
 def on_mouse_motion(x, y, dx, dy):
     states[0].on_mouse_motion(x, y, dx, dy)
@@ -74,6 +103,7 @@ def on_mouse_drag(x, y, dx, dy, buttons, modifiers):
     states[0].on_mouse_drag(x, y, dx, dy, buttons, modifiers)
     global mouse_position
     mouse_position = [x, y]
+
 
 @window.event
 def on_mouse_release(x, y, button, modifiers):
@@ -94,15 +124,21 @@ class TextState(object):
         LabelBatch.draw()
 
     def update(self, ts):
-        @window.event
-        def on_key_release(symbol, modifiers):
-            # print symbol
-            if symbol == key.DELETE:
+        symbol = key_handler.get_next_item()
+        while (symbol != False): # noqa
+            print symbol
+            if int(symbol) == 65288:
                 self.button.delete()
-            elif symbol == key.ENTER or symbol == key.RETURN:
+
+            elif int(symbol) == 65293:
+                key_handler.deactivate()
+                key_handler.clear_state()
                 states.pop(0)
-            else:
+
+            elif int(symbol) < 127 and int(symbol) > 31:
                 self.button.add_text(symbol)
+            symbol = key_handler.get_next_item()
+        window.invalid = False
 
 
 class PauseState():
@@ -112,8 +148,10 @@ class PauseState():
         buttons = ['hi', 'button', 'chain', 'is', 'a', 'go']
         self.y = 660
         for label in buttons:
-            self.manager.add_button(DraggableButton(button, buttonhover, buttondown, 650,
-                self.y, foo, ButtonBatch, label))
+            self.manager.add_button(
+                DraggableButton(button, buttonhover, buttondown, 650,
+                self.y, foo, ButtonBatch, label) # noqa
+            )
             self.y -= 110
 
     def on_mouse_drag(self, x, y, dx, dy, buttons, modifiers):
@@ -124,7 +162,9 @@ class PauseState():
 
     def on_mouse_release(self, x, y, button, modifiers):
         # thing = TextState(self.manager.buttons[0])
+        # key_handler.activate()
         # states.insert(0, thing)
+
         self.manager.update(x, y, 1)
 
     def on_mouse_press(self, x, y, button, modifiers):
@@ -137,6 +177,7 @@ class PauseState():
             if self.Pause == 1:
                 self.Pause = 0
                 jesustakethewheel()
+        window.invalid = False
 
     def test(self):
         ButtonBatch.draw()
@@ -228,6 +269,7 @@ def update(ts):
 #     if symbol == pyglet.window.key.ESCAPE:
 #         jesustakethewheel()
 #         return pyglet.event.EVENT_HANDLED
+
 
 @window.event
 def on_draw():
