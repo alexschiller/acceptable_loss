@@ -303,26 +303,30 @@ class StartState(object):
 
     def __init__(self):
         self.batch = pyglet.graphics.Batch()
+
         self.label = pyglet.text.Label(
-            'ACCEPTABLE LOSS',
-            font_name='Times New Roman',
-            font_size=96,
-            x=window_width / 2,
-            y=window_height / 2 + 200,
-            anchor_x='center',
-            anchor_y='center',
-            batch=self.batch
-        )
-        self.label = pyglet.text.Label(
-            'Press Start!',
+            'Press Start',
             font_name='Times New Roman',
             font_size=32,
-            x=window_width / 2,
+            x=window_width / 2 - 250,
             y=window_height / 2,
             anchor_x='center',
             anchor_y='center',
             batch=self.batch
         )
+        self.sprite = pyglet.sprite.Sprite(load_image('title.png'),
+            window_width / 2, window.height / 2, batch=self.batch)
+        # self.label = pyglet.text.Label(
+        #     'ACCEPTABLE LOSS',
+        #     font_name='Times New Roman',
+        #     font_size=96,
+        #     x=window_width / 2,
+        #     y=window_height / 2 + 200,
+        #     anchor_x='center',
+        #     anchor_y='center',
+        #     batch=self.batch
+        # )
+
         self.flag = False
 
     def on_mouse_drag(self, x, y, dx, dy, buttons, modifiers):
@@ -351,7 +355,7 @@ class StartState(object):
 
     def on_draw(self):
         window.clear()
-        pyglet.gl.glClearColor(0.75, 0.75, 0.75, 1)  # gray back
+        pyglet.gl.glClearColor(0.196, 0.196, 0.196, 1)  # gray back
         self.batch.draw()
         window.invalid = False
 
