@@ -39,9 +39,9 @@ class ProtoKeyStateHandler(key.KeyStateHandler):
         else:
             return False
 
-
-window = pyglet.window.Window(window_width, window_height)
+key_handler = ProtoKeyStateHandler()
 states = []
+window = pyglet.window.Window(window_width, window_height)
 master.spriteeffect = SpriteEffect(master)
 
 master.player = Player(master)
@@ -72,7 +72,6 @@ master.friends = [
 for k in gun_dict.keys():
     master.guns.append(gun_dict[k])
 
-key_handler = ProtoKeyStateHandler()
 
 glEnable(GL_BLEND)
 glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA)
@@ -183,10 +182,32 @@ class PauseState():
         ButtonBatch.draw()
         LabelBatch.draw()
 
+    def on_draw(self):
+        window.clear()
+        pyglet.gl.glClearColor(0.75, 0.75, 0.75, 1)  # gray back
+        master.player.sprite.draw()
+        BulletBatch.draw()
+        EffectsBatch.draw()
+        BarBatch.draw()
+        gfx_batch.draw()
+        states[0].test()
+        window.invalid = False
+
 
 class MainState():
     def __init__(self):
         self.Pause = 0
+
+    def on_draw(self):
+        window.clear()
+        pyglet.gl.glClearColor(0.75, 0.75, 0.75, 1)  # gray back
+        master.player.sprite.draw()
+        BulletBatch.draw()
+        EffectsBatch.draw()
+        BarBatch.draw()
+        gfx_batch.draw()
+        states[0].test()
+        window.invalid = False
 
     def test(self):
         pass
@@ -273,16 +294,69 @@ def update(ts):
 
 @window.event
 def on_draw():
-    window.clear()
-    pyglet.gl.glClearColor(0.75, 0.75, 0.75, 1)  # gray back
-    master.player.sprite.draw()
-    BulletBatch.draw()
-    EffectsBatch.draw()
-    BarBatch.draw()
-    gfx_batch.draw()
+    states[0].on_draw()
     states[0].test()
     window.invalid = False
 
+
+class StartState(object):
+
+    def __init__(self):
+        self.batch = pyglet.graphics.Batch()
+        self.label = pyglet.text.Label(
+            'ACCEPTABLE LOSS',
+            font_name='Times New Roman',
+            font_size=96,
+            x=window_width / 2,
+            y=window_height / 2 + 200,
+            anchor_x='center',
+            anchor_y='center',
+            batch=self.batch
+        )
+        self.label = pyglet.text.Label(
+            'Press Start!',
+            font_name='Times New Roman',
+            font_size=32,
+            x=window_width / 2,
+            y=window_height / 2,
+            anchor_x='center',
+            anchor_y='center',
+            batch=self.batch
+        )
+        self.flag = False
+
+    def on_mouse_drag(self, x, y, dx, dy, buttons, modifiers):
+        pass
+
+    def on_mouse_motion(self, x, y, dx, dy):
+        pass
+
+    def on_mouse_release(self, x, y, button, modifiers):
+        pass
+
+    def on_mouse_press(self, x, y, button, modifiers):
+        pass
+
+    def update(self, ts):
+        if key_handler[key.ENTER] or key_handler[key.RETURN]:
+            self.flag = True
+        else:
+            if self.flag:
+                states.pop(0)
+
+        window.invalid = False
+
+    def test(self):
+        pass
+
+    def on_draw(self):
+        window.clear()
+        pyglet.gl.glClearColor(0.75, 0.75, 0.75, 1)  # gray back
+        self.batch.draw()
+        window.invalid = False
+
+
+states.append(StartState())
 states.append(MainState())  # add state to run time
 states.append(PauseState())
 pyglet.clock.schedule_interval(update, 1 / 60.0)

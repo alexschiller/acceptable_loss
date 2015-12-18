@@ -1,5 +1,9 @@
 import pyglet
 from utility import LabelBatch
+from collide import * # noqa
+
+DragButtons = []
+Containers = []
 
 
 def foo():
@@ -45,9 +49,6 @@ class Button(object):
                 batch=LabelBatch
             )
 
-    def on_press(self):
-        pass
-
     def on_mouse_motion(self, x, y):
         if (self.sprite.x < x and
                 x < self.sprite.x + self.sprite.width and
@@ -70,8 +71,10 @@ class Button(object):
             if mode == 1 and self.trigger == 1:
                 self.trigger = 0
                 self.sprite.image = self.hoversprite
-
-                self.func()
+                try:
+                    self.func()
+                except:
+                    pass
             if mode == 0:
                 self.sprite.image = self.downsprite
                 self.trigger = 1
@@ -83,6 +86,15 @@ class DraggableButton(Button):
             upsprite, hoversprite, downsprite, x, y,
             callback, batch, label
         )
+        self.collision = SpriteCollision(self.sprite)
+
+    def on_collide(self, button):
+        ret = calc_vel_xy(
+            self.sprite.x, self.sprite.y,
+            button.sprite.x, button.sprite.y, 10
+        )
+        self.sprite.x += ret[0]
+        self.sprite.y += ret[1]
 
     def on_mouse_press(self, x, y, mode):
         if (
@@ -109,6 +121,10 @@ class DraggableButton(Button):
             self.sprite.y += dy
             self.label.x += dx
             self.label.y += dy
+            for buttons in DragButtons:
+                if collide(self.collision, buttons.collision) and buttons is not self:
+                    print "OK"
+                    self.on_collide(buttons)
         else:
             self.trigger = 0
             self.sprite.image = self.upsprite
@@ -116,6 +132,7 @@ class DraggableButton(Button):
 
 class TextBox(Button):
     def __init__(self, upsprite, hoversprite, downsprite, x, y, callback=None, batch=None, label=None):
+        DragButtons.append(self)
         super(TextBox, self).__init__(
             upsprite, hoversprite, downsprite, x, y,
             callback, batch, ' '
@@ -142,3 +159,14 @@ class TextBox(Button):
             if mode == 0:
                 self.sprite.image = self.downsprite
                 self.trigger = 1
+
+
+class Container(Button):
+
+    def __init__(self, upsprite, hoversprite, downsprite, x, y, callback=None, batch=None, label=None):
+        Containers.append(self)
+        super(DraggableButton, self).__init__(
+            upsprite, hoversprite, downsprite, x, y,
+            None, batch, labe= None # noqa
+        )
+        self.collision = SpriteCollision(self.sprite)
