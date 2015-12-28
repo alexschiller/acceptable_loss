@@ -14,7 +14,7 @@ class Master(object):
         self.enemies = []
         self.friends = []
         self.guns = []
-        self.grenade = None
+        self.objects = []
         self.spriteeffect = None
 
     def update(self):
@@ -28,7 +28,6 @@ class Master(object):
                 e.update()
             except:
                 pass
-
         for f in self.friends:
             try:
                 f.update()
@@ -41,10 +40,6 @@ class Master(object):
                 pass
         try:
             self.spriteeffect.update()
-        except:
-            pass
-        try:
-            self.grenade.update()
         except:
             pass
 
@@ -99,13 +94,13 @@ def play_sound(sound_file):
     if sound_file:
         sound = pyglet.media.Player()
         sound.queue(sound_file)
-       # sound.play()
+       # sound.play() # noqa
 
 
 # todo move elsewhere
-button = load_image('button.png',False)
-buttonhover = load_image('buttonhover.png',False)
-buttondown = load_image('buttondown.png',False)
+button = load_image('button.png', False)
+buttonhover = load_image('buttonhover.png', False)
+buttondown = load_image('buttondown.png', False)
 
 def calc_vel_xy(tar_x, tar_y, start_x, start_y, velocity):
     dif_y = tar_y - start_y

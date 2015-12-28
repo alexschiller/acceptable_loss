@@ -2,7 +2,6 @@
 import math # noqa
 import pyglet
 # import random
-# import itertools
 from pyglet.gl import * # noqa
 from pyglet.window import key # noqa
 from pyglet.window import mouse # noqa
@@ -11,6 +10,7 @@ from character import * # noqa
 from utility import * # noqa
 from gun import * # noqa
 from button import Manager, Button,TextBox, DraggableButton, foo # noqa
+from energy import * # noqa
 
 
 class ProtoKeyStateHandler(key.KeyStateHandler):
@@ -48,25 +48,38 @@ master.player = Player(master)
 
 # todo: Gun 'hits' (e.g., master.enemies, master.player) needs refactor to two subclasses,
 # one that hits friends, one that hits enemies
-gun_dict = {'pistol': Gun(master, master.enemies, base=exgun),
-            'player_gun': Gun(master, master.enemies, base=red_laser),
-            'cannon_gun': Gun(master, master.enemies, base=shotgun),
-            'enemy_gun': Gun(master, master.player, base=slimegun),
-            'soldier_gun': Gun(master, master.player, base=exgun),
+gun_dict = {'pistol': Gun(master, hits='enemies', base=fire),
+            'master.player_1': Gun(master,
+                hits='enemies', base=red_laser),
+            'master.player_2': Gun(master, hits='enemies', base=shotgun),
+            'master.player_3': MissileLauncher(master,
+                hits='enemies', base=missile),
+            'master.player_4': MissileLauncher(master,
+                hits='enemies', base=shrapnel),
+            'cannon_gun': Gun(master, hits='enemies', base=shotgun),
+            'enemy_gun': Gun(master, hits='enemies', base=slimegun),
+            'soldier_gun': Gun(master, hits='friends', base=exgun),
             }
-player_gun = gun_dict['player_gun']
 
-# guns = [player_gun, cannon_gun, enemy_gun, pistol, soldier_gun]
+# player_guns = [gun_dict['master.player_1'], gun_dict['master.player_2'], gun_dict['master.player_3']] # noqa
+player_guns = [gun_dict['master.player_4']]
+
+master.player.load_guns(player_guns)
+master.pistol = gun_dict['pistol']
+
+# guns = [master.player, cannon_gun, enemy_gun, pistol, soldier_gun]
 # for i in range(2):
     # enemy.append(Enemy(master, gun_dict['enemy_gun'])) # noqa
 
-for i in range(10):
+for i in range(5):
     master.enemies.append(Soldier(master, gun_dict['soldier_gun'])) # noqa
 
-master.grenade = Grenade(master)
+for i in range(10):
+    master.objects.append(Box(master)) # noqa
+
 
 master.friends = [
-    Healer(master, gun_dict['cannon_gun']), # noqa
+    # Healer(master, gun_dict['cannon_gun']), # noqa
     # Cannon(player, enemy, gun, spriteeffect)
 ]
 for k in gun_dict.keys():
@@ -216,8 +229,8 @@ class MainState():
         pass
 
     def on_mouse_press(self, x, y, button, modifiers):
-        if player_gun.fire(master.player.sprite.x, master.player.sprite.y, mouse_position[0], mouse_position[1]): # noqa
-            ret = calc_vel_xy(master.player.sprite.x, master.player.sprite.y, mouse_position[0], mouse_position[1], player_gun.base['recoil']) # noqa
+        if master.player.fire(mouse_position[0], mouse_position[1]): # noqa
+            ret = calc_vel_xy(master.player.sprite.x, master.player.sprite.y, mouse_position[0], mouse_position[1], master.player.base['recoil']) # noqa
             master.player.sprite.x += ret[0]
             master.player.sprite.y += ret[1]
 
@@ -235,8 +248,8 @@ class MainState():
         y_dist = y - float(master.player.sprite.y)
 
         deg = (math.degrees(math.atan2(y_dist, x_dist)) * -1) + 90
-        if player_gun.fire(master.player.sprite.x, master.player.sprite.y, mouse_position[0], mouse_position[1]): # noqa
-            ret = calc_vel_xy(master.player.sprite.x, master.player.sprite.y, mouse_position[0], mouse_position[1], player_gun.base['recoil']) # noqa
+        if master.player.fire(mouse_position[0], mouse_position[1]): # noqa
+            ret = calc_vel_xy(master.player.sprite.x, master.player.sprite.y, mouse_position[0], mouse_position[1], master.player.base['recoil']) # noqa
             master.player.sprite.x += ret[0]
             master.player.sprite.y += ret[1]
         master.player.sprite.rotation = deg
@@ -263,20 +276,18 @@ class MainState():
             my -= 1
         master.player.move(mx, my)
 
-        if key_handler[key.Q]:
-            master.grenade.throw(
-                master.player.sprite.x,
-                master.player.sprite.y, mouse_position[0],
-                mouse_position[1]
-            )
+        # if key_handler[key.Q]:
+        #     master.grenade.throw(
+        #         master.player.sprite.x,
+        #         master.player.sprite.y, mouse_position[0],
+        #         mouse_position[1]
+        # )
+        if key_handler[key.E]:
+            master.player.next_gun()
 
         if key_handler[key.F] and master.player.energy >= 100:
-            master.player.energy -= 100
-            master.spriteeffect.teleport(master.player.sprite.x, master.player.sprite.y)
-            master.player.sprite.x = mouse_position[0]
-            master.player.sprite.y = mouse_position[1]
-            master.spriteeffect.teleport(master.player.sprite.x, master.player.sprite.y)
-
+            # teleport(master, mouse_position)
+            heal(master, mouse_position)
         # Run Updates
         master.update()
         window.invalid = False

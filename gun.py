@@ -42,18 +42,27 @@ class Bullet(object):
         self.vel_x = ret[0] + (random.gauss(0, self.spread) * self.velocity)
         self.vel_y = ret[1] + (random.gauss(0, self.spread) * self.velocity)
 
+    def update(self):
+        self.sprite.x += self.vel_x
+        self.sprite.y += self.vel_y
+        self.travelled += math.hypot(self.vel_x, self.vel_y)
 
 class Gun(object):
-    def __init__(self, master, hits, base, chips=[]): # noqa
-        self.rof = 60 / base['rof']
+    def __init__(self, master, base, hits, chips=[]): # noqa
+        self.base = base
+        self.rof = 60 / self.base['rof']
         self.rofl = 0
         self.bullets = []
-        self.base = base
         self.hits = hits
         self.master = master
-        self.energy_cost = base['energy_cost']
-        self.gun_fire_sound = base['gun_fire_sound']
-        self.on_hit_sound = base['on_hit_sound']
+        self.energy_cost = self.base['energy_cost']
+        self.gun_fire_sound = self.base['gun_fire_sound']
+        self.on_hit_sound = self.base['on_hit_sound']
+
+        if hits == "enemies":
+            self.bullet_checks = self.hits_bad
+        else:
+            self.bullet_checks = self.hits_good
 
     def fire(self, start_x, start_y, target_x, target_y):
         if self.rofl == self.rof:
@@ -67,13 +76,40 @@ class Gun(object):
             return True
 
     def delete_bullet(self, bullet):
-        if self.base['special']:
-            ret = self.select_target(bullet)
-            if random.randint(1, 10) != 1:
-                self.fire(bullet.sprite.x, bullet.sprite.y, ret[0], ret[1])
         try:
             bullet.sprite.delete()
             self.bullets.remove(bullet)
+        except:
+            pass
+
+    def update_pierce(self, bullet):
+        bullet.pierce -= 1
+        if bullet.pierce < 0:
+            self.delete_bullet(bullet)
+
+    def hits_good(self, bullet):
+        if collide(bullet.collision, self.master.player.collision):
+            play_sound(self.on_hit_sound)
+            self.hits.on_hit(bullet)
+            self.update_pierce(bullet)
+
+        for o in self.master.objects:
+            if collide(bullet.collision, o.collision):
+                self.delete_bullet(bullet)
+                break
+
+    def hits_bad(self, bullet):
+        for e in self.master.enemies:
+            if collide(bullet.collision, e.collision):
+                play_sound(self.on_hit_sound)
+                e.on_hit(bullet)
+                self.update_pierce(bullet)
+                break
+        try:
+            for o in self.master.objects:
+                if collide(bullet.collision, o.collision):
+                    self.delete_bullet(bullet)
+                    break
         except:
             pass
 
@@ -81,34 +117,8 @@ class Gun(object):
         if self.rofl < self.rof:
             self.rofl += 1
         for bullet in self.bullets:
-            # bullet.sprite.rotation += 10
-            bullet.sprite.x += bullet.vel_x
-            bullet.sprite.y += bullet.vel_y
-            bullet.travelled = bullet.travelled + abs(bullet.vel_x) + abs(bullet.vel_y)
-            try:
-                for e in self.hits:
-                    if collide(bullet.collision, e.collision):
-                        play_sound(self.on_hit_sound)
-                        e.on_hit(bullet)
-                        bullet.pierce -= 1
-                        if bullet.pierce < 0:
-                            self.delete_bullet(bullet)
-                    # if bullet.check_collision(e):
-                        # if not bullet.handle_collision():
-
-                        break
-                    # self.delete_bullet(bullet)
-            except:
-                if collide(bullet.collision, self.hits.collision):
-                    play_sound(self.on_hit_sound)
-                    self.hits.on_hit(bullet)
-                    bullet.pierce -= 1
-                    if bullet.pierce < 0:
-                        self.delete_bullet(bullet)
-                # if bullet.check_collision(e):
-                    # if not bullet.handle_collision():
-
-                    break
+            bullet.update()
+            self.bullet_checks(bullet)
             if bullet.travelled > bullet.calc_travel:
                 self.delete_bullet(bullet)
 
@@ -117,76 +127,52 @@ class Gun(object):
             min_dist = float("inf")
             coord = (0, 0)
             x1 = bullet.sprite.x
-            y1 = bullet.sprite.x
-            for e in self.hits:
-                dist = (e.sprite.x - x1) ** 2 + (e.sprite.y - y1) ** 2
+            y1 = bullet.sprite.y
+            for e in self.master.enemies:
+                dist = abs(math.hypot(x1 - e.sprite.x, y1 - e.sprite.y))
                 if dist < min_dist:
                     min_dist = dist
                     coord = (e.sprite.x, e.sprite.y)
             return coord
         except:
+            print "snail fail"
             return [bullet.sprite.x, bullet.sprite.y]
 
-class GrenadeEffect(object):
-    def __init__(self, start_x, start_y, vel_x, vel_y, travel=20, ecolor=[0, 0, 0], esizex=3, esizey=3,shadow=0): # noqa
-        if vel_x == 0 and vel_y == 0:
-            vel_x, vel_y = 5, 10
-        effect_color = pyglet.image.SolidColorImagePattern(color=(ecolor[0],
-            ecolor[1], ecolor[2], 255))
-        effect_shape = pyglet.image.create(esizex, esizey, effect_color)
+class MissileLauncher(Gun):
+    def __init__(self, *args, **kwargs):
+        super(MissileLauncher, self).__init__(*args, **kwargs)
+        self.gun = Gun(master, hits='enemies', base=self.base['effect_gun'])
+        self.master.guns.append(self.gun)
 
-        self.sprite = pyglet.sprite.Sprite(effect_shape,
-        start_x, start_y, batch=EffectsBatch)
-        self.vel_x = vel_x
-        self.vel_y = vel_y
-        self.travel = travel
-        self.travelled = 0
-        self.shadow = shadow
+    def delete_bullet(self, bullet):
+        for i in range(4):
+            self.gun.fire(bullet.sprite.x, bullet.sprite.y,
+            bullet.sprite.x + random.randint(-4, 4),
+            bullet.sprite.y + random.randint(-4, 4))
+        try:
+            bullet.sprite.delete()
+            self.bullets.remove(bullet)
+        except:
+            pass
 
-class Grenade(object):
-    def __init__(self, master):
-        self.master = master
-        self.effects = []
-        self.grenades = 1
+class Strafe(Gun):
+    def __init__(self, *args, **kwargs):
+        super(Strafe, self).__init__(*args, **kwargs)
+        self.gun = MissileLauncher(master, hits='enemies', base=self.base['effect_gun'])
+        self.master.guns.append(self.gun)
 
     def update(self):
-        if self.grenades < 1:
-            self.grenades += .01
-        for effect in self.effects:
-            effect.sprite.x += effect.vel_x
-            effect.sprite.y += effect.vel_y
-            perc_trav = effect.travelled / effect.travel
-            if not effect.shadow:
-                if perc_trav < .5:
-                    effect.sprite.scale += .2
-                else:
-                    effect.sprite.scale -= .2
+        if self.rofl < self.rof:
+            self.rofl += 1
+        for bullet in self.bullets:
+            if random.randint(0, 100) >= 80:
+                coord = self.select_target(bullet)
+                self.gun.fire(bullet.sprite.x, bullet.sprite.y, coord[0], coord[1])
+            bullet.update()
+            self.bullet_checks(bullet)
+            if bullet.travelled > bullet.calc_travel:
+                self.delete_bullet(bullet)
 
-            effect.travelled = effect.travelled + abs(effect.vel_x) + abs(effect.vel_y)
-            if effect.travelled > effect.travel:
-                effect.sprite.delete()
-                self.effects.remove(effect)
-
-    def throw(self, start_x, start_y, target_x, target_y):
-        if self.grenades >= 1:
-            self.grenades -= 1
-            ret = calc_vel_xy(target_x, target_y, start_x, start_y, 10)
-            travel = abs(target_x - start_x) + abs(target_y - start_y)
-            self.effects.append(
-                GrenadeEffect(start_x=start_x, start_y=start_y,
-                    vel_x=ret[0], vel_y=ret[1],
-                    travel=travel,
-                    ecolor=[random.randint(0, 255), random.randint(0, 255),
-                        random.randint(0, 255)],
-                    esizex=3, esizey=3, shadow=0)
-            )
-            # self.effects.append(
-            #     GrenadeEffect(start_x=start_x, start_y=start_y,
-            #         vel_x=ret[0], vel_y=ret[1],
-            #         travel=travel,
-            #         ecolor=[150, 150, 150],
-            #         esizex=10, esizey=10, shadow=1)
-            # )
 
 # Prefab guns for now, belong elsewhere
 shotgun = {
@@ -202,7 +188,7 @@ shotgun = {
     'knockback': 20.0,
     'image': load_image('shotgun.png'),
     'recoil': 10,
-    'special': None,
+    'effect_gun': None,
     'gun_fire_sound': load_sound('shotgun.wav'),
     'on_hit_sound': load_sound('on_hit_2.wav'),
 }
@@ -220,7 +206,25 @@ exgun = {
     'knockback': 1.0,
     'image': load_image('snipe.png'),
     'recoil': 1,
-    'special': False,
+    'effect_gun': None,
+    'gun_fire_sound': None,
+    'on_hit_sound': load_sound('on_hit.wav'),
+}
+
+fire = {
+    'damage': 1,
+    'travel': 50,
+    'velocity': 5,
+    'accuracy': .85,
+    'spread': 0,
+    'energy_cost': 20,
+    'bullets': 1,
+    'pierce': 0,
+    'rof': 100,
+    'knockback': 10.0,
+    'image': load_image('fire.png'),
+    'recoil': 1,
+    'effect_gun': None,
     'gun_fire_sound': None,
     'on_hit_sound': load_sound('on_hit.wav'),
 }
@@ -238,7 +242,7 @@ stargun = {
     'knockback': 1.0,
     'image': load_image('star.png'),
     'recoil': 1,
-    'special': None,
+    'effect_gun': None,
     'gun_fire_sound': load_sound('laser.wav'),
     'on_hit_sound': load_sound('on_hit.wav'),
 }
@@ -256,7 +260,7 @@ lineshot = {
     'knockback': 20.0,
     'image': load_image('lineshot.png'),
     'recoil': 10,
-    'special': None,
+    'effect_gun': None,
     'gun_fire_sound': load_sound('laser.wav'),
     'on_hit_sound': load_sound('on_hit.wav'),
 }
@@ -274,7 +278,7 @@ red_laser = {
     'knockback': 10.0,
     'image': load_image('red_laser.png'),
     'recoil': 1,
-    'special': None,
+    'effect_gun': None,
     'gun_fire_sound': load_sound('laser.wav'),
     'on_hit_sound': load_sound('on_hit.wav'),
 }
@@ -293,7 +297,7 @@ slimegun = {
     'knockback': 10.0,
     'image': load_image('slimeball.png'),
     'recoil': 10,
-    'special': None,
+    'effect_gun': None,
     'gun_fire_sound': None,
     'on_hit_sound': load_sound('on_hit.wav'),
 }
@@ -311,7 +315,79 @@ tracker = {
     'knockback': 0.0,
     'image': load_image('tracker.png'),
     'recoil': 0,
-    'special': True,
+    'effect_gun': True,
     'gun_fire_sound': load_sound('laser.wav'),
     'on_hit_sound': load_sound('on_hit.wav'),
+}
+
+rocket = {
+    'damage': 2,
+    'travel': 150,
+    'velocity': 20,
+    'accuracy': .85,
+    'spread': .15,
+    'energy_cost': 20,
+    'bullets': 1,
+    'pierce': 0,
+    'rof': 10,
+    'knockback': 0.0,
+    'image': load_image('missile.png'),
+    'recoil': 0,
+    'effect_gun': fire,
+    'gun_fire_sound': load_sound('laser.wav'),
+    'on_hit_sound': load_sound('on_hit.wav'),
+}
+
+missile = {
+    'damage': 2,
+    'travel': 800,
+    'velocity': 8,
+    'accuracy': .85,
+    'spread': 0,
+    'energy_cost': 20,
+    'bullets': 1,
+    'pierce': 0,
+    'rof': 1,
+    'knockback': 0.0,
+    'image': load_image('tracker.png'),
+    'recoil': 0,
+    'effect_gun': rocket,
+    'gun_fire_sound': load_sound('laser.wav'),
+    'on_hit_sound': load_sound('on_hit.wav'),
+}
+
+shrap = {
+    'damage': 1,
+    'travel': 200,
+    'velocity': 10,
+    'accuracy': .85,
+    'spread': .5,
+    'energy_cost': 20,
+    'bullets': 10,
+    'pierce': 0,
+    'rof': 100,
+    'knockback': 1.0,
+    'image': load_image('burr.png'),
+    'recoil': 5,
+    'effect_gun': None,
+    'gun_fire_sound': load_sound('shotgun.wav'),
+    'on_hit_sound': load_sound('on_hit_2.wav'),
+}
+
+shrapnel = {
+    'damage': 1,
+    'travel': 400,
+    'velocity': 8,
+    'accuracy': .85,
+    'spread': .06,
+    'energy_cost': 20,
+    'bullets': 1,
+    'pierce': 0,
+    'rof': 1,
+    'knockback': 20.0,
+    'image': load_image('ball.png'),
+    'recoil': 10,
+    'effect_gun': shrap,
+    'gun_fire_sound': load_sound('shotgun.wav'),
+    'on_hit_sound': load_sound('on_hit_2.wav'),
 }

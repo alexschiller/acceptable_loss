@@ -34,12 +34,20 @@ class Player(Character):
         self.max_energy = 100
         self.energy = 100
         self.spriteeffect = master.spriteeffect
-
+        self.vel_x = 0
+        self.vel_y = 0
         self.max_shield = 100
         self.shield = 100
         #movement
 
     def update(self):
+        for o in self.master.objects:
+            if collide(self.collision, o.collision):
+                ret = calc_vel_xy(self.sprite.x, self.sprite.y,
+                o.sprite.x, o.sprite.y, self.speed * 2)
+                self.sprite.x += ret[0]
+                self.sprite.y += ret[1]
+
         if self.energy < 100:
             self.energy += 1
         self.shield_bar = pyglet.sprite.Sprite(
@@ -60,6 +68,18 @@ class Player(Character):
         impact = bullet.knockback / self.kbr
         self.sprite.x += bullet.vel_x * impact
         self.sprite.y += bullet.vel_y * impact
+
+    def next_gun(self):
+        self.gun = self.guns[next(self.cycle_guns)]
+
+    def fire(self, target_x, target_y):
+        self.gun.fire(self.sprite.x, self.sprite.y, target_x, target_y)
+
+    def load_guns(self, guns):
+        self.guns = guns
+        self.cycle_guns = itertools.cycle(range(len(self.guns)))
+        self.gun = self.guns[0]
+
 
 class Ally(Character):
     def __init__(self, master, gun):
@@ -323,6 +343,14 @@ class Soldier(object):
         self.health -= 10
 
     def update(self):
+        # for o in self.master.objects:
+            # if collide(self.collision, o.collision):
+                # print 'zomg'
+        #         ret = calc_vel_xy(self.sprite.x, self.sprite.y,
+        #         o.sprite.x, o.sprite.y, 5)
+        #         self.sprite.x += ret[0]
+        #         self.sprite.y += ret[1]
+
         x_dist = self.player.sprite.x - float(self.sprite.x)
         y_dist = self.player.sprite.y - float(self.sprite.y)
         self.sprite.rotation = (math.degrees(math.atan2(y_dist, x_dist)) * -1) + 90
@@ -338,6 +366,51 @@ class Soldier(object):
             self.on_collide()
         if self.health <= 0:
             self.on_death()
+
+class Box(object):
+    def __init__(self, master):
+        self.sprite = pyglet.sprite.Sprite(load_image('box.png'),
+            random.randint(50, 1350), random.randint(50, 750), batch=gfx_batch)
+        self.collision = SpriteCollision(self.sprite)
+        self.health = 1000
+        self.max_health = 1000.0
+
+    # def on_death(self):
+    #     self.enemy.append(Enemy(master, self.gun))
+    #     self.spriteeffect.explosion(self.sprite.x, self.sprite.y, 30, 50)
+    #     try:
+    #         self.sprite.delete()
+    #         self.enemy.remove(self)
+    #     except:
+    #         pass
+
+    # def on_hit(self, bullet):
+    #     self.spriteeffect.explosion(bullet.sprite.x, bullet.sprite.y, 3, 5)
+        # self.sprite.scale = (self.health / self.max_health * .5) + .5
+
+    # def on_collide(self):
+    #     pass
+        # ret = calc_vel_xy(self.player.sprite.x, self.player.sprite.y,
+        # self.sprite.x, self.sprite.y, 20)
+        # self.sprite.x -= ret[0] / 2
+        # self.sprite.y -= ret[1] / 2
+        # self.player.sprite.x += ret[0]
+        # self.player.sprite.y += ret[1]
+        # self.player.health -= self.touch_damage
+
+    # def update(self):
+
+    #     ret = calc_vel_xy(self.player.sprite.x, self.player.sprite.y,
+    #         self.sprite.x, self.sprite.y, self.speed)
+    #     self.speed = next(self.animation)
+    #     self.sprite.x += ret[0]
+    #     self.sprite.y += ret[1]
+    #     if random.randint(0, 300) > 270:
+    #         self.shoot()
+    #     if collide(self.collision, self.player.collision):
+    #         self.on_collide()
+    #     if self.health <= 0:
+    #         self.on_death()
 
 class Effect(object):
     def __init__(self, start_x, start_y, vel_x, vel_y, travel=20, ecolor=[0, 0, 0], esizex=3, esizey=3): # noqa
