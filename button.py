@@ -122,10 +122,10 @@ class DraggableButton(Button):
             self.sprite.y += dy
             self.label.x += dx
             self.label.y += dy
-            for buttons in DragButtons:
-                if collide(self.collision, buttons.collision) and buttons is not self:
-                    print "OK"
-                    self.on_collide(buttons)
+            # for buttons in DragButtons:
+            #     if collide(self.collision, buttons.collision) and buttons is not self:
+            #         print "OK"
+            #         self.on_collide(buttons)
         else:
             self.trigger = 0
             self.sprite.image = self.upsprite
