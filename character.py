@@ -40,13 +40,30 @@ class Player(Character):
         self.shield = 100
         #movement
 
-    def update(self):
+    def closest_object(self):
+        closest = None
+        min_dist = float('inf')
+        x1 = self.sprite.x
+        y1 = self.sprite.y
         for o in self.master.objects:
-            if collide(self.collision, o.collision):
-                ret = calc_vel_xy(self.sprite.x, self.sprite.y,
-                o.sprite.x, o.sprite.y, self.speed * 2)
-                self.sprite.x += ret[0]
-                self.sprite.y += ret[1]
+            dist = math.sqrt((o.sprite.x - x1) ** 2 + (o.sprite.y - y1) ** 2)
+            if dist < min_dist:
+                closest = o
+                min_dist = dist
+        return closest
+
+    def check_object_collision(self, o):
+        if collide(self.collision, o.collision):
+            ret = calc_vel_xy(self.sprite.x, self.sprite.y,
+            o.sprite.x, o.sprite.y, 3)
+            self.sprite.x += ret[0]
+            self.sprite.y += ret[1]
+
+    def update(self):
+        try:
+            self.check_object_collision(self.closest_object())
+        except:
+            pass
 
         if self.energy < 100:
             self.energy += 1
@@ -292,6 +309,7 @@ class Soldier(object):
     def __init__(self, master, gun):
         self.enemy = master.enemies
         self.player = master.player
+        self.master = master
         self.spriteeffect = master.spriteeffect
         self.sprite = pyglet.sprite.Sprite(load_image('soldier.png'),
             random.randint(50, 1350), random.randint(50, 750), batch=gfx_batch)
@@ -342,14 +360,30 @@ class Soldier(object):
         self.player.sprite.y += ret[1]
         self.health -= 10
 
+    def closest_object(self):
+        closest = None
+        min_dist = float('inf')
+        x1 = self.sprite.x
+        y1 = self.sprite.y
+        for o in self.master.objects:
+            dist = math.sqrt((o.sprite.x - x1) ** 2 + (o.sprite.y - y1) ** 2)
+            if dist < min_dist:
+                closest = o
+                min_dist = dist
+        return closest
+
+    def check_object_collision(self, o):
+        if collide(self.collision, o.collision):
+            ret = calc_vel_xy(self.sprite.x, self.sprite.y,
+            o.sprite.x, o.sprite.y, 3)
+            self.sprite.x += ret[0]
+            self.sprite.y += ret[1]
+
     def update(self):
-        # for o in self.master.objects:
-            # if collide(self.collision, o.collision):
-                # print 'zomg'
-        #         ret = calc_vel_xy(self.sprite.x, self.sprite.y,
-        #         o.sprite.x, o.sprite.y, 5)
-        #         self.sprite.x += ret[0]
-        #         self.sprite.y += ret[1]
+        try:
+            self.check_object_collision(self.closest_object())
+        except:
+            pass
 
         x_dist = self.player.sprite.x - float(self.sprite.x)
         y_dist = self.player.sprite.y - float(self.sprite.y)

@@ -51,18 +51,12 @@ master.player = Player(master)
 gun_dict = {'pistol': Gun(master, hits='enemies', base=fire),
             'master.player_1': Gun(master,
                 hits='enemies', base=red_laser),
-            'master.player_2': Gun(master, hits='enemies', base=shotgun),
-            'master.player_3': MissileLauncher(master,
-                hits='enemies', base=missile),
-            'master.player_4': MissileLauncher(master,
-                hits='enemies', base=shrapnel),
-            'cannon_gun': Gun(master, hits='enemies', base=shotgun),
-            'enemy_gun': Gun(master, hits='enemies', base=slimegun),
-            'soldier_gun': Gun(master, hits='friends', base=exgun),
+            'master.player_2': Gun(master, hits='enemies', base=lancer),
+            'soldier_gun': Gun(master, hits='friends', base=missile),
             }
 
 # player_guns = [gun_dict['master.player_1'], gun_dict['master.player_2'], gun_dict['master.player_3']] # noqa
-player_guns = [gun_dict['master.player_4']]
+player_guns = [gun_dict['master.player_2']]
 
 master.player.load_guns(player_guns)
 master.pistol = gun_dict['pistol']
@@ -287,7 +281,7 @@ class MainState():
 
         if key_handler[key.F] and master.player.energy >= 100:
             # teleport(master, mouse_position)
-            heal(master, mouse_position)
+            teleport(master, mouse_position)
         # Run Updates
         master.update()
         window.invalid = False
