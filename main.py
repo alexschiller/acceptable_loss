@@ -51,7 +51,7 @@ master.player = Player(master)
 gun_dict = {'pistol': Gun(master, hits='enemies', base=fire),
             'master.player_1': Gun(master,
                 hits='enemies', base=red_laser),
-            'master.player_2': Gun(master, hits='enemies', base=lancer),
+            'master.player_2': Gun(master, hits='enemies', base=shotgun),
             'soldier_gun': Gun(master, hits='friends', base=missile),
             }
 
@@ -68,7 +68,7 @@ master.pistol = gun_dict['pistol']
 for i in range(5):
     master.enemies.append(Soldier(master, gun_dict['soldier_gun'])) # noqa
 
-for i in range(10):
+for i in range(50):
     master.objects.append(Box(master)) # noqa
 
 

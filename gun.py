@@ -111,7 +111,7 @@ class Gun(object):
                 self.update_pierce(bullet)
                 return True
         except:
-            print "O FAIL"
+            pass
 
     def hits_bad(self, bullet):
         try:
@@ -122,14 +122,14 @@ class Gun(object):
                 self.update_pierce(bullet)
                 return True
         except:
-            print "E FAIL"
+            pass
         try:
             o = self.closest_object(bullet, self.master.objects)
             if collide(bullet.collision, o.collision):
                 self.update_pierce(bullet)
                 return True
         except:
-            print "O FAIL"
+            pass
 
     def update(self):
         if self.rofl < self.rof:
