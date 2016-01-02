@@ -49,12 +49,13 @@ class Button(object):
                 batch=LabelBatch
             )
 
-    def on_mouse_motion(self, x, y):
+    def on_mouse_motion(self, x, y, dx, dy):
         if (self.sprite.x < x and
                 x < self.sprite.x + self.sprite.width and
                 self.sprite.y < y and
                 y < self.sprite.y + self.sprite.height):
             self.sprite.image = self.hoversprite
+            print 'whats up kitty cat'
         else:
             self.trigger = 0
             self.sprite.image = self.upsprite
