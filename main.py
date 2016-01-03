@@ -39,43 +39,6 @@ class ProtoKeyStateHandler(key.KeyStateHandler):
 key_handler = ProtoKeyStateHandler()
 states = []
 window = pyglet.window.Window(window_width, window_height)
-master.spriteeffect = SpriteEffect(master)
-
-master.player = Player(master, base=player_base)
-
-# todo: Gun 'hits' (e.g., master.enemies, master.player) needs refactor to two subclasses,
-# one that hits friends, one that hits enemies
-gun_dict = {'pistol': Gun(master, hits='enemies', base=fire),
-            'master.player_1': Gun(master,
-                hits='enemies', base=red_laser),
-            'master.player_2': Gun(master, hits='enemies', base=shotgun),
-            'soldier_gun': Gun(master, hits='friends', base=missile),
-            }
-
-# player_guns = [gun_dict['master.player_1'], gun_dict['master.player_2'], gun_dict['master.player_3']] # noqa
-player_guns = [gun_dict['master.player_2']]
-
-master.player.load_guns(player_guns)
-master.pistol = gun_dict['pistol']
-
-# guns = [master.player, cannon_gun, enemy_gun, pistol, soldier_gun]
-# for i in range(2):
-    # enemy.append(Enemy(master, gun_dict['enemy_gun'])) # noqa
-
-for i in range(5):
-    master.enemies.append(Enemy(master, base=gen_soldier_base() )) # noqa
-
-for i in range(20):
-    master.objects.append(Box(master)) # noqa
-
-
-master.friends = [
-    # Healer(master, gun_dict['cannon_gun']), # noqa
-    # Cannon(player, enemy, gun, spriteeffect)
-]
-for k in gun_dict.keys():
-    master.guns.append(gun_dict[k])
-
 
 glEnable(GL_BLEND)
 glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA)

@@ -15,7 +15,7 @@ def gen_soldier_base():
         'kbr': 50,
         'health': 10,
         'speed': 1,
-        'gun': Gun(master, hits='friends', base=missile),
+        'guns': [Gun(master, hits='friends', base=missile)],
     }
     return base
 
@@ -25,8 +25,6 @@ class Enemy(Character):
 
         self.build_character(kwargs['base'])
 
-        self.gun = kwargs['base']['gun']
-        self.master.guns.append(self.gun)
         self.touch_damage = 0
 
         # enter effect

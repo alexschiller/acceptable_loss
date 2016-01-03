@@ -43,6 +43,11 @@ class Master(object):
         except:
             pass
 
+    def register_guns(self, guns):
+        for gun in guns:
+            self.guns.append(gun)
+
+
 master = Master()
 # Window sizes
 window_height = 800
