@@ -37,7 +37,7 @@ class ProtoKeyStateHandler(key.KeyStateHandler):
             return False
 
 key_handler = ProtoKeyStateHandler()
-states = []
+states = None
 window = pyglet.window.Window(window_width, window_height)
 
 glEnable(GL_BLEND)
@@ -47,42 +47,32 @@ window.push_handlers(key_handler)
 
 #  Align sprite to mouse
 
-
-def swapstates():
-    states[0] = BuildState()
-
-
-def jesustakethewheel():
-        thing = states[0]
-        states[0] = states[1]
-        states[1] = thing
-
 global mouse_position
 mouse_position = [0, 0]
 
 
 @window.event
 def on_mouse_motion(x, y, dx, dy):
-    states[0].on_mouse_motion(x, y, dx, dy)
+    states.current.on_mouse_motion(x, y, dx, dy)
     global mouse_position
     mouse_position = [x, y]
 
 
 @window.event
 def on_mouse_drag(x, y, dx, dy, buttons, modifiers):
-    states[0].on_mouse_drag(x, y, dx, dy, buttons, modifiers)
+    states.current.on_mouse_drag(x, y, dx, dy, buttons, modifiers)
     global mouse_position
     mouse_position = [x, y]
 
 
 @window.event
 def on_mouse_release(x, y, button, modifiers):
-    states[0].on_mouse_release(x, y, button, modifiers)
+    states.current.on_mouse_release(x, y, button, modifiers)
 
 
 @window.event
 def on_mouse_press(x, y, button, modifiers):
-    states[0].on_mouse_press(x, y, button, modifiers)
+    states.current.on_mouse_press(x, y, button, modifiers)
 
 
 class TextState(object):
@@ -146,7 +136,7 @@ class PauseState():
         else:
             if self.Pause == 1:
                 self.Pause = 0
-                jesustakethewheel()
+                states.swapback()
         window.invalid = False
 
     def test(self):
@@ -161,15 +151,19 @@ class PauseState():
         EffectsBatch.draw()
         BarBatch.draw()
         gfx_batch.draw()
-        states[0].test()
+        states.current.test()
         window.invalid = False
 
 
 class MainState(object):
     def __init__(self):
         self.Pause = 0
-        Self.Build = 0
-        master.enemies.append(Enemy(master, base=gen_soldier_base() )) # noqa
+        self.Build = 0
+        for i in range(5):
+            master.enemies.append(Soldier(master, base=gen_soldier_base() )) # noqa
+
+        for i in range(2):
+            master.enemies.append(Slime(master, base=gen_slime_base() )) # noqa
 
     def on_draw(self):
         window.clear()
@@ -179,7 +173,7 @@ class MainState(object):
         EffectsBatch.draw()
         BarBatch.draw()
         gfx_batch.draw()
-        states[0].test()
+        states.current.test()
         window.invalid = False
 
     def test(self):
@@ -217,20 +211,23 @@ class MainState(object):
     def on_key_press(self, ts):
         pass
 
+    def swap(self):
+        states.swap('build')
+
     def update(self, ts):
         if key_handler[key.P]:
             self.Pause = 1
         else:
             if self.Pause == 1:
                 self.Pause = 0
-                jesustakethewheel()
+                states.swap('pause')
 
         if key_handler[key.B]:
             self.Build = 1
         else:
             if self.Build == 1:
                 self.Build = 0
-                jesustakethewheel()
+                self.swap()
         mx = 0
         my = 0
         if key_handler[key.D]:
@@ -261,28 +258,26 @@ class MainState(object):
 
 class BuildState(MainState):
     def __init__(self):
-        for enemy in master.enemies:
-            del enemy
+        for i in range(len(master.enemies)):
+            master.enemies.pop(0)
         self.Pause = 0
+        self.Build = 0
+
+    def swap(self):
+        states.swap('main')
 
     def test(self):
         pass
 
 
 def update(ts):
-    states[0].update(ts)
-
-# @window.event
-# def on_key_release(symbol, modifiers):
-#     if symbol == pyglet.window.key.ESCAPE:
-#         jesustakethewheel()
-#         return pyglet.event.EVENT_HANDLED
+    states.current.update(ts)
 
 
 @window.event
 def on_draw():
-    states[0].on_draw()
-    states[0].test()
+    states.current.on_draw()
+    states.current.test()
     window.invalid = False
 
 
@@ -323,7 +318,7 @@ class StartState(object):
             self.shrinking = True
         else:
             if self.flag:
-                states.pop(0)
+                states.swap('build')
         if self.shrinking:
             self.shrink()
         window.invalid = False
@@ -338,9 +333,27 @@ class StartState(object):
         window.invalid = False
 
 
-states.append(StartState())
-states.append(MainState())  # add state to run time
-states.append(PauseState())
+class StateManager(object):
+
+    def __init__(self):
+        self.current = StartState()
+        self.past = None
+        self.pause = PauseState()
+
+    def swap(self, string):
+        self.past = self.current
+        if string == 'main':
+            self.current = MainState()
+        if string == 'pause':
+            self.current = self.pause
+        if string == 'build':
+            self.current = BuildState()
+
+    def swapback(self):
+        temp = self.past
+        self.past = self.current
+        self.current = temp
+states = StateManager()
 pyglet.clock.schedule_interval(update, 1 / 60.0)
 
 pyglet.app.run()
