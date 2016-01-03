@@ -1,16 +1,13 @@
-# import random
-import math # noqa
+import math
 import pyglet
-# import random
+
 from pyglet.gl import * # noqa
 from pyglet.window import key # noqa
 from pyglet.window import mouse # noqa
-from collide import * # noqa
-from character import * # noqa
-from utility import * # noqa
-from gun import * # noqa
+
+from importer import * # noqa # Put random file imports here for now
+
 from button import Manager, Button,TextBox, DraggableButton, foo # noqa
-from energy import * # noqa
 
 
 class ProtoKeyStateHandler(key.KeyStateHandler):
@@ -44,7 +41,7 @@ states = []
 window = pyglet.window.Window(window_width, window_height)
 master.spriteeffect = SpriteEffect(master)
 
-master.player = Player(master)
+master.player = Player(master, base=player_base)
 
 # todo: Gun 'hits' (e.g., master.enemies, master.player) needs refactor to two subclasses,
 # one that hits friends, one that hits enemies
@@ -66,9 +63,9 @@ master.pistol = gun_dict['pistol']
     # enemy.append(Enemy(master, gun_dict['enemy_gun'])) # noqa
 
 for i in range(5):
-    master.enemies.append(Soldier(master, gun_dict['soldier_gun'])) # noqa
+    master.enemies.append(Enemy(master, base=gen_soldier_base() )) # noqa
 
-for i in range(50):
+for i in range(20):
     master.objects.append(Box(master)) # noqa
 
 
@@ -223,7 +220,7 @@ class MainState():
         pass
 
     def on_mouse_press(self, x, y, button, modifiers):
-        if master.player.fire(mouse_position[0], mouse_position[1]): # noqa
+        if master.player.shoot(mouse_position[0], mouse_position[1]): # noqa
             ret = calc_vel_xy(master.player.sprite.x, master.player.sprite.y, mouse_position[0], mouse_position[1], master.player.base['recoil']) # noqa
             master.player.sprite.x += ret[0]
             master.player.sprite.y += ret[1]
@@ -242,7 +239,7 @@ class MainState():
         y_dist = y - float(master.player.sprite.y)
 
         deg = (math.degrees(math.atan2(y_dist, x_dist)) * -1) + 90
-        if master.player.fire(mouse_position[0], mouse_position[1]): # noqa
+        if master.player.shoot(mouse_position[0], mouse_position[1]): # noqa
             ret = calc_vel_xy(master.player.sprite.x, master.player.sprite.y, mouse_position[0], mouse_position[1], master.player.base['recoil']) # noqa
             master.player.sprite.x += ret[0]
             master.player.sprite.y += ret[1]
