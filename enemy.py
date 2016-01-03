@@ -12,10 +12,21 @@ def gen_soldier_base():
     base = {
         'sprite': load_image('soldier.png'),
         'coord': [random.randint(0, window_width), random.randint(0, window_height)],
-        'kbr': 50,
+        'kbr': 10,
         'health': 10,
         'speed': 1,
         'guns': [Gun(master, hits='friends', base=missile)],
+    }
+    return base
+
+def gen_slime_base():
+    base = {
+        'sprite': load_image('big_slime.png'),
+        'coord': [random.randint(0, window_width), random.randint(0, window_height)],
+        'kbr': 90,
+        'health': 200,
+        'speed': .5,
+        'guns': [Gun(master, hits='friends', base=slimegun)],
     }
     return base
 
@@ -47,7 +58,6 @@ class Enemy(Character):
         self.sprite.y -= ret[1] * 2
         self.player.sprite.x += ret[0]
         self.player.sprite.y += ret[1]
-        self.health -= 10
 
     def update(self):
         try:
@@ -61,12 +71,46 @@ class Enemy(Character):
 
         ret = calc_vel_xy(self.player.sprite.x, self.player.sprite.y,
             self.sprite.x, self.sprite.y, self.speed)
-        self.speed = .5
         self.sprite.x += ret[0]
         self.sprite.y += ret[1]
-        if random.randint(0, 300) > 270:
+        if random.randint(0, 100) > 99:
             self.shoot(self.player.sprite.x, self.player.sprite.y)
         if collide(self.collision, self.player.collision):
             self.on_collide()
         if self.health <= 0:
             self.on_death()
+
+
+class Soldier(Enemy):
+    def __init__(self, *args, **kwargs):
+        super(Soldier, self).__init__(*args, **kwargs)
+
+    def on_collide(self):
+        ret = calc_vel_xy(self.player.sprite.x, self.player.sprite.y,
+        self.sprite.x, self.sprite.y, 10)
+        self.sprite.x -= ret[0] * 2
+        self.sprite.y -= ret[1] * 2
+        self.player.sprite.x += ret[0]
+        self.player.sprite.y += ret[1]
+        self.health -= 10  # squish
+
+class Slime(Enemy):
+    def __init__(self, *args, **kwargs):
+        super(Slime, self).__init__(*args, **kwargs)
+        self.sprite.scale = 1
+
+    def slime_on_hit(self):
+        hpratio = self.health / float(self.max_health)
+        self.sprite.scale = hpratio * .5 + .5
+        self.speed = 1 / (hpratio * .7 + .3)
+        self.collision = SpriteCollision(self.sprite)
+
+    def on_hit(self, bullet):
+        self.health -= bullet.damage
+
+        self.slime_on_hit()
+
+        self.spriteeffect.blood(bullet.sprite.x, bullet.sprite.y, 3, 5)
+        impact = bullet.knockback / self.kbr
+        self.sprite.x += bullet.vel_x * impact
+        self.sprite.y += bullet.vel_y * impact

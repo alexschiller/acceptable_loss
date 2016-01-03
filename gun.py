@@ -497,6 +497,24 @@ red_laser = {
     'on_hit_sound': load_sound('on_hit.wav'),
 }
 
+jet_laser = {
+    'damage': 1,
+    'travel': 500,
+    'velocity': 10,
+    'accuracy': .85,
+    'spread': .05,
+    'energy_cost': 20,
+    'bullets': 1,
+    'pierce': 2,
+    'rof': 20,
+    'knockback': 10.0,
+    'image': load_image('red_laser.png'),
+    'recoil': 0,
+    'effect_gun': fire,
+    'gun_fire_sound': load_sound('laser.wav'),
+    'on_hit_sound': load_sound('on_hit.wav'),
+}
+
 splode = {
     'damage': 1,
     'travel': 500,

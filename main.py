@@ -241,7 +241,7 @@ class MainState():
 
         if key_handler[key.F] and master.player.energy >= 100:
             # teleport(master, mouse_position)
-            teleport(master, mouse_position)
+            carpet(master, mouse_position)
         # Run Updates
         master.update()
         window.invalid = False

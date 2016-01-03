@@ -5,18 +5,19 @@ from energy import * # noqa
 from gun import * # noqa
 from player import * # noqa
 from utility import * # noqa
+from friend import * # noqa
 
 master.spriteeffect = SpriteEffect(master)
 master.player = Player(master, base=player_base)
 
 for i in range(5):
-    master.enemies.append(Enemy(master, base=gen_soldier_base() )) # noqa
+    master.enemies.append(Soldier(master, base=gen_soldier_base() )) # noqa
+
+for i in range(2):
+	master.enemies.append(Slime(master, base=gen_slime_base() )) # noqa
 
 for i in range(20):
     master.objects.append(Box(master)) # noqa
 
-
-master.friends = [
-    # Healer(master, gun_dict['cannon_gun']), # noqa
-    # Cannon(player, enemy, gun, spriteeffect)
+master.friends = [  # Friend(master, base=gen_friend_base())
 ]
