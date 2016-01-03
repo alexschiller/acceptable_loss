@@ -18,7 +18,7 @@ class Clickable(object):
                 x < self.sprite.x + self.sprite.width and
                 self.sprite.y < y and
                 y < self.sprite.y + self.sprite.height):
-            print 'whats up kitty cat'
+            pass
         else:
             self.trigger = 0
 
@@ -66,11 +66,9 @@ class Placeable(Clickable):
         ):
             if mode == 1 and self.trigger == 1:
                 self.trigger = 0
-                self.sprite.image = self.hoversprite
 
                 self.func()
             if mode == 0:
-                self.sprite.image = self.downsprite
                 self.trigger = 1
 
     def on_mouse_motion(self, x, y, dx, dy):
@@ -82,10 +80,5 @@ class Placeable(Clickable):
             self.sprite.y += dy
             self.label.x += dx
             self.label.y += dy
-            # for buttons in DragButtons:
-            #     if collide(self.collision, buttons.collision) and buttons is not self:
-            #         print "OK"
-            #         self.on_collide(buttons)
         else:
             self.trigger = 0
-            self.sprite.image = self.upsprite

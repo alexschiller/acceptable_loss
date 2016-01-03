@@ -48,6 +48,10 @@ window.push_handlers(key_handler)
 #  Align sprite to mouse
 
 
+def swapstates():
+    states[0] = BuildState()
+
+
 def jesustakethewheel():
         thing = states[0]
         states[0] = states[1]
@@ -161,9 +165,11 @@ class PauseState():
         window.invalid = False
 
 
-class MainState():
+class MainState(object):
     def __init__(self):
         self.Pause = 0
+        Self.Build = 0
+        master.enemies.append(Enemy(master, base=gen_soldier_base() )) # noqa
 
     def on_draw(self):
         window.clear()
@@ -218,6 +224,13 @@ class MainState():
             if self.Pause == 1:
                 self.Pause = 0
                 jesustakethewheel()
+
+        if key_handler[key.B]:
+            self.Build = 1
+        else:
+            if self.Build == 1:
+                self.Build = 0
+                jesustakethewheel()
         mx = 0
         my = 0
         if key_handler[key.D]:
@@ -244,7 +257,16 @@ class MainState():
             teleport(master, mouse_position)
         # Run Updates
         master.update()
-        window.invalid = False
+
+
+class BuildState(MainState):
+    def __init__(self):
+        for enemy in master.enemies:
+            del enemy
+        self.Pause = 0
+
+    def test(self):
+        pass
 
 
 def update(ts):
@@ -269,34 +291,14 @@ class StartState(object):
     def __init__(self):
         self.batch = pyglet.graphics.Batch()
         self.shrinking = False
-        # self.label = pyglet.text.Label(
-        #     'Press Start',
-        #     font_name='Times New Roman',
-        #     font_size=32,
-        #     x=window_width / 2 - 250,
-        #     y=window_height / 2,
-        #     anchor_x='center',
-        #     anchor_y='center',
-        #     batch=self.batch
-        # )
-
         img = pyglet.image.load('images/title_2.png')
         img.anchor_x = 0
         img.anchor_y = img.height
 
-        self.sprite = pyglet.sprite.Sprite(img,
-            0, window_height, batch=self.batch)
-        # self.label = pyglet.text.Label(
-        #     'ACCEPTABLE LOSS',
-        #     font_name='Times New Roman',
-        #     font_size=96,
-        #     x=window_width / 2,
-        #     y=window_height / 2 + 200,
-        #     anchor_x='center',
-        #     anchor_y='center',
-        #     batch=self.batch
-        # )
-
+        self.sprite = pyglet.sprite.Sprite(
+            img, 0, window_height,
+            batch=self.batch
+        )
         self.flag = False
 
     def on_mouse_drag(self, x, y, dx, dy, buttons, modifiers):
