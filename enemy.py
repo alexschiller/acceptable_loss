@@ -30,6 +30,17 @@ def gen_slime_base():
     }
     return base
 
+def gen_portal_base():
+    base = {
+        'sprite': load_image('portal.png'),
+        'coord': [random.randint(0, window_width), random.randint(0, window_height)],
+        'kbr': 999999,
+        'health': 500,
+        'speed': 0,
+        'guns': [Gun(master, hits='friends', base=missile)],
+    }
+    return base
+
 class Enemy(Character):
     def __init__(self, *args, **kwargs):
         super(Enemy, self).__init__(*args, **kwargs)
@@ -50,7 +61,7 @@ class Enemy(Character):
         self.spriteeffect.blood(self.sprite.x, self.sprite.y, 30, 50)
         try:
             self.sprite.delete()
-            self.enemy.remove(self)
+            self.enemies.remove(self)
         except:
             pass
 
@@ -127,3 +138,59 @@ class Slime(Enemy):
         impact = bullet.knockback / self.kbr
         self.sprite.x += bullet.vel_x * impact
         self.sprite.y += bullet.vel_y * impact
+
+class Portal(Enemy):
+    def __init__(self, *args, **kwargs):
+        super(Portal, self).__init__(*args, **kwargs)
+        self.spawns = 50
+        self.spawn = {
+            'sprite': load_image('soldier.png'),
+            'coord': [self.sprite.x, self.sprite.y],
+            'kbr': 10,
+            'health': 10,
+            'speed': 1,
+            'guns': [Gun(master, hits='friends', base=missile)],
+        }
+
+    def on_death(self):
+        self.spriteeffect.blood(self.sprite.x, self.sprite.y, 30, 50)
+        if self.sprite.scale >= .06:
+            self.sprite.scale -= .05
+            self.sprite.rotation += 2
+        else:
+            try:
+                self.sprite.delete()
+                self.enemies.remove(self)
+            except:
+                pass
+
+    def on_collide(self):
+        ret = calc_vel_xy(self.player.sprite.x, self.player.sprite.y,
+        self.sprite.x, self.sprite.y, 10)
+        self.player.sprite.x += ret[0]
+        self.player.sprite.y += ret[1]
+
+    def update_ai(self):
+        self.master.enemies.append(Soldier(master, base=self.spawn))
+
+    def timer_ai(self):
+        self.ai_time += 1
+        if self.ai_time == 360:
+            self.ai_time = 0
+            self.spawns -= 1
+            self.update_ai()
+
+    def update(self):
+        self.timer_ai()
+        self.sprite.rotation += 1
+
+        ret = calc_vel_xy(self.move_target[0], self.move_target[1],
+            self.sprite.x, self.sprite.y, self.speed)
+
+        self.sprite.x += ret[0]
+        self.sprite.y += ret[1]
+
+        if collide(self.collision, self.player.collision):
+            self.on_collide()
+        if self.health <= 0 or self.spawns <= 0:
+            self.on_death()

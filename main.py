@@ -159,10 +159,13 @@ class MainState(object):
     def __init__(self):
         self.Pause = 0
         self.Build = 0
-        for i in range(5):
+        for i in range(1):
             master.enemies.append(Soldier(master, base=gen_soldier_base() )) # noqa
 
-        for i in range(2):
+        for i in range(1):
+            master.enemies.append(Portal(master, base=gen_portal_base() )) # noqa            
+
+        for i in range(1):
             master.enemies.append(Slime(master, base=gen_slime_base() )) # noqa
 
     def on_draw(self):

@@ -665,7 +665,7 @@ rocket = {
 missile = {
     'damage': 2,
     'travel': 800,
-    'velocity': 10,
+    'velocity': 5,
     'accuracy': .85,
     'spread': 0,
     'energy_cost': 20,
