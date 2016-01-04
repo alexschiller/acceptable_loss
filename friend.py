@@ -26,7 +26,7 @@ def gen_carpet_base(mouse):
         'kbr': 10,
         'health': 1800,
         'speed': 10,
-        'guns': [Gun(master, hits='enemies', base=jet_laser)],
+        'guns': [Gun(master, hits='enemies', base=bomb)],
         'mouse': mouse,
     }
     return base

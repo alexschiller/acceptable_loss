@@ -15,7 +15,7 @@ master.player = Player(master, base=player_base)
 # for i in range(2):
 # 	master.enemies.append(Slime(master, base=gen_slime_base() )) # noqa
 
-for i in range(20):
+for i in range(5):
     master.objects.append(Box(master)) # noqa
 
 master.friends = [  # Friend(master, base=gen_friend_base())

@@ -173,6 +173,24 @@ class MissileLauncher(Gun):
         except:
             pass
 
+class Shrap(Gun):
+    def __init__(self, *args, **kwargs):
+        super(Shrap, self).__init__(*args, **kwargs)
+        self.gun = Gun(master, hits=self.hits, base=self.base['effect_gun'])
+        self.master.guns.append(self.gun)
+
+    def delete_bullet(self, bullet):
+        for n in range(10):
+            self.gun.fire(bullet.sprite.x, bullet.sprite.y,
+                bullet.sprite.x + random.randint(-4, 4),
+                bullet.sprite.y + random.randint(-4, 4))
+        try:
+            bullet.sprite.delete()
+            self.bullets.remove(bullet)
+        except:
+            pass
+
+
 class MouseBoom(Gun):
     def __init__(self, *args, **kwargs):
         super(MouseBoom, self).__init__(*args, **kwargs)
@@ -262,6 +280,25 @@ base = {
     'gun_fire_sound': None,
     'on_hit_sound': load_sound('on_hit.wav'),
 }
+
+based = {
+    'damage': 1,  # Starting = 10, *, min = 1, no max
+    'travel': 30,  # Starting 500, +/-, min = 50, max = screen size
+    'velocity': 3,  # Starting 100, +/-, min = 3, max to 20 or so
+    'accuracy': .85,  # Unused
+    'spread': 0,  # Starting 0 (no spread), +, min = 0, max = .5 (super spready)
+    'energy_cost': 20,  # Unused
+    'bullets': 1,  # Starting 1, +, min = 1, max = probably 50 with no effects and low
+    'pierce': 0,  # Starting 0, +, min = 0, max = float('inf')
+    'rof': 300,  # Starts at 1, +/-, min = probably .5, max = ~120 maybe
+    'knockback': 5.0,  # Starts 0, +/-
+    'image': load_image('fire.png'),
+    'recoil': 1,
+    'effect_gun': None,
+    'gun_fire_sound': None,
+    'on_hit_sound': load_sound('on_hit.wav'),
+}
+
 
 magnum = {
     'damage': base['damage'] * 4,
@@ -353,6 +390,24 @@ battlerifle = {
     'on_hit_sound': load_sound('on_hit_2.wav'),
 }
 
+shitgun = {
+    'damage': base['damage'] / 3,
+    'travel': base['travel'] + 100,
+    'velocity': base['velocity'],
+    'accuracy': base['accuracy'],
+    'spread': base['spread'] + .03,
+    'energy_cost': base['energy_cost'],
+    'bullets': base['bullets'],
+    'pierce': base['pierce'],
+    'rof': base['rof'] + 10,
+    'knockback': base['knockback'],
+    'recoil': base['recoil'],
+    'effect_gun': based,
+    'image': load_image('flak.png'),
+    'gun_fire_sound': load_sound('shotgun.wav'),
+    'on_hit_sound': load_sound('on_hit_2.wav'),
+}
+
 shotgun = {
     'damage': base['damage'] / 3,
     'travel': base['travel'] - 50,
@@ -400,6 +455,25 @@ fire = {
     'pierce': 0,
     'rof': 100,
     'knockback': 30.0,
+    'image': load_image('shotgun.png'),
+    'recoil': 1,
+    'effect_gun': None,
+    'gun_fire_sound': None,
+    'on_hit_sound': load_sound('on_hit.wav'),
+}
+
+
+bomb = {
+    'damage': 1,
+    'travel': 300,
+    'velocity': 10,
+    'accuracy': .85,
+    'spread': .05,
+    'energy_cost': 20,
+    'bullets': 10,
+    'pierce': 5,
+    'rof': 5,
+    'knockback': 5.0,
     'image': load_image('shotgun.png'),
     'recoil': 1,
     'effect_gun': None,

@@ -36,7 +36,10 @@ class Enemy(Character):
 
         self.build_character(kwargs['base'])
 
+        self.ai_time = random.randint(0, 60)
+
         self.touch_damage = 0
+        self.move_target = (self.player.sprite.x, self.player.sprite.y)
 
         # enter effect
         self.spriteeffect.teleport(self.sprite.x, self.sprite.y, 5, 5)
@@ -59,7 +62,17 @@ class Enemy(Character):
         self.player.sprite.x += ret[0]
         self.player.sprite.y += ret[1]
 
+    def update_ai(self):
+        self.move_target = (self.player.sprite.x, self.player.sprite.y)
+
+    def timer_ai(self):
+        self.ai_time += 1
+        if self.ai_time == 60:
+            self.ai_time = 0
+            self.update_ai()
+
     def update(self):
+        self.timer_ai()
         try:
             self.check_object_collision(self.closest_object())
         except:
@@ -69,7 +82,7 @@ class Enemy(Character):
         y_dist = self.player.sprite.y - float(self.sprite.y)
         self.sprite.rotation = (math.degrees(math.atan2(y_dist, x_dist)) * -1) + 90
 
-        ret = calc_vel_xy(self.player.sprite.x, self.player.sprite.y,
+        ret = calc_vel_xy(self.move_target[0], self.move_target[1],
             self.sprite.x, self.sprite.y, self.speed)
         self.sprite.x += ret[0]
         self.sprite.y += ret[1]
