@@ -1,5 +1,5 @@
 import pyglet
-from utility import LabelBatch
+from utility import * # noqa
 from collide import * # noqa
 
 
@@ -66,19 +66,26 @@ class Placeable(Clickable):
         ):
             if mode == 1 and self.trigger == 1:
                 self.trigger = 0
-
-                self.func()
+                try:
+                    self.func()
+                except:
+                    pass
             if mode == 0:
                 self.trigger = 1
 
     def on_mouse_motion(self, x, y, dx, dy):
-        if (self.sprite.x < x and
-                x < self.sprite.x + self.sprite.width and
-                self.sprite.y < y and self.trigger == 1 and
-                y < self.sprite.y + self.sprite.height):
+        if self.trigger == 1:
             self.sprite.x += dx
             self.sprite.y += dy
-            self.label.x += dx
-            self.label.y += dy
+
         else:
             self.trigger = 0
+        if self.sprite.x < 0:
+            self.sprite.x = 0
+        if self.sprite.y < 0:
+            self.sprite.y = 0
+
+        if self.sprite.x > window_width - self.sprite.width:
+            self.sprite.x = window_width - self.sprite.width
+        if self.sprite.y > window_height - self.sprite.height:
+            self.sprite.y = window_height - self.sprite.height

@@ -8,6 +8,7 @@ from pyglet.window import mouse # noqa
 from importer import * # noqa # Put random file imports here for now
 
 from button import Manager, Button,TextBox, DraggableButton, foo # noqa
+from placeable import * # noqa
 
 
 class ProtoKeyStateHandler(key.KeyStateHandler):
@@ -152,6 +153,7 @@ class PauseState():
         BarBatch.draw()
         gfx_batch.draw()
         states.current.test()
+        BuildingBatch.draw()
         window.invalid = False
 
 
@@ -176,6 +178,7 @@ class MainState(object):
         EffectsBatch.draw()
         BarBatch.draw()
         gfx_batch.draw()
+        BuildingBatch.draw()
         states.current.test()
         window.invalid = False
 
@@ -187,7 +190,10 @@ class MainState(object):
 
     def on_mouse_press(self, x, y, button, modifiers):
         if master.player.shoot(mouse_position[0], mouse_position[1]): # noqa
-            ret = calc_vel_xy(master.player.sprite.x, master.player.sprite.y, mouse_position[0], mouse_position[1], master.player.base['recoil']) # noqa
+            ret = calc_vel_xy(
+                master.player.sprite.x, master.player.sprite.y,
+                mouse_position[0], mouse_position[1], master.player.base['recoil']
+            ) # noqa
             master.player.sprite.x += ret[0]
             master.player.sprite.y += ret[1]
 
@@ -206,7 +212,11 @@ class MainState(object):
 
         deg = (math.degrees(math.atan2(y_dist, x_dist)) * -1) + 90
         if master.player.shoot(mouse_position[0], mouse_position[1]): # noqa
-            ret = calc_vel_xy(master.player.sprite.x, master.player.sprite.y, mouse_position[0], mouse_position[1], master.player.base['recoil']) # noqa
+            ret = calc_vel_xy(
+                master.player.sprite.x, master.player.sprite.y,
+                mouse_position[0], mouse_position[1],
+                master.player.base['recoil']
+            )
             master.player.sprite.x += ret[0]
             master.player.sprite.y += ret[1]
         master.player.sprite.rotation = deg
@@ -265,6 +275,46 @@ class BuildState(MainState):
             master.enemies.pop(0)
         self.Pause = 0
         self.Build = 0
+        self.manager = Manager()
+
+        master.buildings.append(Placeable(load_image('brick.png', anchor=False), 400, 400, None, BuildingBatch))
+
+    def on_mouse_release(self, x, y, button, modifiers):
+        master.update_button(x, y, 1)
+
+    def on_mouse_press(self, x, y, button, modifiers):
+        if master.player.shoot(mouse_position[0], mouse_position[1]): # noqa
+            ret = calc_vel_xy(
+                master.player.sprite.x, master.player.sprite.y,
+                mouse_position[0], mouse_position[1], master.player.base['recoil']
+            ) # noqa
+            master.player.sprite.x += ret[0]
+            master.player.sprite.y += ret[1]
+        master.update_button(x, y, 0)
+
+    def on_mouse_motion(self, x, y, dx, dy):
+        x_dist = x - float(master.player.sprite.x)
+        y_dist = y - float(master.player.sprite.y)
+
+        deg = (math.degrees(math.atan2(y_dist, x_dist)) * -1) + 90
+
+        master.player.sprite.rotation = deg
+        # print dx, dy
+
+    def on_mouse_drag(self, x, y, dx, dy, buttons, modifiers):
+        x_dist = x - float(master.player.sprite.x)
+        y_dist = y - float(master.player.sprite.y)
+        master.update_button_image(x, y, dx, dy)
+        deg = (math.degrees(math.atan2(y_dist, x_dist)) * -1) + 90
+        if master.player.shoot(mouse_position[0], mouse_position[1]): # noqa
+            ret = calc_vel_xy(
+                master.player.sprite.x, master.player.sprite.y,
+                mouse_position[0], mouse_position[1],
+                master.player.base['recoil']
+            )
+            master.player.sprite.x += ret[0]
+            master.player.sprite.y += ret[1]
+        master.player.sprite.rotation = deg
 
     def swap(self):
         states.swap('main')

@@ -12,6 +12,9 @@ class Character(object):
         self.enemies = master.enemies
         self.player = master.player
 
+    def moveable(self):
+        return False
+
     def move(self, x, y):
         self.sprite.x += (self.speed * x)
         self.sprite.y += (self.speed * y)

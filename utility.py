@@ -8,6 +8,7 @@ from pyglet.window import key # noqa
 from pyglet.window import mouse # noqa
 from collide import * # noqa
 
+
 class Master(object):
     def __init__(self):
         self.player = None
@@ -16,6 +17,7 @@ class Master(object):
         self.guns = []
         self.objects = []
         self.spriteeffect = None
+        self.buildings = []
 
     def update(self):
         try:
@@ -42,10 +44,23 @@ class Master(object):
             self.spriteeffect.update()
         except:
             pass
+        try:
+            for b in self.buildings:
+                b.update()
+        except:
+            pass
 
     def register_guns(self, guns):
         for gun in guns:
             self.guns.append(gun)
+
+    def update_button(self, x, y, mode):
+        for button in self.buildings:
+            button.on_mouse_press(x, y, mode)
+
+    def update_button_image(self, x, y, dx, dy):
+        for button in self.buildings:
+            button.on_mouse_motion(x, y, dx, dy)
 
 
 master = Master()
@@ -61,6 +76,7 @@ gfx_batch = pyglet.graphics.Batch()
 BulletBatch = pyglet.graphics.Batch()
 EffectsBatch = pyglet.graphics.Batch()
 ButtonBatch = pyglet.graphics.Batch()
+BuildingBatch = pyglet.graphics.Batch()
 
 
 # Manually Built Static Sprites
@@ -106,6 +122,7 @@ def play_sound(sound_file):
 button = load_image('button.png', False)
 buttonhover = load_image('buttonhover.png', False)
 buttondown = load_image('buttondown.png', False)
+
 
 def calc_vel_xy(tar_x, tar_y, start_x, start_y, velocity):
     dif_y = tar_y - start_y
