@@ -72,6 +72,8 @@ class Placeable(Clickable):
                     pass
             if mode == 0:
                 self.trigger = 1
+        else:
+            self.trigger = 0
 
     def on_mouse_motion(self, x, y, dx, dy):
         if self.trigger == 1:
