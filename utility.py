@@ -17,6 +17,7 @@ window_width_half = float(window_width / 2)
 
 frame_width = 50
 
+
 class Master(object):
     def __init__(self):
         self.player = None
@@ -100,6 +101,24 @@ class Master(object):
             mx = camera_x * 5
         if abs(camera_y) > .2:
             my = camera_y * 5
+        for o in self.objects:
+            o.sprite.x += mx
+            o.sprite.y += my
+
+        self.player.sprite.x += mx
+        self.player.sprite.y += my
+        self.home.x += mx
+        self.home.y += my
+
+        for e in self.enemies:
+            e.sprite.x += mx
+            e.sprite.y += my
+        for gun in self.guns:
+            for b in gun.bullets:
+                b.sprite.x += mx
+                b.sprite.y += my
+
+    def move_all(self, mx, my):
         for o in self.objects:
             o.sprite.x += mx
             o.sprite.y += my
