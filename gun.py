@@ -221,6 +221,22 @@ class Trail(Gun):
             if bullet.travelled > bullet.calc_travel:
                 self.delete_bullet(bullet)
 
+class Flame(Gun):
+    def __init__(self, *args, **kwargs):
+        super(Flame, self).__init__(*args, **kwargs)
+        # self.gun = Gun(master, hits=self.hits, base=self.base['effect_gun'])
+        # self.master.guns.append(self.gun)
+
+    def update(self):
+        if self.rofl < self.rof:
+            self.rofl += 1
+        for bullet in self.bullets:
+            bullet.update()
+            bullet.sprite.scale = bullet.travelled / bullet.calc_travel + .1
+            self.bullet_checks(bullet)
+            if bullet.travelled > bullet.calc_travel:
+                self.delete_bullet(bullet)
+
 
 class Laser(Gun):
     def __init__(self, *args, **kwargs):
@@ -456,6 +472,24 @@ fire = {
     'rof': 100,
     'knockback': 30.0,
     'image': load_image('shotgun.png'),
+    'recoil': 1,
+    'effect_gun': None,
+    'gun_fire_sound': None,
+    'on_hit_sound': load_sound('on_hit.wav'),
+}
+
+flame = {
+    'damage': .3,
+    'travel': 150,
+    'velocity': 10,
+    'accuracy': .85,
+    'spread': .05,
+    'energy_cost': 20,
+    'bullets': 1,
+    'pierce': 10,
+    'rof': 100,
+    'knockback': 0.0,
+    'image': load_image('fireball.png'),
     'recoil': 1,
     'effect_gun': None,
     'gun_fire_sound': None,

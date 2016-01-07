@@ -8,6 +8,15 @@ from pyglet.window import key # noqa
 from pyglet.window import mouse # noqa
 from collide import * # noqa
 
+# Window sizes
+window_height = 800
+window_width = 1400
+
+window_height_half = window_height / 2
+window_width_half = window_width / 2
+
+frame_width = 50
+
 
 class Master(object):
     def __init__(self):
@@ -49,6 +58,7 @@ class Master(object):
                 b.update()
         except:
             pass
+        self.update_camera()
 
     def register_guns(self, guns):
         for gun in guns:
@@ -62,12 +72,32 @@ class Master(object):
         for button in self.buildings:
             button.on_mouse_motion(x, y, dx, dy)
 
+    def update_camera(self):
+
+        camera_x = float((window_width_half - self.player.sprite.x) / window_width_half) # noqa
+        camera_y = float((window_height_half - self.player.sprite.y) / window_height_half) # noqa
+        mx = camera_x * 5
+        my = camera_y * 5
+        for o in self.objects:
+            o.sprite.x += mx
+            o.sprite.y += my
+
+        self.player.sprite.x += mx
+        self.player.sprite.y += my
+
+        for e in self.enemies:
+            e.sprite.x += mx
+            e.sprite.y += my
+        for gun in self.guns:
+            for b in gun.bullets:
+                b.sprite.x += mx
+                b.sprite.y += my
+
+    def move_player(self, mx, my):
+        self.player.sprite.x += mx
+        self.player.sprite.y += my
 
 master = Master()
-# Window sizes
-window_height = 800
-window_width = 1400
-frame_width = 50
 
 # Batches
 LabelBatch = pyglet.graphics.Batch()

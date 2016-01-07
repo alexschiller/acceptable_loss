@@ -7,11 +7,11 @@ from gun import * # noqa
 
 player_base = {
     'sprite': load_image('dreadnaught.png'),
-    'coord': [50, 50],
+    'coord': [window_width / 2, window_height / 2],
     'kbr': 50,
     'health': 100,
-    'speed': 1,
-    'guns': [Shrap(master, hits='enemies', base=shitgun)],
+    'speed': 3,
+    'guns': [Flame(master, hits='enemies', base=flame)],
 }
 
 class Player(Character):
@@ -34,8 +34,13 @@ class Player(Character):
             self.shield = 0
         self.spriteeffect.blood(bullet.sprite.x, bullet.sprite.y, 3, 5)
         impact = bullet.knockback / self.kbr
-        self.sprite.x += bullet.vel_x * impact
-        self.sprite.y += bullet.vel_y * impact
+        self.master.move_player(bullet.vel_x * impact, bullet.vel_y * impact)
+
+    def check_object_collision(self, o):
+        if collide(self.collision, o.collision):
+            ret = calc_vel_xy(self.sprite.x, self.sprite.y,
+            o.sprite.x, o.sprite.y, 3)
+            self.master.move_player(ret[0], ret[1])
 
     def update(self):
         # if self.shield < self.max_shield:

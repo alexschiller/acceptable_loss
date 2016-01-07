@@ -143,7 +143,9 @@ class Portal(Enemy):
     def __init__(self, *args, **kwargs):
         super(Portal, self).__init__(*args, **kwargs)
         self.spawns = 50
-        self.spawn = {
+
+    def spawn_soldier(self):
+        new_soldier = {
             'sprite': load_image('soldier.png'),
             'coord': [self.sprite.x, self.sprite.y],
             'kbr': 10,
@@ -151,9 +153,10 @@ class Portal(Enemy):
             'speed': 1,
             'guns': [Gun(master, hits='friends', base=missile)],
         }
+        self.master.enemies.append(Soldier(master, base=new_soldier))
 
     def on_death(self):
-        self.spriteeffect.blood(self.sprite.x, self.sprite.y, 30, 50)
+        # self.spriteeffect.blood(self.sprite.x, self.sprite.y, 30, 50)
         if self.sprite.scale >= .06:
             self.sprite.scale -= .05
             self.sprite.rotation += 2
@@ -164,6 +167,9 @@ class Portal(Enemy):
             except:
                 pass
 
+    def on_hit(self, bullet):
+        self.health -= bullet.damage
+
     def on_collide(self):
         ret = calc_vel_xy(self.player.sprite.x, self.player.sprite.y,
         self.sprite.x, self.sprite.y, 10)
@@ -171,7 +177,7 @@ class Portal(Enemy):
         self.player.sprite.y += ret[1]
 
     def update_ai(self):
-        self.master.enemies.append(Soldier(master, base=self.spawn))
+        self.spawn_soldier()
 
     def timer_ai(self):
         self.ai_time += 1

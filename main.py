@@ -244,14 +244,16 @@ class MainState(object):
         mx = 0
         my = 0
         if key_handler[key.D]:
-            mx += 1
+            mx += 3
         if key_handler[key.A]:
-            mx -= 1
+            mx -= 3
         if key_handler[key.W]:
-            my += 1
+            my += 3
         if key_handler[key.S]:
-            my -= 1
-        master.player.move(mx, my)
+            my -= 3
+        master.move_player(mx, my)
+
+        # master.player.move(mx, my)
 
         # if key_handler[key.Q]:
         #     master.grenade.throw(
@@ -277,7 +279,7 @@ class BuildState(MainState):
         self.Build = 0
         self.manager = Manager()
 
-        master.buildings.append(Placeable(load_image('brick.png', anchor=False), 400, 400, None, BuildingBatch))
+        # master.buildings.append(Placeable(load_image('brick.png', anchor=False), 400, 400, None, BuildingBatch)) # noqa
 
     def on_mouse_release(self, x, y, button, modifiers):
         master.update_button(x, y, 1)
@@ -364,7 +366,7 @@ class StartState(object):
     def shrink(self):
         if self.sprite.scale < .01:
             self.flag = True
-        self.sprite.scale -= .01
+        self.sprite.scale -= .1
 
     def update(self, ts):
         if key_handler[key.ENTER] or key_handler[key.RETURN]:
