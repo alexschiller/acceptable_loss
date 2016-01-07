@@ -11,7 +11,7 @@ from gun import * # noqa
 def gen_soldier_base():
     base = {
         'sprite': load_image('soldier.png'),
-        'coord': [random.randint(0, window_width), random.randint(0, window_height)],
+        'coord': random.choice([[-50, random.randint(0, window_height)], [random.randint(0, window_width), -50]]),  # noqa
         'kbr': 10,
         'health': 10,
         'speed': 1,

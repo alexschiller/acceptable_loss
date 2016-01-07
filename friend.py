@@ -19,6 +19,17 @@ def gen_friend_base():
     }
     return base
 
+def gen_cannon_base():
+    base = {
+        'sprite': load_image('can.png'),
+        'coord': [window_width / 2 + 50, window_height / 2 + 50],
+        'kbr': 10,
+        'health': 10,
+        'speed': 1,
+        'guns': [Gun(master, hits='enemies', base=sniper)],
+    }
+    return base
+
 def gen_carpet_base(mouse):
     base = {
         'sprite': load_image('jet.png'),
@@ -122,5 +133,37 @@ class Carpet(Friend):
         loc = self.select_target()
         self.shoot(loc[0], loc[1])
 
+        if self.health <= 0:
+            self.on_death()
+
+class Cannon(Friend):
+    def __init__(self, *args, **kwargs):
+        super(Cannon, self).__init__(*args, **kwargs)
+
+    def move(self):
+        pass
+
+    def on_collide(self):
+        ret = calc_vel_xy(self.player.sprite.x, self.player.sprite.y,
+        self.sprite.x, self.sprite.y, 10)
+
+        self.player.sprite.x += ret[0]
+        self.player.sprite.y += ret[1]
+
+    def update(self):
+        try:
+            self.check_object_collision(self.closest_object())
+        except:
+            pass
+
+        if random.randint(0, 100) > 50:
+            loc = self.select_target()
+            x_dist = loc[0] - float(self.sprite.x)
+            y_dist = loc[1] - float(self.sprite.y)
+            self.sprite.rotation = (math.degrees(math.atan2(y_dist, x_dist)) * -1) + 90
+            self.shoot(loc[0], loc[1])
+
+        if collide(self.collision, self.player.collision):
+            self.on_collide()
         if self.health <= 0:
             self.on_death()

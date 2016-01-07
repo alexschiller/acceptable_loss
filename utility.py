@@ -27,9 +27,8 @@ class Master(object):
         self.spriteeffect = None
         self.buildings = []
 
-        self.threat_time = 0
         self.home = None
-        self.threat = 0
+        self.threat = None
 
     def update(self):
         try:
@@ -62,25 +61,11 @@ class Master(object):
         except:
             pass
         self.update_camera()
-        self.threat_timer()
+        self.threat.update()
 
     def register_guns(self, guns):
         for gun in guns:
             self.guns.append(gun)
-
-    def threat_timer(self):
-        self.threat_time += 1
-        if self.threat_time >= 360:
-            self.update_threat()
-            self.threat_time = 0
-
-    def calculate_threat(self):
-        dist = math.hypot(self.player.sprite.x - self.home.x, self.player.sprite.y - self.home.y) # noqa
-        return dist / 1000.0 * 1  # object threat?
-
-    def update_threat(self):
-        self.threat += self.calculate_threat()
-        print self.threat
 
     def update_button(self, x, y, mode):
         for button in self.buildings:
@@ -116,6 +101,9 @@ class Master(object):
             for b in gun.bullets:
                 b.sprite.x += mx
                 b.sprite.y += my
+        for f in self.friends:
+            f.sprite.x += mx
+            f.sprite.y += my
 
     def move_player(self, mx, my):
         if mx and my:
