@@ -243,6 +243,9 @@ class MainState(object):
                 self.swap()
         mx = 0
         my = 0
+        if key_handler[key.H]:
+            master.player.sprite.x = master.home.x
+            master.player.sprite.y = master.home.y
         if key_handler[key.D]:
             mx += 2
         if key_handler[key.A]:
