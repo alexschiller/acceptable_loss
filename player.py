@@ -11,7 +11,7 @@ player_base = {
     'kbr': 50,
     'health': 100,
     'speed': 3,
-    'guns': [Flame(master, hits='enemies', base=flame)],
+    'guns': [Gun(master, hits='enemies', base=red_laser)],
 }
 
 class Player(Character):

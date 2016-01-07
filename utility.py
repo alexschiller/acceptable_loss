@@ -12,11 +12,10 @@ from collide import * # noqa
 window_height = 800
 window_width = 1400
 
-window_height_half = window_height / 2
-window_width_half = window_width / 2
+window_height_half = float(window_height / 2)
+window_width_half = float(window_width / 2)
 
 frame_width = 50
-
 
 class Master(object):
     def __init__(self):
@@ -27,6 +26,10 @@ class Master(object):
         self.objects = []
         self.spriteeffect = None
         self.buildings = []
+
+        self.threat_time = 0
+        self.home = None
+        self.threat = 0
 
     def update(self):
         try:
@@ -59,10 +62,25 @@ class Master(object):
         except:
             pass
         self.update_camera()
+        self.threat_timer()
 
     def register_guns(self, guns):
         for gun in guns:
             self.guns.append(gun)
+
+    def threat_timer(self):
+        self.threat_time += 1
+        if self.threat_time >= 360:
+            self.update_threat()
+            self.threat_time = 0
+
+    def calculate_threat(self):
+        dist = math.hypot(self.player.sprite.x - self.home.x, self.player.sprite.y - self.home.y) # noqa
+        return dist / 1000.0 * 1  # object threat?
+
+    def update_threat(self):
+        self.threat += self.calculate_threat()
+        print self.threat
 
     def update_button(self, x, y, mode):
         for button in self.buildings:
@@ -74,16 +92,22 @@ class Master(object):
 
     def update_camera(self):
 
-        camera_x = float((window_width_half - self.player.sprite.x) / window_width_half) # noqa
-        camera_y = float((window_height_half - self.player.sprite.y) / window_height_half) # noqa
-        mx = camera_x * 5
-        my = camera_y * 5
+        camera_x = (window_width_half - self.player.sprite.x) / window_width_half # noqa
+        camera_y = (window_height_half - self.player.sprite.y) / window_height_half # noqa
+        mx = 0
+        my = 0
+        if abs(camera_x) > .2:
+            mx = camera_x * 5
+        if abs(camera_y) > .2:
+            my = camera_y * 5
         for o in self.objects:
             o.sprite.x += mx
             o.sprite.y += my
 
         self.player.sprite.x += mx
         self.player.sprite.y += my
+        self.home.x += mx
+        self.home.y += my
 
         for e in self.enemies:
             e.sprite.x += mx
@@ -94,6 +118,9 @@ class Master(object):
                 b.sprite.y += my
 
     def move_player(self, mx, my):
+        if mx and my:
+            mx = mx / 1.41
+            my = my / 1.41
         self.player.sprite.x += mx
         self.player.sprite.y += my
 

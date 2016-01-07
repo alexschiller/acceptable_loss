@@ -78,7 +78,7 @@ class Enemy(Character):
 
     def timer_ai(self):
         self.ai_time += 1
-        if self.ai_time == 60:
+        if self.ai_time == 30:
             self.ai_time = 0
             self.update_ai()
 

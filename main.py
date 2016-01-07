@@ -161,13 +161,13 @@ class MainState(object):
     def __init__(self):
         self.Pause = 0
         self.Build = 0
-        for i in range(1):
+        for i in range(10):
             master.enemies.append(Soldier(master, base=gen_soldier_base() )) # noqa
 
-        for i in range(1):
-            master.enemies.append(Portal(master, base=gen_portal_base() )) # noqa            
+        # for i in range(1):
+            # master.enemies.append(Portal(master, base=gen_portal_base() )) # noqa            
 
-        for i in range(1):
+        for i in range(0):
             master.enemies.append(Slime(master, base=gen_slime_base() )) # noqa
 
     def on_draw(self):
@@ -244,13 +244,13 @@ class MainState(object):
         mx = 0
         my = 0
         if key_handler[key.D]:
-            mx += 3
+            mx += 2
         if key_handler[key.A]:
-            mx -= 3
+            mx -= 2
         if key_handler[key.W]:
-            my += 3
+            my += 2
         if key_handler[key.S]:
-            my -= 3
+            my -= 2
         master.move_player(mx, my)
 
         # master.player.move(mx, my)
@@ -266,7 +266,7 @@ class MainState(object):
 
         if key_handler[key.F] and master.player.energy >= 100:
             # teleport(master, mouse_position)
-            carpet(master, mouse_position)
+            teleport(master, mouse_position)
         # Run Updates
         master.update()
 

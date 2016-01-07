@@ -6,8 +6,12 @@ from gun import * # noqa
 from player import * # noqa
 from utility import * # noqa
 from friend import * # noqa
+
 master.spriteeffect = SpriteEffect(master)
 master.player = Player(master, base=player_base)
+
+master.home = pyglet.sprite.Sprite(load_image('home.png'),
+            window_width_half, window_height_half, batch=gfx_batch)
 
 # for i in range(5):
 #     master.enemies.append(Soldier(master, base=gen_soldier_base() )) # noqa
