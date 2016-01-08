@@ -55,6 +55,7 @@ class Gun(object):
         self.bullets = []
         self.hits = hits
         self.master = master
+        self.travel = self.base['travel']
         self.energy_cost = self.base['energy_cost']
         self.gun_fire_sound = self.base['gun_fire_sound']
         self.on_hit_sound = self.base['on_hit_sound']
@@ -353,7 +354,7 @@ gauss = {
 }
 
 sniper = {
-    'damage': base['damage'],
+    'damage': base['damage'] * 3,
     'travel': base['travel'] * 4,
     'velocity': base['velocity'],
     'accuracy': base['accuracy'],

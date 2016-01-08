@@ -147,13 +147,14 @@ class PauseState():
     def on_draw(self):
         window.clear()
         pyglet.gl.glClearColor(0.75, 0.75, 0.75, 1)  # gray back
-        master.player.sprite.draw()
+
+        BuildingBatch.draw()
         BulletBatch.draw()
+        gfx_batch.draw()
         EffectsBatch.draw()
         BarBatch.draw()
-        gfx_batch.draw()
         states.current.test()
-        BuildingBatch.draw()
+
         window.invalid = False
 
 

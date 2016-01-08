@@ -28,6 +28,7 @@ class Master(object):
         self.spriteeffect = None
         self.buildings = []
 
+        self.radar = None
         self.home = None
         self.threat = None
 
@@ -63,6 +64,7 @@ class Master(object):
             pass
         self.update_camera()
         self.threat.update()
+        self.radar.update()
 
     def register_guns(self, guns):
         for gun in guns:

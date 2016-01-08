@@ -30,6 +30,45 @@ class Threat(object):
             self.threat -= 1
             self.master.enemies.append(Soldier(self.master, base=gen_soldier_base())) # noqa
 
+class Radar(object):
+    def __init__(self, master):
+        self.x_min = window_width - 350
+        self.x_max = window_width - 150
+        self.x_mid = (self.x_min + self.x_max) / 2
+        self.y_min = window_height - 210
+        self.y_max = window_height - 10
+        self.y_mid = (self.y_min + self.y_max) / 2
+
+        green_sprite = pyglet.image.SolidColorImagePattern(color=(0, 255, 0, 150))
+        self.green_dot = pyglet.image.create(5, 5, green_sprite)
+
+        blue_sprite = pyglet.image.SolidColorImagePattern(color=(0, 0, 255, 150))
+        self.blue_dot = pyglet.image.create(5, 5, blue_sprite)
+
+        red_sprite = pyglet.image.SolidColorImagePattern(color=(255, 0, 0, 150))
+        self.red_dot = pyglet.image.create(5, 5, red_sprite)
+
+        self.master = master
+        self.radar_range = 600
+        self.radar_scale = self.radar_range / abs(self.x_mid - self.x_min)
+        self.radar_player = pyglet.sprite.Sprite(self.blue_dot,
+            self.x_mid, self.y_mid, batch=gfx_batch)
+        self.to_draw = []
+
+    def update(self):
+        x1 = self.master.player.sprite.x
+        y1 = self.master.player.sprite.y
+
+        to_draw = []
+        for e in self.master.enemies:
+            if abs(x1 - e.sprite.x) + abs(y1 - e.sprite.y) <= self.radar_range:
+                x_loc = self.x_mid - ((x1 - e.sprite.x) / self.radar_scale)
+                y_loc = self.y_mid - ((y1 - e.sprite.y) / self.radar_scale)
+                to_draw.append(pyglet.sprite.Sprite(self.red_dot, x_loc, y_loc, batch=gfx_batch)) # noqa
+        self.to_draw = to_draw
+
+
+master.radar = Radar(master)
 master.threat = Threat(master)
 master.spriteeffect = SpriteEffect(master)
 master.player = Player(master, base=player_base)

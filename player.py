@@ -39,7 +39,7 @@ class Player(Character):
     def check_object_collision(self, o):
         if collide(self.collision, o.collision):
             ret = calc_vel_xy(self.sprite.x, self.sprite.y,
-            o.sprite.x, o.sprite.y, 3)
+            o.sprite.x, o.sprite.y, self.speed + 1)
             self.master.move_player(ret[0], ret[1])
 
     def update(self):

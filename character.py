@@ -53,9 +53,9 @@ class Character(object):
     def check_object_collision(self, o):
         if collide(self.collision, o.collision):
             ret = calc_vel_xy(self.sprite.x, self.sprite.y,
-            o.sprite.x, o.sprite.y, 3)
-            self.sprite.x += ret[0]
-            self.sprite.y += ret[1]
+            o.sprite.x, o.sprite.y, 1)
+            self.sprite.x += ret[0] * self.speed
+            self.sprite.y += ret[1] * self.speed
 
     def build_character(self, base):
         self.sprite = pyglet.sprite.Sprite(base['sprite'], base['coord'][0], base['coord'][1], batch=gfx_batch) # noqa

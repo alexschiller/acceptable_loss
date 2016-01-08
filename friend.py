@@ -72,18 +72,19 @@ class Friend(Character):
     def select_target(self):
         try:
             min_dist = float("inf")
-            coord = (0, 0)
+            coord = (0, 0, 0)
             x1 = self.sprite.x
             y1 = self.sprite.y
+            if len(self.master.enemies) == 0:
+                return False
             for e in self.master.enemies:
                 dist = abs(math.hypot(x1 - e.sprite.x, y1 - e.sprite.y))
                 if dist < min_dist:
                     min_dist = dist
-                    coord = (e.sprite.x, e.sprite.y)
+                    coord = (e.sprite.x, e.sprite.y, dist)
             return coord
         except:
-            print "snail fail"
-            return [self.sprite.x + random.randint(-5, 5), self.sprite.x + random.randint(-5, 5)] # noqa
+            return False
 
     def update(self):
         try:
@@ -155,13 +156,13 @@ class Cannon(Friend):
             self.check_object_collision(self.closest_object())
         except:
             pass
-
-        if random.randint(0, 100) > 50:
-            loc = self.select_target()
-            x_dist = loc[0] - float(self.sprite.x)
-            y_dist = loc[1] - float(self.sprite.y)
-            self.sprite.rotation = (math.degrees(math.atan2(y_dist, x_dist)) * -1) + 90
-            self.shoot(loc[0], loc[1])
+        loc = self.select_target()
+        if loc:
+            if loc[2] < self.gun.travel:
+                x_dist = loc[0] - float(self.sprite.x)
+                y_dist = loc[1] - float(self.sprite.y)
+                self.sprite.rotation = (math.degrees(math.atan2(y_dist, x_dist)) * -1) + 90 # noqa
+                self.shoot(loc[0], loc[1])
 
         if collide(self.collision, self.player.collision):
             self.on_collide()
