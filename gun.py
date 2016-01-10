@@ -617,7 +617,7 @@ red_laser = {
     'energy_cost': 20,
     'bullets': 1,
     'pierce': 0,
-    'rof': 20,
+    'rof': 120,
     'knockback': 50.0,
     'image': load_image('red_laser.png'),
     'recoil': 5,

@@ -67,7 +67,55 @@ class Radar(object):
                 to_draw.append(pyglet.sprite.Sprite(self.red_dot, x_loc, y_loc, batch=gfx_batch)) # noqa
         self.to_draw = to_draw
 
+class Resources(object):
+    def __init__(self, master):
+        self.sci = 0
+        self.foo = 0
+        self.pow = 0
+        self.eng = 0
+        self.mon = 0
 
+        self.foo_ps = .1
+        self.pow_ps = .12
+        self.eng_ps = .09
+        self.sci_ps = .11
+        self.mon_ps = .15
+
+        self.timer = 0
+        self.foo_lab = pyglet.text.Label('F: ' + str(round(self.foo, 1)), font_name='Courier New', font_size=12, x=window_width - 150, y=130, anchor_x='left',anchor_y='center', batch=gfx_batch) # noqa        
+        self.pow_lab = pyglet.text.Label('P: ' + str(round(self.pow, 1)), font_name='Courier New', font_size=12, x=window_width - 150, y=110, anchor_x='left',anchor_y='center', batch=gfx_batch) # noqa        
+        self.eng_lab = pyglet.text.Label('E: ' + str(round(self.eng, 1)), font_name='Courier New', font_size=12, x=window_width - 150, y=90, anchor_x='left',anchor_y='center', batch=gfx_batch) # noqa        
+        self.sci_lab = pyglet.text.Label('S: ' + str(round(self.sci, 1)), font_name='Courier New', font_size=12, x=window_width - 150, y=70, anchor_x='left',anchor_y='center', batch=gfx_batch) # noqa
+        self.mon_lab = pyglet.text.Label('M: ' + str(round(self.mon, 1)), font_name='Courier New', font_size=12, x=window_width - 150, y=50, anchor_x='left',anchor_y='center', batch=gfx_batch) # noqa        
+
+    def update_timer(self):
+        self.timer += 1
+        if self.timer == 60:
+            self.timer = 0
+            self.update_resources()
+
+    def update_resources(self):
+        self.labs = []
+        self.sci += self.sci_ps
+        self.foo += self.foo_ps
+        self.pow += self.pow_ps
+        self.eng += self.eng_ps
+        self.mon += self.mon_ps
+        self.update_labs()
+
+    def update_labs(self):
+        self.foo_lab.text = 'F: ' + str(round(self.foo, 1))
+        self.pow_lab.text = 'P: ' + str(round(self.pow, 1))
+        self.eng_lab.text = 'E: ' + str(round(self.eng, 1))
+        self.sci_lab.text = 'S: ' + str(round(self.sci, 1))
+        self.mon_lab.text = 'M: ' + str(round(self.mon, 1))
+
+    def update(self):
+        self.update_timer()
+        self.update_labs()
+
+
+master.resources = Resources(master)
 master.radar = Radar(master)
 master.threat = Threat(master)
 master.spriteeffect = SpriteEffect(master)

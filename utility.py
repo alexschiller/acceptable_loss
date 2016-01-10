@@ -28,6 +28,7 @@ class Master(object):
         self.spriteeffect = None
         self.buildings = []
 
+        self.resources = None
         self.radar = None
         self.home = None
         self.threat = None
@@ -62,6 +63,7 @@ class Master(object):
                 b.update()
         except:
             pass
+        self.resources.update()
         self.update_camera()
         self.threat.update()
         self.radar.update()
