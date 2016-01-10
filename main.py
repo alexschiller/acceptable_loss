@@ -9,6 +9,7 @@ from importer import * # noqa # Put random file imports here for now
 
 from button import Manager, Button,TextBox, DraggableButton, foo # noqa
 from placeable import * # noqa
+from menu import * # noqa
 
 
 class ProtoKeyStateHandler(key.KeyStateHandler):
@@ -154,6 +155,7 @@ class PauseState():
         EffectsBatch.draw()
         BarBatch.draw()
         states.current.test()
+        MenuBatch.draw()
 
         window.invalid = False
 
@@ -181,13 +183,14 @@ class MainState(object):
         gfx_batch.draw()
         BuildingBatch.draw()
         states.current.test()
+        MenuBatch.draw()
         window.invalid = False
 
     def test(self):
         pass
 
     def on_mouse_release(self, x, y, button, modifiers):
-        pass
+        Buildmenu.on_mouse_press(x, y, 1)
 
     def on_mouse_press(self, x, y, button, modifiers):
         if master.player.shoot(mouse_position[0], mouse_position[1]): # noqa
@@ -291,6 +294,7 @@ class BuildState(MainState):
 
     def on_mouse_release(self, x, y, button, modifiers):
         master.update_button(x, y, 1)
+        Buildmenu.on_mouse_press(x, y, 1)
 
     def on_mouse_press(self, x, y, button, modifiers):
         if master.player.shoot(mouse_position[0], mouse_position[1]): # noqa

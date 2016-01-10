@@ -129,6 +129,7 @@ BulletBatch = pyglet.graphics.Batch()
 EffectsBatch = pyglet.graphics.Batch()
 ButtonBatch = pyglet.graphics.Batch()
 BuildingBatch = pyglet.graphics.Batch()
+MenuBatch = pyglet.graphics.Batch()
 
 
 # Manually Built Static Sprites
@@ -194,3 +195,23 @@ def calc_vel_xy(tar_x, tar_y, start_x, start_y, velocity):
     vel_y = perc * velocity * dir_y
     vel_x = (velocity - abs(vel_y)) * dir_x
     return (vel_x, vel_y)
+
+resource_base = {
+    'food': 0,
+    'eng': 0,
+    'sci': 0,
+    'pow': 0,
+    'mon': 0,
+    'red': 0,
+    'orange': 0,
+    'yellow': 0,
+    'sap': 0,
+    'green': 0,
+    'brown': 0,
+    'grey': 0,
+    'dgreen': 0,
+    'teal': 0,
+    'blue': 0,
+    'dblue': 0,
+    'purple': 0
+}

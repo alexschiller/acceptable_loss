@@ -14,6 +14,7 @@ player_base = {
     'guns': [Shrap(master, hits='enemies', base=red_laser)],
 }
 
+
 class Player(Character):
     def __init__(self, *args, **kwargs):
         super(Player, self).__init__(*args, **kwargs)
