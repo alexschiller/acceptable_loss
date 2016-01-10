@@ -193,7 +193,7 @@ class MainState(object):
         if master.player.shoot(mouse_position[0], mouse_position[1]): # noqa
             ret = calc_vel_xy(
                 master.player.sprite.x, master.player.sprite.y,
-                mouse_position[0], mouse_position[1], master.player.base['recoil']
+                mouse_position[0], mouse_position[1], master.player.gun.base['recoil']
             ) # noqa
             master.player.sprite.x += ret[0]
             master.player.sprite.y += ret[1]
@@ -216,8 +216,9 @@ class MainState(object):
             ret = calc_vel_xy(
                 master.player.sprite.x, master.player.sprite.y,
                 mouse_position[0], mouse_position[1],
-                master.player.base['recoil']
+                master.player.gun.base['recoil']
             )
+            print ret
             master.player.sprite.x += ret[0]
             master.player.sprite.y += ret[1]
         master.player.sprite.rotation = deg
@@ -295,7 +296,7 @@ class BuildState(MainState):
         if master.player.shoot(mouse_position[0], mouse_position[1]): # noqa
             ret = calc_vel_xy(
                 master.player.sprite.x, master.player.sprite.y,
-                mouse_position[0], mouse_position[1], master.player.base['recoil']
+                mouse_position[0], mouse_position[1], master.player.gun.base['recoil']
             ) # noqa
             master.player.sprite.x += ret[0]
             master.player.sprite.y += ret[1]
@@ -319,7 +320,7 @@ class BuildState(MainState):
             ret = calc_vel_xy(
                 master.player.sprite.x, master.player.sprite.y,
                 mouse_position[0], mouse_position[1],
-                master.player.base['recoil']
+                master.player.gun.base['recoil']
             )
             master.player.sprite.x += ret[0]
             master.player.sprite.y += ret[1]

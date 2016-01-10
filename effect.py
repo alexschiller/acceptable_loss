@@ -59,15 +59,14 @@ class SpriteEffect(object):
                     esizex=random.randint(1, 10), esizey=random.randint(1, 10))
             )
 
-    def blood(self, start_x, start_y, size_min=5, size_max=5):
+    def blood(self, start_x, start_y, size_min=1, size_max=5):
         for e in range(random.randint(size_min, size_max)):
             self.effects.append(
                 Effect(start_x=start_x, start_y=start_y,
                     vel_x=random.randint(-20, 20), vel_y=random.randint(-20, 20),
                     travel=15,
-                    ecolor=[random.randint(100, 255), random.randint(0, 55),
-                        random.randint(0, 55)],
-                    esizex=random.randint(1, 10), esizey=random.randint(1, 10))
+                    ecolor=[255, 10, 10],
+                    esizex=4, esizey=4,)
             )
 
     def smoke(self, start_x, start_y, target_x, target_y):

@@ -179,18 +179,38 @@ class Shrap(Gun):
         super(Shrap, self).__init__(*args, **kwargs)
         self.gun = Gun(master, hits=self.hits, base=self.base['effect_gun'])
         self.master.guns.append(self.gun)
+        self.sprite = None
+        self.red_sprite = pyglet.image.SolidColorImagePattern(color=(255, 0, 0, 150))
+
+    def update(self):
+        if self.rofl < self.rof:
+            self.rofl += 1
+        self.sprite = None
+        while len(self.bullets) > 0:
+            for bullet in self.bullets:
+                bullet.update()
+                self.bullet_checks(bullet)
+                if bullet.travelled > bullet.calc_travel:
+                    self.delete_bullet(bullet)
 
     def delete_bullet(self, bullet):
-        for n in range(10):
+        red_line = pyglet.image.create(1, int(bullet.travelled), self.red_sprite)
+
+        x_dist = bullet.sprite.x - float(master.player.sprite.x)
+        y_dist = bullet.sprite.y - float(master.player.sprite.y)
+        deg = (math.degrees(math.atan2(y_dist, x_dist)) * -1) + 90
+        self.sprite = pyglet.sprite.Sprite(red_line, self.master.player.sprite.x, self.master.player.sprite.y, batch=gfx_batch) # noqa
+        self.sprite.rotation = deg
+
+        for i in range(10):
             self.gun.fire(bullet.sprite.x, bullet.sprite.y,
-                bullet.sprite.x + random.randint(-4, 4),
-                bullet.sprite.y + random.randint(-4, 4))
+            bullet.sprite.x + random.randint(-4, 4),
+            bullet.sprite.y + random.randint(-4, 4))
         try:
             bullet.sprite.delete()
             self.bullets.remove(bullet)
         except:
             pass
-
 
 class MouseBoom(Gun):
     def __init__(self, *args, **kwargs):
@@ -463,15 +483,15 @@ lancer = {
 
 fire = {
     'damage': 1,
-    'travel': 150,
-    'velocity': 20,
+    'travel': 15,
+    'velocity': 1,
     'accuracy': .85,
     'spread': 0,
     'energy_cost': 20,
     'bullets': 1,
     'pierce': 0,
     'rof': 100,
-    'knockback': 30.0,
+    'knockback': 5.0,
     'image': load_image('shotgun.png'),
     'recoil': 1,
     'effect_gun': None,
@@ -590,17 +610,17 @@ lineshot = {
 
 red_laser = {
     'damage': 1,
-    'travel': 300,
-    'velocity': 8,
+    'travel': 500,
+    'velocity': 3,
     'accuracy': .85,
     'spread': .05,
     'energy_cost': 20,
     'bullets': 1,
-    'pierce': 2,
+    'pierce': 0,
     'rof': 20,
-    'knockback': 5.0,
+    'knockback': 50.0,
     'image': load_image('red_laser.png'),
-    'recoil': 1,
+    'recoil': 5,
     'effect_gun': fire,
     'gun_fire_sound': load_sound('laser.wav'),
     'on_hit_sound': load_sound('on_hit.wav'),
