@@ -262,6 +262,8 @@ class MainState(object):
             master.player.sprite.x = master.home.x
             master.player.sprite.y = master.home.y
             master.move_all(-readjust_x, -readjust_y)
+        if key_handler[key.TAB]:
+            master.mousepip.closest_enemy()
         if key_handler[key.D]:
             mx += 2
         if key_handler[key.A]:

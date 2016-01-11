@@ -135,6 +135,21 @@ class MousePip(object):
             except:
                 self.target = None
 
+    def closest_enemy(self):
+        try:
+            min_dist = float("inf")
+            x1 = self.master.player.sprite.x
+            y1 = self.master.player.sprite.y
+            if len(self.master.enemies) == 0:
+                return False
+            for e in self.master.enemies:
+                dist = abs(math.hypot(x1 - e.sprite.x, y1 - e.sprite.y))
+                if dist < min_dist:
+                    min_dist = dist
+                    self.target = e
+        except:
+            self.target = None
+
     def build_target(self, e):
         # frame = 10
         bar = 2

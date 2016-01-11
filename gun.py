@@ -47,6 +47,42 @@ class Bullet(object):
         self.sprite.y += self.vel_y
         self.travelled += math.hypot(self.vel_x, self.vel_y)
 
+class Mullet(object):
+    def __init__(self, base, start_x, start_y, target_x, target_y, enemy_range, e, chips=[]):  # noqa
+        # Base stats
+        self.base = base
+        self.damage = self.base['damage']
+        self.travel = self.base['travel']
+        self.velocity = self.base['velocity']
+        self.spread = self.base['spread']
+        self.accuracy = self.base['accuracy']
+        self.knockback = self.base['knockback']
+        self.pierce = self.base['pierce']
+        self.enemy_range = enemy_range
+        self.enemy = e
+
+        x_dist = target_x - float(start_x)
+        y_dist = target_y - float(start_y)
+
+        # Updated Stats
+        self.travelled = 0
+        self.sprite = pyglet.sprite.Sprite(base['image'],
+            start_x, start_y, batch=BulletBatch)
+        self.sprite.rotation = (math.degrees(math.atan2(y_dist, x_dist)) * -1) + 90
+        self.sprite.scale = 1
+
+        ret = calc_vel_xy(target_x, target_y,
+            start_x, start_y, self.velocity)
+
+        self.vel_x = ret[0]
+        self.vel_y = ret[1]
+
+    def update(self):
+        self.sprite.x += self.vel_x
+        self.sprite.y += self.vel_y
+        self.travelled += math.hypot(self.vel_x, self.vel_y)
+
+
 class Gun(object):
     def __init__(self, master, base, hits, chips=[]): # noqa
         self.base = base
@@ -156,6 +192,50 @@ class Gun(object):
         except:
             print "snail fail"
             return [bullet.sprite.x, bullet.sprite.y]
+
+class Fun(object):
+    def __init__(self, master, base): # noqa
+        self.base = base
+        self.rof = 60 / self.base['rof']
+        self.rofl = 0
+        self.bullets = []
+        self.master = master
+        self.travel = self.base['travel']
+        self.energy_cost = self.base['energy_cost']
+        self.gun_fire_sound = self.base['gun_fire_sound']
+        self.on_hit_sound = self.base['on_hit_sound']
+
+        # if hits == "enemies":
+        #     self.bullet_checks = self.hits_bad
+        # else:
+        #     self.bullet_checks = self.hits_good
+
+    def fire(self, start_x, start_y, target_x, target_y, e):
+        zx = start_x - target_x
+        zy = start_y - target_y
+        enemy_range = math.hypot(zy, zx)
+        if enemy_range <= self.travel:
+            if self.rofl == self.rof:
+                self.rofl -= self.rof
+                play_sound(self.gun_fire_sound)
+                self.bullets.append(Mullet(self.base, start_x, start_y, target_x, target_y, enemy_range, e)) # noqa
+                return True
+
+    def delete_bullet(self, bullet):
+        try:
+            bullet.sprite.delete()
+            self.bullets.remove(bullet)
+        except:
+            pass
+
+    def update(self):
+        if self.rofl < self.rof:
+            self.rofl += 1
+        for bullet in self.bullets:
+            bullet.update()
+            if bullet.travelled > bullet.enemy_range:
+                bullet.enemy.on_hit(bullet)
+                self.delete_bullet(bullet)
 
 class MissileLauncher(Gun):
     def __init__(self, *args, **kwargs):
@@ -376,7 +456,7 @@ gauss = {
 sniper = {
     'damage': base['damage'] * 3,
     'travel': base['travel'] * 4,
-    'velocity': base['velocity'],
+    'velocity': base['velocity'] * 20,
     'accuracy': base['accuracy'],
     'spread': base['spread'],
     'energy_cost': base['energy_cost'],
@@ -609,16 +689,16 @@ lineshot = {
 }
 
 red_laser = {
-    'damage': 1,
+    'damage': 10,
     'travel': 500,
-    'velocity': 3,
+    'velocity': 20,
     'accuracy': .85,
     'spread': .05,
     'energy_cost': 20,
     'bullets': 1,
     'pierce': 0,
-    'rof': 120,
-    'knockback': 50.0,
+    'rof': 1,
+    'knockback': 5.0,
     'image': load_image('red_laser.png'),
     'recoil': 5,
     'effect_gun': fire,
