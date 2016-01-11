@@ -164,6 +164,7 @@ class MainState(object):
     def __init__(self):
         self.Pause = 0
         self.Build = 0
+        self.Menu = 0
         for i in range(10):
             master.enemies.append(Soldier(master, base=gen_soldier_base() )) # noqa
 
@@ -183,9 +184,7 @@ class MainState(object):
         gfx_batch.draw()
         BuildingBatch.draw()
         states.current.test()
-        MenuBackground.draw()
-        MenuBatch.draw()
-        SelectBatch.draw()
+        Buildmenu.update()
         window.invalid = False
 
     def test(self):
@@ -242,6 +241,12 @@ class MainState(object):
             if self.Pause == 1:
                 self.Pause = 0
                 states.swap('pause')
+        if key_handler[key.N]:
+            self.Menu = 1
+        else:
+            if self.Menu == 1:
+                self.Menu = 0
+                Buildmenu.change_flag()
 
         if key_handler[key.B]:
             self.Build = 1
@@ -291,6 +296,7 @@ class BuildState(MainState):
             master.enemies.pop(0)
         self.Pause = 0
         self.Build = 0
+        self.Menu = 0
         self.manager = Manager()
 
         # master.buildings.append(Placeable(load_image('brick.png', anchor=False), 400, 400, None, BuildingBatch)) # noqa
