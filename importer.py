@@ -114,12 +114,73 @@ class Resources(object):
         self.update_timer()
         self.update_labs()
 
+class MousePip(object):
+    def __init__(self, master):
+        self.master = master
+        self.black_sprite = pyglet.image.SolidColorImagePattern(color=(0, 0, 0, 150))
+        self.black_dot = pyglet.image.create(10, 10, self.black_sprite)
+        self.sprite = pyglet.sprite.Sprite(self.black_dot,
+                    0, 0, batch=gfx_batch)
+        self.collision = SpriteCollision(self.sprite)
+
+        self.target = None
+        self.marker = []
+
+    def update(self):
+        self.marker = []
+        if self.target:
+            try:
+                self.build_target(self.target)
+                master.player.shoot(self.target.sprite.x, self.target.sprite.y)
+            except:
+                self.target = None
+
+    def build_target(self, e):
+        # frame = 10
+        bar = 2
+        # half = 5
+        self.target = e
+        h = e.sprite.height
+        w = e.sprite.width
+        v = max(h, w)
+        v2 = v / 2
+        x = e.sprite.x
+        y = e.sprite.y
+
+        vs = pyglet.image.create(bar, v2, red_sprite)
+        hs = pyglet.image.create(v2, bar, red_sprite)
+
+        self.marker = [
+            #  Bottom two verticals
+            pyglet.sprite.Sprite(vs, x - v - 2, y - v, batch=gfx_batch),  # noqa 
+            pyglet.sprite.Sprite(vs, x + v, y - v, batch=gfx_batch),  # noqa 
+            #  Bottom two horizontals
+            pyglet.sprite.Sprite(hs, x - v - 2, y - v, batch=gfx_batch),  # noqa 
+            pyglet.sprite.Sprite(hs, x + v - v2 + 2, y - v, batch=gfx_batch),  # noqa 
+            #  Top two verticals
+            pyglet.sprite.Sprite(vs, x - v - 2, y + v, batch=gfx_batch),  # noqa 
+            pyglet.sprite.Sprite(vs, x + v, y + v, batch=gfx_batch),  # noqa 
+            #  Top two horizontals
+            pyglet.sprite.Sprite(hs, x - v - 2, y + v + 5, batch=gfx_batch),  # noqa 
+            pyglet.sprite.Sprite(hs, x + v - v2 + 2, y + v + 5, batch=gfx_batch),  # noqa 
+
+        ]
+
+    def update_target(self):
+        red_sprite = pyglet.image.SolidColorImagePattern(color=(255, 0, 0, 150))
+        self.red_dot = pyglet.image.create(5, 5, red_sprite)
+
+        for e in master.enemies:
+            if collide(self.collision, e.collision):
+                self.build_target(e)
+                break
 
 master.resources = Resources(master)
 master.radar = Radar(master)
 master.threat = Threat(master)
 master.spriteeffect = SpriteEffect(master)
 master.player = Player(master, base=player_base)
+master.mousepip = MousePip(master)
 
 master.home = pyglet.sprite.Sprite(load_image('home.png'),
             window_width_half, window_height_half, batch=gfx_batch)

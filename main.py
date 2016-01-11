@@ -300,17 +300,20 @@ class BuildState(MainState):
         Buildmenu.on_mouse_press(x, y, 1)
 
     def on_mouse_press(self, x, y, button, modifiers):
-        if master.player.shoot(mouse_position[0], mouse_position[1]): # noqa
-            ret = calc_vel_xy(
-                master.player.sprite.x, master.player.sprite.y,
-                mouse_position[0], mouse_position[1], master.player.gun.base['recoil']
-            ) # noqa
-            master.player.sprite.x += ret[0]
-            master.player.sprite.y += ret[1]
+        master.mousepip.update_target()
+        # if master.player.shoot(mouse_position[0], mouse_position[1]): # noqa
+        #     ret = calc_vel_xy(
+        #         master.player.sprite.x, master.player.sprite.y,
+        #         mouse_position[0], mouse_position[1], master.player.gun.base['recoil']
+        #     ) # noqa
+        #     master.player.sprite.x += ret[0]
+        #     master.player.sprite.y += ret[1]
         # master.update_button(x, y, 0)
         Buildmenu.on_mouse_press(x, y, 0)
 
     def on_mouse_motion(self, x, y, dx, dy):
+        master.mousepip.sprite.x = x
+        master.mousepip.sprite.y = y
         x_dist = x - float(master.player.sprite.x)
         y_dist = y - float(master.player.sprite.y)
 
@@ -320,6 +323,8 @@ class BuildState(MainState):
         # print dx, dy
 
     def on_mouse_drag(self, x, y, dx, dy, buttons, modifiers):
+        master.mousepip.sprite.x = x
+        master.mousepip.sprite.y = y
         x_dist = x - float(master.player.sprite.x)
         y_dist = y - float(master.player.sprite.y)
         master.update_button_image(x, y, dx, dy)

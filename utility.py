@@ -66,6 +66,7 @@ class Master(object):
         self.update_camera()
         self.threat.update()
         self.radar.update()
+        self.mousepip.update()
 
     def register_guns(self, guns):
         for gun in guns:
@@ -143,7 +144,8 @@ blue_bar = pyglet.image.create(200, 10, blue_sprite)
 
 red_sprite = pyglet.image.SolidColorImagePattern(color=(255, 0, 0, 150))
 red_bar = pyglet.image.create(200, 10, red_sprite)
-menu_back = pyglet.image.create(200, window_height, pyglet.image.SolidColorImagePattern(color=(238, 232, 170, 150)))
+
+menu_back = pyglet.image.create(200, window_height, pyglet.image.SolidColorImagePattern(color=(238, 232, 170, 150))) # noqa
 # Image loader function and dict
 image_dict = {}
 
