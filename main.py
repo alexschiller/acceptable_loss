@@ -155,7 +155,7 @@ class PauseState():
         EffectsBatch.draw()
         BarBatch.draw()
         states.current.test()
-        MenuBatch.draw()
+        # MenuBatch.draw()
 
         window.invalid = False
 
@@ -183,7 +183,9 @@ class MainState(object):
         gfx_batch.draw()
         BuildingBatch.draw()
         states.current.test()
+        MenuBackground.draw()
         MenuBatch.draw()
+        SelectBatch.draw()
         window.invalid = False
 
     def test(self):
@@ -199,7 +201,8 @@ class MainState(object):
                 mouse_position[0], mouse_position[1], master.player.gun.base['recoil']
             ) # noqa
             master.player.sprite.x += ret[0]
-            master.player.sprite.y += ret[1]
+        master.player.sprite.y += ret[1]
+        Buildmenu.on_mouse_press(x, y, 0)
 
     def on_mouse_motion(self, x, y, dx, dy):
         x_dist = x - float(master.player.sprite.x)
@@ -293,7 +296,7 @@ class BuildState(MainState):
         # master.buildings.append(Placeable(load_image('brick.png', anchor=False), 400, 400, None, BuildingBatch)) # noqa
 
     def on_mouse_release(self, x, y, button, modifiers):
-        master.update_button(x, y, 1)
+        # master.update_button(x, y, 1)
         Buildmenu.on_mouse_press(x, y, 1)
 
     def on_mouse_press(self, x, y, button, modifiers):
@@ -304,7 +307,8 @@ class BuildState(MainState):
             ) # noqa
             master.player.sprite.x += ret[0]
             master.player.sprite.y += ret[1]
-        master.update_button(x, y, 0)
+        # master.update_button(x, y, 0)
+        Buildmenu.on_mouse_press(x, y, 0)
 
     def on_mouse_motion(self, x, y, dx, dy):
         x_dist = x - float(master.player.sprite.x)

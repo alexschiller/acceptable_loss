@@ -7,7 +7,6 @@ from pyglet.gl import * # noqa
 from pyglet.window import key # noqa
 from pyglet.window import mouse # noqa
 from collide import * # noqa
-
 # Window sizes
 window_height = 800
 window_width = 1400
@@ -132,7 +131,8 @@ EffectsBatch = pyglet.graphics.Batch()
 ButtonBatch = pyglet.graphics.Batch()
 BuildingBatch = pyglet.graphics.Batch()
 MenuBatch = pyglet.graphics.Batch()
-
+MenuBackground = pyglet.graphics.Batch()
+SelectBatch = pyglet.graphics.Batch()
 
 # Manually Built Static Sprites
 green_sprite = pyglet.image.SolidColorImagePattern(color=(0, 255, 0, 150))
@@ -143,7 +143,7 @@ blue_bar = pyglet.image.create(200, 10, blue_sprite)
 
 red_sprite = pyglet.image.SolidColorImagePattern(color=(255, 0, 0, 150))
 red_bar = pyglet.image.create(200, 10, red_sprite)
-
+menu_back = pyglet.image.create(200, window_height, pyglet.image.SolidColorImagePattern(color=(238, 232, 170, 150)))
 # Image loader function and dict
 image_dict = {}
 
