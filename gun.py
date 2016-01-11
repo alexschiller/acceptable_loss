@@ -232,9 +232,15 @@ class Fun(object):
         if self.rofl < self.rof:
             self.rofl += 1
         for bullet in self.bullets:
-            bullet.update()
+            try:
+                bullet.update()
+            except:
+                self.delete_bullet(bullet)
             if bullet.travelled > bullet.enemy_range:
-                bullet.enemy.on_hit(bullet)
+                try:
+                    bullet.enemy.on_hit(bullet)
+                except:
+                    pass
                 self.delete_bullet(bullet)
 
 class MissileLauncher(Gun):
@@ -689,7 +695,7 @@ lineshot = {
 }
 
 red_laser = {
-    'damage': 10,
+    'damage': 1,
     'travel': 500,
     'velocity': 20,
     'accuracy': .85,
@@ -697,7 +703,7 @@ red_laser = {
     'energy_cost': 20,
     'bullets': 1,
     'pierce': 0,
-    'rof': 1,
+    'rof': 10,
     'knockback': 5.0,
     'image': load_image('red_laser.png'),
     'recoil': 5,
