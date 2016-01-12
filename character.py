@@ -20,7 +20,8 @@ class Character(object):
         self.sprite.y += (self.speed * y)
 
     def shoot(self, target_x, target_y):
-        self.gun.fire(self.sprite.x, self.sprite.y, target_x, target_y)
+        pass
+        # self.gun.fire(self.sprite.x, self.sprite.y, target_x, target_y)
 
     def on_hit(self, bullet):
         self.health -= bullet.damage

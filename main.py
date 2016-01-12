@@ -204,12 +204,13 @@ class MainState(object):
         Buildmenu.on_mouse_press(x, y, 0)
 
     def on_mouse_motion(self, x, y, dx, dy):
-        x_dist = x - float(master.player.sprite.x)
-        y_dist = y - float(master.player.sprite.y)
+        pass
+        # x_dist = x - float(master.player.sprite.x)
+        # y_dist = y - float(master.player.sprite.y)
 
-        deg = (math.degrees(math.atan2(y_dist, x_dist)) * -1) + 90
+        # deg = (math.degrees(math.atan2(y_dist, x_dist)) * -1) + 90
 
-        master.player.sprite.rotation = deg
+        # master.player.sprite.rotation = deg
         # print dx, dy
 
     def on_mouse_drag(self, x, y, dx, dy, buttons, modifiers):
@@ -263,7 +264,7 @@ class MainState(object):
             master.player.sprite.y = master.home.y
             master.move_all(-readjust_x, -readjust_y)
         if key_handler[key.TAB]:
-            master.mousepip.closest_enemy()
+            master.pip.closest_enemy()
         if key_handler[key.D]:
             mx += 2
         if key_handler[key.A]:
@@ -308,7 +309,7 @@ class BuildState(MainState):
         Buildmenu.on_mouse_press(x, y, 1)
 
     def on_mouse_press(self, x, y, button, modifiers):
-        master.mousepip.update_target()
+        master.pip.update_target()
         # if master.player.shoot(mouse_position[0], mouse_position[1]): # noqa
         #     ret = calc_vel_xy(
         #         master.player.sprite.x, master.player.sprite.y,
@@ -320,8 +321,8 @@ class BuildState(MainState):
         Buildmenu.on_mouse_press(x, y, 0)
 
     def on_mouse_motion(self, x, y, dx, dy):
-        master.mousepip.sprite.x = x
-        master.mousepip.sprite.y = y
+        master.pip.sprite.x = x
+        master.pip.sprite.y = y
         x_dist = x - float(master.player.sprite.x)
         y_dist = y - float(master.player.sprite.y)
 
@@ -331,12 +332,12 @@ class BuildState(MainState):
         # print dx, dy
 
     def on_mouse_drag(self, x, y, dx, dy, buttons, modifiers):
-        master.mousepip.sprite.x = x
-        master.mousepip.sprite.y = y
-        x_dist = x - float(master.player.sprite.x)
-        y_dist = y - float(master.player.sprite.y)
+        master.pip.sprite.x = x
+        master.pip.sprite.y = y
+        # x_dist = x - float(master.player.sprite.x)
+        # y_dist = y - float(master.player.sprite.y)
         master.update_button_image(x, y, dx, dy)
-        deg = (math.degrees(math.atan2(y_dist, x_dist)) * -1) + 90
+        # deg = (math.degrees(math.atan2(y_dist, x_dist)) * -1) + 90
         if master.player.shoot(mouse_position[0], mouse_position[1]): # noqa
             ret = calc_vel_xy(
                 master.player.sprite.x, master.player.sprite.y,
@@ -345,7 +346,6 @@ class BuildState(MainState):
             )
             master.player.sprite.x += ret[0]
             master.player.sprite.y += ret[1]
-        master.player.sprite.rotation = deg
 
     def swap(self):
         states.swap('main')

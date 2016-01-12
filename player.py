@@ -11,7 +11,7 @@ player_base = {
     'kbr': 50,
     'health': 100,
     'speed': 3,
-    'guns': [Fun(master, base=red_laser)],
+    'guns': [Gun(master, base=red_laser)],
 }
 
 
@@ -29,7 +29,7 @@ class Player(Character):
         self.shield = 10
 
     def shoot(self, target_x, target_y):
-        self.gun.fire(self.sprite.x, self.sprite.y, target_x, target_y, self.master.mousepip.target) # noqa      
+        self.gun.fire(self.sprite.x, self.sprite.y, target_x, target_y, self.master.pip.target) # noqa      
 
     def on_hit(self, bullet):
         self.shield -= bullet.damage

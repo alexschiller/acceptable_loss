@@ -15,7 +15,7 @@ def gen_friend_base():
         'kbr': 10,
         'health': 10,
         'speed': 1,
-        'guns': [Gun(master, hits='enemies', base=shotgun)],
+        'guns': [Gun(master, base=missile)],
     }
     return base
 
@@ -26,19 +26,7 @@ def gen_cannon_base():
         'kbr': 10,
         'health': 10,
         'speed': 1,
-        'guns': [Gun(master, hits='enemies', base=sniper)],
-    }
-    return base
-
-def gen_carpet_base(mouse):
-    base = {
-        'sprite': load_image('jet.png'),
-        'coord': random.choice([[-50, random.randint(0, window_height)], [random.randint(0, window_width), -50]]), # noqa
-        'kbr': 10,
-        'health': 1800,
-        'speed': 10,
-        'guns': [Gun(master, hits='enemies', base=bomb)],
-        'mouse': mouse,
+        'guns': [Gun(master, base=missile)],
     }
     return base
 
@@ -109,33 +97,33 @@ class Friend(Character):
             self.on_death()
 
 
-class Carpet(Friend):
-    def __init__(self, *args, **kwargs):
-        super(Carpet, self).__init__(*args, **kwargs)
-        self.ret = calc_vel_xy(kwargs['base']['mouse'][0], kwargs['base']['mouse'][1],
-            self.sprite.x, self.sprite.y, self.speed)
+# class Carpet(Friend):
+#     def __init__(self, *args, **kwargs):
+#         super(Carpet, self).__init__(*args, **kwargs)
+#         self.ret = calc_vel_xy(kwargs['base']['mouse'][0], kwargs['base']['mouse'][1],
+#             self.sprite.x, self.sprite.y, self.speed)
 
-        x_dist = kwargs['base']['mouse'][0] - float(self.sprite.x)
-        y_dist = kwargs['base']['mouse'][1] - float(self.sprite.y)
-        self.sprite.rotation = (math.degrees(math.atan2(y_dist, x_dist)) * -1) + 90
+#         x_dist = kwargs['base']['mouse'][0] - float(self.sprite.x)
+#         y_dist = kwargs['base']['mouse'][1] - float(self.sprite.y)
+#         self.sprite.rotation = (math.degrees(math.atan2(y_dist, x_dist)) * -1) + 90
 
-    def check_object_collision(self, o):
-        pass
+#     def check_object_collision(self, o):
+#         pass
 
-    def update(self):
-        self.health -= self.speed
-        try:
-            self.check_object_collision(self.closest_object())
-        except:
-            pass
-        self.sprite.x += self.ret[0]
-        self.sprite.y += self.ret[1]
+#     def update(self):
+#         self.health -= self.speed
+#         try:
+#             self.check_object_collision(self.closest_object())
+#         except:
+#             pass
+#         self.sprite.x += self.ret[0]
+#         self.sprite.y += self.ret[1]
 
-        loc = self.select_target()
-        self.shoot(loc[0], loc[1])
+#         loc = self.select_target()
+#         self.shoot(loc[0], loc[1])
 
-        if self.health <= 0:
-            self.on_death()
+#         if self.health <= 0:
+#             self.on_death()
 
 class Cannon(Friend):
     def __init__(self, *args, **kwargs):

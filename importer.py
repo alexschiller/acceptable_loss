@@ -130,10 +130,17 @@ class MousePip(object):
         self.marker = []
         if self.target:
             try:
+                x_dist = self.target.sprite.x - float(self.master.player.sprite.x)
+                y_dist = self.target.sprite.y - float(self.master.player.sprite.y)
                 self.build_target(self.target)
                 master.player.shoot(self.target.sprite.x, self.target.sprite.y)
             except:
                 self.target = None
+        else:
+            x_dist = self.sprite.x - float(self.master.player.sprite.x)
+            y_dist = self.sprite.y - float(self.master.player.sprite.y)
+        deg = (math.degrees(math.atan2(y_dist, x_dist)) * -1) + 90
+        self.master.player.sprite.rotation = deg
 
     def closest_enemy(self):
         try:
@@ -195,7 +202,7 @@ master.radar = Radar(master)
 master.threat = Threat(master)
 master.spriteeffect = SpriteEffect(master)
 master.player = Player(master, base=player_base)
-master.mousepip = MousePip(master)
+master.pip = MousePip(master)
 
 master.home = pyglet.sprite.Sprite(load_image('home.png'),
             window_width_half, window_height_half, batch=gfx_batch)

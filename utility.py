@@ -66,7 +66,7 @@ class Master(object):
         self.update_camera()
         self.threat.update()
         self.radar.update()
-        self.mousepip.update()
+        self.pip.update()
 
     def register_guns(self, guns):
         for gun in guns:
