@@ -49,7 +49,7 @@ class Radar(object):
         self.red_dot = pyglet.image.create(5, 5, red_sprite)
 
         self.master = master
-        self.radar_range = 600
+        self.radar_range = 1000
         self.radar_scale = self.radar_range / abs(self.x_mid - self.x_min)
         self.radar_player = pyglet.sprite.Sprite(self.blue_dot,
             self.x_mid, self.y_mid, batch=gfx_batch)
@@ -114,7 +114,7 @@ class Resources(object):
         self.update_timer()
         self.update_labs()
 
-class MousePip(object):
+class Pip(object):  # Personal Information Panel (PIP)
     def __init__(self, master):
         self.master = master
         self.black_sprite = pyglet.image.SolidColorImagePattern(color=(0, 0, 0, 150))
@@ -202,7 +202,7 @@ master.radar = Radar(master)
 master.threat = Threat(master)
 master.spriteeffect = SpriteEffect(master)
 master.player = Player(master, base=player_base)
-master.pip = MousePip(master)
+master.pip = Pip(master)
 
 master.home = pyglet.sprite.Sprite(load_image('home.png'),
             window_width_half, window_height_half, batch=gfx_batch)

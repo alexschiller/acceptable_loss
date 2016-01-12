@@ -54,47 +54,34 @@ class Friend(Character):
         self.sprite.x, self.sprite.y, 10)
         self.sprite.x -= ret[0] * 2
         self.sprite.y -= ret[1] * 2
-        # self.player.sprite.x += ret[0]
-        # self.player.sprite.y += ret[1]
 
-    def select_target(self):
+    def update_target(self):
         try:
             min_dist = float("inf")
-            coord = (0, 0, 0)
             x1 = self.sprite.x
             y1 = self.sprite.y
-            if len(self.master.enemies) == 0:
-                return False
+            self.target = None
             for e in self.master.enemies:
                 dist = abs(math.hypot(x1 - e.sprite.x, y1 - e.sprite.y))
                 if dist < min_dist:
                     min_dist = dist
-                    coord = (e.sprite.x, e.sprite.y, dist)
-            return coord
+                    self.target = e
         except:
-            return False
+            self.target = None
 
     def update(self):
         try:
             self.check_object_collision(self.closest_object())
         except:
             pass
-        x_dist = self.player.sprite.x - float(self.sprite.x)
-        y_dist = self.player.sprite.y - float(self.sprite.y)
-        if abs(y_dist) + abs(x_dist) > 50:
-            self.sprite.rotation = (math.degrees(math.atan2(y_dist, x_dist)) * -1) + 90
 
-            ret = calc_vel_xy(self.player.sprite.x, self.player.sprite.y,
-                self.sprite.x, self.sprite.y, self.speed)
-            self.sprite.x += ret[0]
-            self.sprite.y += ret[1]
-        if random.randint(0, 100) > 50:
-            loc = self.select_target()
-            self.shoot(loc[0], loc[1])
+        if math.hypot(abs(self.sprite.x - self.master.player.sprite.x), abs(self.sprite.y - self.master.player.sprite.y)) < self.gun.travel: # noqa
+            self.shoot(self.player.sprite.x, self.player.sprite.y, self.player)
+
         if collide(self.collision, self.player.collision):
             self.on_collide()
-        if self.health <= 0:
-            self.on_death()
+
+        self.required_updates()
 
 
 # class Carpet(Friend):
@@ -129,7 +116,7 @@ class Cannon(Friend):
     def __init__(self, *args, **kwargs):
         super(Cannon, self).__init__(*args, **kwargs)
 
-    def move(self):
+    def update_movement(self):
         pass
 
     def on_collide(self):
@@ -144,15 +131,8 @@ class Cannon(Friend):
             self.check_object_collision(self.closest_object())
         except:
             pass
-        loc = self.select_target()
-        if loc:
-            if loc[2] < self.gun.travel:
-                x_dist = loc[0] - float(self.sprite.x)
-                y_dist = loc[1] - float(self.sprite.y)
-                self.sprite.rotation = (math.degrees(math.atan2(y_dist, x_dist)) * -1) + 90 # noqa
-                self.shoot(loc[0], loc[1])
 
         if collide(self.collision, self.player.collision):
             self.on_collide()
-        if self.health <= 0:
-            self.on_death()
+
+        self.required_updates()

@@ -11,24 +11,60 @@ class Character(object):
         self.spriteeffect = master.spriteeffect
         self.enemies = master.enemies
         self.player = master.player
+        self.health_bar = None
+        self.target = None
 
-    def moveable(self):
-        return False
+    def update_health_bar(self):
+        hw = int(self.sprite.width * 2 * self.health / self.max_health)
+        if hw > 0:
+            self.health_bar = pyglet.sprite.Sprite(
+                pyglet.image.create(hw, 2, red_sprite),
+                self.sprite.x - self.sprite.width,
+                self.sprite.y + self.sprite.height, batch=BarBatch)
+        else:
+            self.health_bar = None
 
     def move(self, x, y):
         self.sprite.x += (self.speed * x)
         self.sprite.y += (self.speed * y)
 
-    def shoot(self, target_x, target_y):
-        pass
-        # self.gun.fire(self.sprite.x, self.sprite.y, target_x, target_y)
+    def attack(self):
+        if self.target:
+            self.gun.fire(self.sprite.x, self.sprite.y, self.target.sprite.x, self.target.sprite.y, self.target) # noqa            
+
+    def update_rotation(self):
+        if self.target:
+            dist_x = self.target.sprite.x - float(self.sprite.x)
+            dist_y = self.target.sprite.y - float(self.sprite.y)
+            self.sprite.rotation = (math.degrees(math.atan2(dist_y, dist_x)) * -1) + 90
+
+    def update_movement(self):
+        if self.target:
+            ret = calc_vel_xy(self.target.sprite.x, self.target.sprite.y,
+                self.sprite.x, self.sprite.y, self.speed)
+            self.sprite.x += ret[0]
+            self.sprite.y += ret[1]
+
+    def update_attack(self):
+        if math.hypot(abs(self.sprite.x - self.target.sprite.x), abs(self.sprite.y - self.target.sprite.y)) < self.gun.travel: # noqa
+            self.attack()
+
+    def death_check(self):
+        if self.health <= 0:
+            self.on_death()
+
+    def required_updates(self):
+        if not self.target:  # This should probably be checked more often
+            self.update_target()
+        self.update_movement()
+        self.update_rotation()
+        self.update_attack()
+        self.death_check()
 
     def on_hit(self, bullet):
         self.health -= bullet.damage
+        self.update_health_bar()
         self.spriteeffect.blood(bullet.sprite.x, bullet.sprite.y, 3, 5)
-        impact = bullet.knockback / self.kbr
-        self.sprite.x += bullet.vel_x * impact
-        self.sprite.y += bullet.vel_y * impact
 
     def closest_object(self):
         closest = None
