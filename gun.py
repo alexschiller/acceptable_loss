@@ -16,12 +16,19 @@ class Bullet(object):
         self.velocity = self.base['velocity']
         self.accuracy = self.base['accuracy']
         self.knockback = self.base['knockback']
+        self.crit_chance = self.base['crit_chance']
+        self.crit_multiplier = self.base['crit_multiplier']
         self.enemy_range = enemy_range
         self.enemy = enemy
         self.travelled = 0
 
         # Calculate shit here
+        self.crit = False
         self.hit = random.randint(0, 100) < self.accuracy
+
+        if self.hit and random.randint(0, 100) < self.crit_chance:
+            self.crit = True
+            self.damage = self.damage * self.crit_multiplier
 
         self.sprite = pyglet.sprite.Sprite(base['image'],
             start_x, start_y, batch=BulletBatch)
@@ -79,6 +86,13 @@ class Gun(object):
 
     def delete_bullet(self, bullet):
         try:
+            if bullet.crit:
+                self.master.spriteeffect.bullet_crit(bullet.sprite.x, bullet.sprite.y, bullet.damage) # noqa
+            elif bullet.hit:
+                self.master.spriteeffect.bullet_hit(bullet.sprite.x, bullet.sprite.y, bullet.damage) # noqa
+            else:
+                self.master.spriteeffect.bullet_miss(bullet.sprite.x, bullet.sprite.y, 'miss') # noqa
+
             bullet.sprite.delete()
             self.bullets.remove(bullet)
         except:
@@ -112,6 +126,8 @@ red_laser = {
     'accuracy': 85,
     'rof': 10,
     'knockback': 1,
+    'crit_chance': 5,
+    'crit_multiplier': 2,
     'image': load_image('red_laser.png'),
     'gun_fire_sound': load_sound('laser.wav'),
     'on_hit_sound': load_sound('on_hit.wav'),
@@ -124,6 +140,8 @@ missile = {
     'accuracy': 95,
     'rof': 1,
     'knockback': 1,
+    'crit_chance': 5,
+    'crit_multiplier': 2,
     'image': load_image('missile.png'),
     'gun_fire_sound': load_sound('laser.wav'),
     'on_hit_sound': load_sound('on_hit.wav'),

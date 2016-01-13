@@ -54,11 +54,13 @@ class Character(object):
             self.on_death()
 
     def required_updates(self):
-        if not self.target:  # This should probably be checked more often
+        if self.target:  # This should probably be checked more often
+            self.update_attack()
+            self.update_movement()
+        else:
             self.update_target()
-        self.update_movement()
         self.update_rotation()
-        self.update_attack()
+
         self.death_check()
 
     def on_hit(self, bullet):

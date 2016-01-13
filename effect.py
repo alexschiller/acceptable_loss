@@ -20,6 +20,14 @@ class Effect(object):
         self.travel = travel
         self.travelled = 0
 
+class Text(object):
+    def __init__(self, start_x, start_y, text, f_color, f_size): # noqa
+
+        self.sprite = pyglet.text.Label(text, font_name='Sans Serif', color=f_color, font_size=f_size, x=start_x, y=start_y, anchor_x='left',anchor_y='center', batch=gfx_batch) # noqa        
+        self.vel_x = random.randint(-2, 2)
+        self.vel_y = random.randint(1, 2)
+        self.travel = abs(self.vel_x) + abs(self.vel_y) * 30
+        self.travelled = 0
 
 class SpriteEffect(object):
     def __init__(self, master):
@@ -30,11 +38,34 @@ class SpriteEffect(object):
         for effect in self.effects:
             effect.sprite.x += effect.vel_x
             effect.sprite.y += effect.vel_y
-            effect.sprite.rotation += random.randint(0, 5)
             effect.travelled = effect.travelled + abs(effect.vel_x) + abs(effect.vel_y)
             if effect.travelled > effect.travel:
                 effect.sprite.delete()
                 self.effects.remove(effect)
+
+    def bullet_hit(self, start_x, start_y, text):
+        self.effects.append(
+            Text(start_x=start_x, start_y=start_y,
+                text=str(text),
+                f_color=(150, 0, 0, 255),
+                f_size=8)
+        )
+
+    def bullet_crit(self, start_x, start_y, text):
+        self.effects.append(
+            Text(start_x=start_x, start_y=start_y,
+                text=str(text),
+                f_color=(255, 0, 0, 255),
+                f_size=14)
+        )
+
+    def bullet_miss(self, start_x, start_y, text):
+        self.effects.append(
+            Text(start_x=start_x, start_y=start_y,
+                text='miss',
+                f_color=(255, 255, 255, 155),
+                f_size=8)
+        )
 
     def heal(self, start_x, start_y, target_x, target_y, travel=50):
         ret = calc_vel_xy(target_x, target_y, start_x, start_y, 10)

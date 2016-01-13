@@ -75,9 +75,6 @@ class Friend(Character):
         except:
             pass
 
-        if math.hypot(abs(self.sprite.x - self.master.player.sprite.x), abs(self.sprite.y - self.master.player.sprite.y)) < self.gun.travel: # noqa
-            self.shoot(self.player.sprite.x, self.player.sprite.y, self.player)
-
         if collide(self.collision, self.player.collision):
             self.on_collide()
 

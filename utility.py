@@ -33,35 +33,21 @@ class Master(object):
         self.threat = None
 
     def update(self):
-        try:
-            self.player.update()
-        except:
-            pass
 
         for e in self.enemies:
-            try:
-                e.update()
-            except:
-                pass
+            e.update()
+
         for f in self.friends:
-            try:
-                f.update()
-            except:
-                pass
+            f.update()
+
         for g in self.guns:
-            try:
-                g.update()
-            except:
-                pass
-        try:
-            self.spriteeffect.update()
-        except:
-            pass
-        try:
-            for b in self.buildings:
-                b.update()
-        except:
-            pass
+            g.update()
+
+        for b in self.buildings:
+            b.update()
+
+        self.player.update()
+        self.spriteeffect.update()
         self.resources.update()
         self.update_camera()
         self.threat.update()
