@@ -11,7 +11,7 @@ player_base = {
     'kbr': 50,
     'health': 100,
     'speed': 3,
-    'guns': [Gun(master, base=red_laser)],
+    'guns': [AOEChanceGun(master, base=red_laser)],
     'slot_one': AOEGun(master, base=rocket),
     'slot_two': Gun(master, base=sniper),
 }
