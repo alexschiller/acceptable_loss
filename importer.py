@@ -117,25 +117,25 @@ class Resources(object):
 class Pip(object):  # Personal Information Panel (PIP)
     def __init__(self, master):
         self.master = master
+        self.player = master.player
         self.black_sprite = pyglet.image.SolidColorImagePattern(color=(0, 0, 0, 150))
         self.black_dot = pyglet.image.create(10, 10, self.black_sprite)
         self.sprite = pyglet.sprite.Sprite(self.black_dot,
                     0, 0, batch=gfx_batch)
         self.collision = SpriteCollision(self.sprite)
 
-        self.target = None
         self.marker = []
 
     def update(self):
         self.marker = []
-        if self.target:
+        if self.player.target:
             try:
-                x_dist = self.target.sprite.x - float(self.master.player.sprite.x)
-                y_dist = self.target.sprite.y - float(self.master.player.sprite.y)
-                self.build_target(self.target)
-                master.player.shoot(self.target.sprite.x, self.target.sprite.y)
+                x_dist = self.player.target.sprite.x - float(self.master.player.sprite.x)
+                y_dist = self.player.target.sprite.y - float(self.master.player.sprite.y)
+                self.build_target(self.player.target)
+                master.player.attack()
             except:
-                self.target = None
+                self.player.target = None
         else:
             x_dist = self.sprite.x - float(self.master.player.sprite.x)
             y_dist = self.sprite.y - float(self.master.player.sprite.y)
@@ -153,15 +153,15 @@ class Pip(object):  # Personal Information Panel (PIP)
                 dist = abs(math.hypot(x1 - e.sprite.x, y1 - e.sprite.y))
                 if dist < min_dist:
                     min_dist = dist
-                    self.target = e
+                    self.player.target = e
         except:
-            self.target = None
+            self.player.target = None
 
     def build_target(self, e):
         # frame = 10
         bar = 2
         # half = 5
-        self.target = e
+        self.player.target = e
         h = e.sprite.height
         w = e.sprite.width
         v = max(h, w)

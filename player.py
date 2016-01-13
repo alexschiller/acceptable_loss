@@ -12,6 +12,7 @@ player_base = {
     'health': 100,
     'speed': 3,
     'guns': [Gun(master, base=red_laser)],
+    'slot_one': Gun(master, base=sniper),
 }
 
 
@@ -27,9 +28,16 @@ class Player(Character):
 
         self.max_shield = 10
         self.shield = 10
+        self.slot_one = kwargs['base']['slot_one']
+        self.master.register_guns([self.slot_one])
 
-    def shoot(self, target_x, target_y):
-        self.gun.fire(self.sprite.x, self.sprite.y, target_x, target_y, self.master.pip.target) # noqa      
+    def slot_one_fire(self):
+        if self.target:
+            self.slot_one.fire(self.sprite.x, self.sprite.y, self.target.sprite.x, self.target.sprite.y, self.target) # noqa
+
+    def attack(self):
+        if self.target:
+            self.gun.fire(self.sprite.x, self.sprite.y, self.target.sprite.x, self.target.sprite.y, self.target) # noqa
 
     def on_hit(self, bullet):
         self.shield -= bullet.damage

@@ -121,7 +121,7 @@ class Gun(object):
 # Sample guns
 red_laser = {
     'damage': 1,
-    'travel': 500,
+    'travel': 300,
     'velocity': 25,
     'accuracy': 85,
     'rof': 10,
@@ -132,6 +132,21 @@ red_laser = {
     'gun_fire_sound': load_sound('laser.wav'),
     'on_hit_sound': load_sound('on_hit.wav'),
 }
+
+sniper = {
+    'damage': 10,
+    'travel': 800,
+    'velocity': 100,
+    'accuracy': 95,
+    'rof': 1,
+    'knockback': 50,
+    'crit_chance': 50,
+    'crit_multiplier': 3,
+    'image': load_image('snipe.png'),
+    'gun_fire_sound': load_sound('laser.wav'),
+    'on_hit_sound': load_sound('on_hit.wav'),
+}
+
 
 missile = {
     'damage': 3,
