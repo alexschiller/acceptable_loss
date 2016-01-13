@@ -60,7 +60,7 @@ class SpriteEffect(object):
         self.effects.append(
             Text(start_x=start_x, start_y=start_y,
                 text=str(text),
-                f_color=(150, 0, 0, 255),
+                f_color=(255, 255, 255, 255),
                 f_size=8)
         )
 

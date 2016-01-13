@@ -127,6 +127,11 @@ class AOEGun(Gun):
 
         self.display_bullet_outcome(bullet, bullet.sprite.x, bullet.sprite.y)
         self.explode(bullet)
+        try:
+            bullet.sprite.delete()
+            self.bullets.remove(bullet)
+        except:
+            pass
 
     def explode(self, bullet):
         if not bullet.hit:
@@ -139,13 +144,8 @@ class AOEGun(Gun):
         for e in self.master.enemies:
             if abs(math.hypot(b_x - e.sprite.x, b_y - e.sprite.y)) < 100:
                 self.display_bullet_outcome(bullet, e.sprite.x, e.sprite.y)
-
                 e.on_aoe_hit(bullet.damage)
-        try:
-            bullet.sprite.delete()
-            self.bullets.remove(bullet)
-        except:
-            pass
+
 
 # Sample guns
 red_laser = {
