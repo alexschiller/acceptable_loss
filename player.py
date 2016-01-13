@@ -12,7 +12,8 @@ player_base = {
     'health': 100,
     'speed': 3,
     'guns': [Gun(master, base=red_laser)],
-    'slot_one': Gun(master, base=sniper),
+    'slot_one': AOEGun(master, base=rocket),
+    'slot_two': Gun(master, base=sniper),
 }
 
 
@@ -30,11 +31,16 @@ class Player(Character):
         self.shield = 10
         self.blood_color = (30, 30, 30, 255)
         self.slot_one = kwargs['base']['slot_one']
-        self.master.register_guns([self.slot_one])
+        self.slot_two = kwargs['base']['slot_two']
+        self.master.register_guns([self.slot_one, self.slot_two])
 
     def slot_one_fire(self):
         if self.target:
             self.slot_one.fire(self.sprite.x, self.sprite.y, self.target.sprite.x, self.target.sprite.y, self.target) # noqa
+
+    def slot_two_fire(self):
+        if self.target:
+            self.slot_two.fire(self.sprite.x, self.sprite.y, self.target.sprite.x, self.target.sprite.y, self.target) # noqa            
 
     def attack(self):
         if self.target:

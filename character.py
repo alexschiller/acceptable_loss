@@ -65,10 +65,17 @@ class Character(object):
         self.death_check()
 
     def on_hit(self, bullet):
-        self.health -= bullet.damage
-        self.update_health_bar()
-        splatter = min(max(int(bullet.damage / self.max_health) * 10, 1), 50)
+        self.update_health(bullet.damage)
+
+        splatter = min(max(int(bullet.damage / self.max_health) * 10, 3), 50)
         self.spriteeffect.bullet_wound(bullet.vel_x, bullet.vel_y, self.sprite.x, self.sprite.y, splatter, self.blood_color) # noqa
+
+    def on_aoe_hit(self, damage):
+        self.update_health(damage)
+
+    def update_health(self, damage):
+        self.health -= damage
+        self.update_health_bar()
 
     def closest_object(self):
         closest = None

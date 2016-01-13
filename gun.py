@@ -3,7 +3,7 @@ from collide import * # noqa
 import random
 from utility import * # noqa
 import pyglet
-# import math
+import math
 # import itertools
 from collide import * # noqa
 
@@ -86,17 +86,19 @@ class Gun(object):
 
     def delete_bullet(self, bullet):
         try:
-            if bullet.crit:
-                self.master.spriteeffect.bullet_crit(bullet.sprite.x, bullet.sprite.y, bullet.damage) # noqa
-            elif bullet.hit:
-                self.master.spriteeffect.bullet_hit(bullet.sprite.x, bullet.sprite.y, bullet.damage) # noqa
-            else:
-                self.master.spriteeffect.bullet_miss(bullet.sprite.x, bullet.sprite.y, 'miss') # noqa
-
+            self.display_bullet_outcome(bullet, bullet.sprite.x, bullet.sprite.y)
             bullet.sprite.delete()
             self.bullets.remove(bullet)
         except:
             pass
+
+    def display_bullet_outcome(self, bullet, x, y):
+        if bullet.crit:
+            self.master.spriteeffect.bullet_crit(x, y, bullet.damage) # noqa
+        elif bullet.hit:
+            self.master.spriteeffect.bullet_hit(x, y, bullet.damage) # noqa
+        else:
+            self.master.spriteeffect.bullet_miss(x, y, 'miss') # noqa
 
     def update_rof(self):
         if self.rofl < self.rof:
@@ -117,6 +119,33 @@ class Gun(object):
         self.update_rof()
         self.update_bullets()
 
+class AOEGun(Gun):
+    def __init__(self, *args, **kwargs):
+        super(AOEGun, self).__init__(*args, **kwargs)
+
+    def delete_bullet(self, bullet):
+
+        self.display_bullet_outcome(bullet, bullet.sprite.x, bullet.sprite.y)
+        self.explode(bullet)
+
+    def explode(self, bullet):
+        if not bullet.hit:
+            bullet.hit = True
+
+        b_x = bullet.sprite.x
+        b_y = bullet.sprite.y
+        self.master.spriteeffect.explosion(b_x, b_y)
+
+        for e in self.master.enemies:
+            if abs(math.hypot(b_x - e.sprite.x, b_y - e.sprite.y)) < 100:
+                self.display_bullet_outcome(bullet, e.sprite.x, e.sprite.y)
+
+                e.on_aoe_hit(bullet.damage)
+        try:
+            bullet.sprite.delete()
+            self.bullets.remove(bullet)
+        except:
+            pass
 
 # Sample guns
 red_laser = {
@@ -151,10 +180,25 @@ sniper = {
 
 
 missile = {
-    'damage': 3,
+    'damage': 2,
     'travel': 400,
     'velocity': 25,
     'accuracy': 95,
+    'rof': 1,
+    'knockback': 1,
+    'crit_chance': 5,
+    'crit_multiplier': 2,
+    'image': load_image('missile.png'),
+    'gun_fire_sound': load_sound('laser.wav'),
+    'on_hit_sound': load_sound('on_hit.wav'),
+    'effects': [],
+}
+
+rocket = {
+    'damage': 3,
+    'travel': 400,
+    'velocity': 25,
+    'accuracy': 0,
     'rof': 1,
     'knockback': 1,
     'crit_chance': 5,
