@@ -131,20 +131,22 @@ red_laser = {
     'image': load_image('red_laser.png'),
     'gun_fire_sound': load_sound('laser.wav'),
     'on_hit_sound': load_sound('on_hit.wav'),
+    'effects': [],
 }
 
 sniper = {
-    'damage': 10,
+    'damage': 5,
     'travel': 800,
     'velocity': 100,
     'accuracy': 95,
     'rof': 1,
     'knockback': 50,
     'crit_chance': 50,
-    'crit_multiplier': 3,
+    'crit_multiplier': 6,
     'image': load_image('snipe.png'),
     'gun_fire_sound': load_sound('laser.wav'),
     'on_hit_sound': load_sound('on_hit.wav'),
+    'effects': [],
 }
 
 
@@ -160,4 +162,5 @@ missile = {
     'image': load_image('missile.png'),
     'gun_fire_sound': load_sound('laser.wav'),
     'on_hit_sound': load_sound('on_hit.wav'),
+    'effects': [],
 }

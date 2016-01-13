@@ -39,9 +39,22 @@ class SpriteEffect(object):
             effect.sprite.x += effect.vel_x
             effect.sprite.y += effect.vel_y
             effect.travelled = effect.travelled + abs(effect.vel_x) + abs(effect.vel_y)
-            if effect.travelled > effect.travel:
+            if effect.travelled >= effect.travel:
                 effect.sprite.delete()
                 self.effects.remove(effect)
+
+    def bullet_wound(self, vel_x, vel_y, start_x, start_y, sprites, ecolor):
+        for e in range(sprites):
+            e_vel_x = vel_x / 8 + random.randint(-3, 3)
+            e_vel_y = vel_y / 8 + random.randint(-3, 3)
+            self.effects.append(
+                Effect(start_x=start_x, start_y=start_y,
+                    vel_x=e_vel_x,
+                    vel_y=e_vel_y,
+                    travel=(abs(e_vel_x) + abs(e_vel_y)) * random.randint(5, 10),
+                    ecolor=ecolor,
+                    esizex=random.randint(1, 4), esizey=random.randint(1, 4),)
+            )
 
     def bullet_hit(self, start_x, start_y, text):
         self.effects.append(
@@ -67,52 +80,6 @@ class SpriteEffect(object):
                 f_size=8)
         )
 
-    def heal(self, start_x, start_y, target_x, target_y, travel=50):
-        ret = calc_vel_xy(target_x, target_y, start_x, start_y, 10)
-        for e in range(3):
-            self.effects.append(
-                Effect(start_x=start_x, start_y=start_y,
-                    vel_x=ret[0], vel_y=ret[1],
-                    travel=travel,
-                    ecolor=[random.randint(100, 255), random.randint(0, 55),
-                        random.randint(0, 55)],
-                    esizex=random.randint(1, 10), esizey=random.randint(1, 10))
-            )
-
-    def explosion(self, start_x, start_y, size_min=10, size_max=10):
-        for e in range(random.randint(size_min, size_max)):
-            self.effects.append(
-                Effect(start_x=start_x, start_y=start_y,
-                    vel_x=random.randint(-20, 20), vel_y=random.randint(-20, 20),
-                    travel=random.randint(30, 50),
-                    ecolor=[random.randint(0, 55), random.randint(100, 255),
-                        random.randint(0, 55)],
-                    esizex=random.randint(1, 10), esizey=random.randint(1, 10))
-            )
-
-    def blood(self, start_x, start_y, size_min=1, size_max=5):
-        for e in range(random.randint(size_min, size_max)):
-            self.effects.append(
-                Effect(start_x=start_x, start_y=start_y,
-                    vel_x=random.randint(-20, 20), vel_y=random.randint(-20, 20),
-                    travel=15,
-                    ecolor=[255, 10, 10],
-                    esizex=4, esizey=4,)
-            )
-
-    def smoke(self, start_x, start_y, target_x, target_y):
-        ret = calc_vel_xy(target_x, target_y, start_x, start_y, 5)
-        for e in range(20):
-            color = random.randint(0, 255)
-            self.effects.append(
-                Effect(start_x=start_x, start_y=start_y,
-                    vel_x=ret[0] + random.randint(-2, 2),
-                    vel_y=ret[1] + random.randint(-2, 2),
-                    travel=100 + random.randint(25, 50),
-                    ecolor=[color, color, color],
-                    esizex=random.randint(1, 10), esizey=random.randint(1, 10))
-            )
-
     def teleport(self, start_x, start_y, size_min=10, size_max=10):
         play_sound(load_sound('teleport.wav'))
         for e in range(random.randint(size_min, size_max)):
@@ -124,3 +91,49 @@ class SpriteEffect(object):
                         random.randint(100, 255)],
                     esizex=random.randint(1, 10), esizey=random.randint(1, 10))
             )
+
+    # def heal(self, start_x, start_y, target_x, target_y, travel=50):
+    #     ret = calc_vel_xy(target_x, target_y, start_x, start_y, 10)
+    #     for e in range(3):
+    #         self.effects.append(
+    #             Effect(start_x=start_x, start_y=start_y,
+    #                 vel_x=ret[0], vel_y=ret[1],
+    #                 travel=travel,
+    #                 ecolor=[random.randint(100, 255), random.randint(0, 55),
+    #                     random.randint(0, 55)],
+    #                 esizex=random.randint(1, 10), esizey=random.randint(1, 10))
+    #         )
+
+    # def explosion(self, start_x, start_y, size_min=10, size_max=10):
+    #     for e in range(random.randint(size_min, size_max)):
+    #         self.effects.append(
+    #             Effect(start_x=start_x, start_y=start_y,
+    #                 vel_x=random.randint(-20, 20), vel_y=random.randint(-20, 20),
+    #                 travel=random.randint(30, 50),
+    #                 ecolor=[random.randint(0, 55), random.randint(100, 255),
+    #                     random.randint(0, 55)],
+    #                 esizex=random.randint(1, 10), esizey=random.randint(1, 10))
+    #         )
+
+    # def blood(self, start_x, start_y, size_min=1, size_max=5):
+    #     for e in range(random.randint(size_min, size_max)):
+    #         self.effects.append(
+    #             Effect(start_x=start_x, start_y=start_y,
+    #                 vel_x=random.randint(-20, 20), vel_y=random.randint(-20, 20),
+    #                 travel=15,
+    #                 ecolor=[255, 10, 10],
+    #                 esizex=4, esizey=4,)
+    #         )
+
+    # def smoke(self, start_x, start_y, target_x, target_y):
+    #     ret = calc_vel_xy(target_x, target_y, start_x, start_y, 5)
+    #     for e in range(20):
+    #         color = random.randint(0, 255)
+    #         self.effects.append(
+    #             Effect(start_x=start_x, start_y=start_y,
+    #                 vel_x=ret[0] + random.randint(-2, 2),
+    #                 vel_y=ret[1] + random.randint(-2, 2),
+    #                 travel=100 + random.randint(25, 50),
+    #                 ecolor=[color, color, color],
+    #                 esizex=random.randint(1, 10), esizey=random.randint(1, 10))
+    #         )

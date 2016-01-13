@@ -35,7 +35,7 @@ class Enemy(Character):
     def on_death(self):
         # For some reason the auto append new enemy is borked
         # self.enemy.append(Enemy(self.master, base=gen_soldier_base()))
-        self.spriteeffect.blood(self.sprite.x, self.sprite.y, 30, 50)
+        # self.spriteeffect.blood(self.sprite.x, self.sprite.y, 30, 50)
         try:
             self.sprite.delete()
             self.enemies.remove(self)

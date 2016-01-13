@@ -28,6 +28,7 @@ class Player(Character):
 
         self.max_shield = 10
         self.shield = 10
+        self.blood_color = (30, 30, 30, 255)
         self.slot_one = kwargs['base']['slot_one']
         self.master.register_guns([self.slot_one])
 
@@ -44,7 +45,10 @@ class Player(Character):
         if self.shield < 0:
             self.health += self.shield
             self.shield = 0
-        self.spriteeffect.blood(bullet.sprite.x, bullet.sprite.y, 3, 5)
+
+        splatter = min(max(int(bullet.damage / self.max_health) * 10, 3), 50)
+        self.spriteeffect.bullet_wound(bullet.vel_x, bullet.vel_y, self.sprite.x, self.sprite.y, splatter, self.blood_color) # noqa
+
         impact = bullet.knockback / self.kbr
         self.master.move_player(bullet.vel_x * impact, bullet.vel_y * impact)
 

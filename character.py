@@ -13,6 +13,7 @@ class Character(object):
         self.player = master.player
         self.health_bar = None
         self.target = None
+        self.blood_color = [138, 7, 7, 255]
 
     def update_health_bar(self):
         hw = int(self.sprite.width * 2 * self.health / self.max_health)
@@ -66,7 +67,8 @@ class Character(object):
     def on_hit(self, bullet):
         self.health -= bullet.damage
         self.update_health_bar()
-        self.spriteeffect.blood(bullet.sprite.x, bullet.sprite.y, 3, 5)
+        splatter = min(max(int(bullet.damage / self.max_health) * 10, 1), 50)
+        self.spriteeffect.bullet_wound(bullet.vel_x, bullet.vel_y, self.sprite.x, self.sprite.y, splatter, self.blood_color) # noqa
 
     def closest_object(self):
         closest = None
