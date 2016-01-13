@@ -32,10 +32,14 @@ class Enemy(Character):
         # enter effect
         self.spriteeffect.teleport(self.sprite.x, self.sprite.y, 5, 5)
 
+    def generate_loot(self):
+        return {'resources': {'mon': random.randint(1, 5), 'sci': random.randint(1, 5)}, 'items': []} # noqa
+
     def on_death(self):
         # For some reason the auto append new enemy is borked
         # self.enemy.append(Enemy(self.master, base=gen_soldier_base()))
         # self.spriteeffect.blood(self.sprite.x, self.sprite.y, 30, 50)
+        self.master.loot.pack_package(self.generate_loot(), self.sprite.x, self.sprite.y)
         try:
             self.sprite.delete()
             self.enemies.remove(self)

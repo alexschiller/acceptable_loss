@@ -6,6 +6,7 @@ from gun import * # noqa
 from player import * # noqa
 from utility import * # noqa
 from friend import * # noqa
+from loot import * # noqa
 import math
 
 class Threat(object):
@@ -103,6 +104,9 @@ class Resources(object):
         self.mon += self.mon_ps
         self.update_labs()
 
+    def add_mon(self, amount):
+        self.mon += amount
+
     def update_labs(self):
         self.foo_lab.text = 'F: ' + str(round(self.foo, 1))
         self.pow_lab.text = 'P: ' + str(round(self.pow, 1))
@@ -197,6 +201,7 @@ class Pip(object):  # Personal Information Panel (PIP)
                 self.build_target(e)
                 break
 
+master.loot = Loot(master)
 master.resources = Resources(master)
 master.radar = Radar(master)
 master.threat = Threat(master)

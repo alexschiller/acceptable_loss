@@ -31,6 +31,7 @@ class Master(object):
         self.radar = None
         self.home = None
         self.threat = None
+        self.loot = None
 
     def update(self):
 
@@ -53,6 +54,7 @@ class Master(object):
         self.threat.update()
         self.radar.update()
         self.pip.update()
+        self.loot.update()
 
     def register_guns(self, guns):
         for gun in guns:
@@ -88,6 +90,13 @@ class Master(object):
         self.player.sprite.y += my
         self.home.x += mx
         self.home.y += my
+        for p in self.loot.current_loot:
+            p.sprite.x += mx
+            p.sprite.y += my
+
+        for c in self.loot.moving_loot:
+            c.sprite.x += mx
+            c.sprite.y += my
 
         for e in self.enemies:
             e.sprite.x += mx
