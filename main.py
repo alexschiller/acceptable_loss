@@ -194,13 +194,13 @@ class MainState(object):
         Buildmenu.on_mouse_press(x, y, 1)
 
     def on_mouse_press(self, x, y, button, modifiers):
-        if master.player.shoot(mouse_position[0], mouse_position[1]): # noqa
-            ret = calc_vel_xy(
-                master.player.sprite.x, master.player.sprite.y,
-                mouse_position[0], mouse_position[1], master.player.gun.base['recoil']
-            ) # noqa
-            master.player.sprite.x += ret[0]
-        master.player.sprite.y += ret[1]
+        # if master.player.shoot(mouse_position[0], mouse_position[1]): # noqa
+        #     ret = calc_vel_xy(
+        #         master.player.sprite.x, master.player.sprite.y,
+        #         mouse_position[0], mouse_position[1], master.player.gun.base['recoil']
+        #     ) # noqa
+        #     master.player.sprite.x += ret[0]
+        # master.player.sprite.y += ret[1]
         Buildmenu.on_mouse_press(x, y, 0)
 
     def on_mouse_motion(self, x, y, dx, dy):
@@ -218,15 +218,15 @@ class MainState(object):
         y_dist = y - float(master.player.sprite.y)
 
         deg = (math.degrees(math.atan2(y_dist, x_dist)) * -1) + 90
-        if master.player.shoot(mouse_position[0], mouse_position[1]): # noqa
-            ret = calc_vel_xy(
-                master.player.sprite.x, master.player.sprite.y,
-                mouse_position[0], mouse_position[1],
-                master.player.gun.base['recoil']
-            )
-            print ret
-            master.player.sprite.x += ret[0]
-            master.player.sprite.y += ret[1]
+        # if master.player.shoot(mouse_position[0], mouse_position[1]): # noqa
+        #     ret = calc_vel_xy(
+        #         master.player.sprite.x, master.player.sprite.y,
+        #         mouse_position[0], mouse_position[1],
+        #         master.player.gun.base['recoil']
+        #     )
+        #     print ret
+        #     master.player.sprite.x += ret[0]
+        #     master.player.sprite.y += ret[1]
         master.player.sprite.rotation = deg
 
     def on_key_press(self, ts):
@@ -344,14 +344,14 @@ class BuildState(MainState):
         # y_dist = y - float(master.player.sprite.y)
         master.update_button_image(x, y, dx, dy)
         # deg = (math.degrees(math.atan2(y_dist, x_dist)) * -1) + 90
-        if master.player.shoot(mouse_position[0], mouse_position[1]): # noqa
-            ret = calc_vel_xy(
-                master.player.sprite.x, master.player.sprite.y,
-                mouse_position[0], mouse_position[1],
-                master.player.gun.base['recoil']
-            )
-            master.player.sprite.x += ret[0]
-            master.player.sprite.y += ret[1]
+        # if master.player.shoot(mouse_position[0], mouse_position[1]): # noqa
+        #     ret = calc_vel_xy(
+        #         master.player.sprite.x, master.player.sprite.y,
+        #         mouse_position[0], mouse_position[1],
+        #         master.player.gun.base['recoil']
+        #     )
+        #     master.player.sprite.x += ret[0]
+        #     master.player.sprite.y += ret[1]
 
     def swap(self):
         states.swap('main')
