@@ -32,7 +32,8 @@ class Player(Character):
         self.blood_color = (30, 30, 30, 255)
         self.slot_one = kwargs['base']['slot_one']
         self.slot_two = kwargs['base']['slot_two']
-        self.master.register_guns([self.slot_one, self.slot_two])
+        self.guns = [self.slot_one, self.slot_two]
+        self.master.register_guns(self.guns)
 
     def slot_one_fire(self):
         if self.target:
@@ -58,10 +59,18 @@ class Player(Character):
         impact = bullet.knockback / self.kbr
         self.master.move_player(bullet.vel_x * impact, bullet.vel_y * impact)
 
+    def fire_gun(self, gunnum):
+        if self.target:
+            self.guns[gunnum](self.sprite.x, self.sprite.y, self.target.sprite.x, self.target.sprite.y, self.target) # noqa            
+
+    def add_gun(self, gun):
+        self.guns.append(gun)
+        self.master.register_guns(gun)
+
     def check_object_collision(self, o):
         if collide(self.collision, o.collision):
             ret = calc_vel_xy(self.sprite.x, self.sprite.y,
-            o.sprite.x, o.sprite.y, self.speed + 1)
+            o.sprite.x, o.sprite.y, self.speed + 1) # noqa
             self.master.move_player(ret[0], ret[1])
 
     def update(self):

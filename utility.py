@@ -129,6 +129,8 @@ BuildingBatch = pyglet.graphics.Batch()
 MenuBatch = pyglet.graphics.Batch()
 MenuBackground = pyglet.graphics.Batch()
 SelectBatch = pyglet.graphics.Batch()
+HotbarBatch = pyglet.graphics.Batch()
+HotbarButtonBatch= pyglet.graphics.Batch()
 
 # Manually Built Static Sprites
 green_sprite = pyglet.image.SolidColorImagePattern(color=(0, 255, 0, 150))
@@ -142,6 +144,8 @@ red_bar = pyglet.image.create(200, 10, red_sprite)
 
 menu_back = pyglet.image.create(200, window_height, pyglet.image.SolidColorImagePattern(color=(238, 232, 170, 150))) # noqa
 # Image loader function and dict
+hotbarback = pyglet.image.create(455, 50, pyglet.image.SolidColorImagePattern(color=(0, 0, 0, 150))) # noqa
+
 image_dict = {}
 
 

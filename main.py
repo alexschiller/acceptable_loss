@@ -10,6 +10,7 @@ from importer import * # noqa # Put random file imports here for now
 from button import Manager, Button,TextBox, DraggableButton, foo # noqa
 from placeable import * # noqa
 from menu import * # noqa
+from hotbar import * # noqa
 
 
 class ProtoKeyStateHandler(key.KeyStateHandler):
@@ -183,6 +184,7 @@ class MainState(object):
         BarBatch.draw()
         gfx_batch.draw()
         BuildingBatch.draw()
+        HotbarBatch.draw()
         states.current.test()
         Buildmenu.update()
         window.invalid = False

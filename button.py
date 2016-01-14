@@ -27,7 +27,7 @@ class Manager(object):
 
 
 class Button(object):
-    def __init__(self, upsprite, hoversprite, downsprite, x, y, callback=None, batch=None, label=None):
+    def __init__(self, upsprite, hoversprite, downsprite, x, y, callback=None, batch=None, label=None, args=None):
         self.func = callback
         self.upsprite = upsprite
         self.downsprite = downsprite
@@ -73,12 +73,15 @@ class Button(object):
                 self.trigger = 0
                 self.sprite.image = self.hoversprite
                 try:
-                    self.func()
+                    self.do_action()
                 except:
                     pass
             if mode == 0:
                 self.sprite.image = self.downsprite
                 self.trigger = 1
+
+    def do_action(self):
+        func()
 
 
 class DraggableButton(Button):
