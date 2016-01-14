@@ -15,7 +15,6 @@ class Bullet(object):
         self.travel = self.base['travel']
         self.velocity = self.base['velocity']
         self.accuracy = self.base['accuracy']
-        self.knockback = self.base['knockback']
         self.crit_chance = self.base['crit_chance']
         self.crit_multiplier = self.base['crit_multiplier']
         self.enemy_range = enemy_range
@@ -58,8 +57,8 @@ class Bullet(object):
 class Gun(object):
     def __init__(self, master, base): # noqa
         self.base = base
-        self.rof = 60 / self.base['rof']
-        self.rofl = 0
+        self.rof = 60.0 / self.base['rof']
+        self.rofl = 0.0
         self.bullets = []
         self.master = master
         self.travel = self.base['travel']
@@ -76,6 +75,7 @@ class Gun(object):
             play_sound(self.gun_fire_sound)
             self.bullets.append(Bullet(self.base, start_x, start_y, target_x, target_y, enemy_range, enemy)) # noqa
             return True
+        return False
 
     def can_fire(self, enemy_range):
         if enemy_range <= self.travel:
@@ -181,7 +181,6 @@ red_laser = {
     'velocity': 25,
     'accuracy': 85,
     'rof': 10,
-    'knockback': 1,
     'crit_chance': 5,
     'crit_multiplier': 2,
     'image': load_image('red_laser.png'),
@@ -190,15 +189,29 @@ red_laser = {
     'effects': [],
 }
 
-sniper = {
+pm_magnum = {
     'damage': 5,
+    'travel': 300,
+    'velocity': 80,
+    'accuracy': 95,
+    'rof': .5,
+    'crit_chance': 5,
+    'crit_multiplier': 2,
+    'image': load_image('pm_magnum.png'),
+    'gun_fire_sound': load_sound('laser.wav'),
+    'on_hit_sound': load_sound('on_hit.wav'),
+    'effects': [],
+}
+
+
+sniper = {
+    'damage': 8,
     'travel': 800,
     'velocity': 100,
     'accuracy': 95,
-    'rof': 1,
-    'knockback': 50,
-    'crit_chance': 50,
-    'crit_multiplier': 6,
+    'rof': .5,
+    'crit_chance': 10,
+    'crit_multiplier': 4,
     'image': load_image('snipe.png'),
     'gun_fire_sound': load_sound('laser.wav'),
     'on_hit_sound': load_sound('on_hit.wav'),
@@ -212,7 +225,6 @@ missile = {
     'velocity': 25,
     'accuracy': 95,
     'rof': 1,
-    'knockback': 1,
     'crit_chance': 5,
     'crit_multiplier': 2,
     'image': load_image('missile.png'),
@@ -227,7 +239,6 @@ rocket = {
     'velocity': 25,
     'accuracy': 0,
     'rof': 1,
-    'knockback': 1,
     'crit_chance': 5,
     'crit_multiplier': 2,
     'image': load_image('missile.png'),
