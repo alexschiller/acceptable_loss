@@ -146,6 +146,33 @@ class AOEGun(Gun):
                 self.display_bullet_outcome(bullet, e.sprite.x, e.sprite.y)
                 e.on_aoe_hit(bullet.damage)
 
+class AOEChanceGun(Gun):
+    def __init__(self, *args, **kwargs):
+        super(AOEChanceGun, self).__init__(*args, **kwargs)
+
+    def delete_bullet(self, bullet):
+
+        self.display_bullet_outcome(bullet, bullet.sprite.x, bullet.sprite.y)
+        if random.randint(0, 100) < 5:
+            self.explode(bullet)
+        try:
+            bullet.sprite.delete()
+            self.bullets.remove(bullet)
+        except:
+            pass
+
+    def explode(self, bullet):
+        if not bullet.hit:
+            bullet.hit = True
+
+        b_x = bullet.sprite.x
+        b_y = bullet.sprite.y
+        self.master.spriteeffect.explosion(b_x, b_y)
+
+        for e in self.master.enemies:
+            if abs(math.hypot(b_x - e.sprite.x, b_y - e.sprite.y)) < 50:
+                self.display_bullet_outcome(bullet, e.sprite.x, e.sprite.y)
+                e.on_aoe_hit(bullet.damage)
 
 # Sample guns
 red_laser = {
