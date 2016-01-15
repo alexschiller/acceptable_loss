@@ -7,6 +7,7 @@ from player import * # noqa
 from utility import * # noqa
 from friend import * # noqa
 from loot import * # noqa
+from plasmaslinger import * # noqa
 import math
 
 class Threat(object):
@@ -27,8 +28,8 @@ class Threat(object):
 
     def update(self):
         self.threat_timer()
-        if self.threat > 1:
-            self.threat -= 1
+        if self.threat > 2:
+            self.threat -= 2
             self.master.enemies.append(Soldier(self.master, base=gen_soldier_base())) # noqa
 
 class Radar(object):

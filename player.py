@@ -4,6 +4,7 @@ from utility import * # noqa
 from character import * # noqa
 import pyglet
 from gun import * # noqa
+from functools import partial
 
 player_base = {
     'sprite': load_image('dreadnaught.png'),
@@ -111,58 +112,3 @@ class Player(Character):
             pyglet.image.create(ew, 10, blue_sprite),
             20, window_height - 60, batch=BarBatch)
 
-class Plasmaslinger(Player):
-    def __init__(self, *args, **kwargs):
-        super(Plasmaslinger, self).__init__(*args, **kwargs)
-        self.plasma = 100
-        self.max_plasma = 100
-
-        self.vat = pyglet.sprite.Sprite(load_image('plasma_vat.png', anchor=False), window_width-472, 0, batch=gfx_batch),  # noqa         
-
-    def slot_one_fire(self):
-        if self.target:
-            if self.plasma >= 50:
-                if self.slot_one.fire(self.sprite.x, self.sprite.y, self.target.sprite.x, self.target.sprite.y, self.target): # noqa
-                    self.plasma -= 30
-
-    def slot_two_fire(self):
-        if self.target:
-            if self.plasma >= 30:
-                if self.slot_two.fire(self.sprite.x, self.sprite.y, self.target.sprite.x, self.target.sprite.y, self.target): # noqa
-                    self.plasma -= 30
-
-    def update_plasma(self):
-        if self.plasma < self.max_plasma:
-            self.plasma += .3 * self.plasma / self.max_plasma + .03
-            # self.plasma += .03
-        else:
-            self.plasma = self.max_plasma
-
-    def update(self):
-        # if self.shield < self.max_shield:
-        #     self.shield += .001
-        try:
-            self.check_object_collision(self.closest_object())
-        except:
-            pass
-        self.update_plasma()
-        if self.energy < 100:
-            self.energy += 1
-
-        if self.shield < self.max_shield:
-            self.shield += .016
-        ph = int(max(120 * self.plasma / 100, 1))
-        sw = int(max(200 * self.shield / self.max_shield, 1))
-        hw = int(max(200 * self.health / self.max_health, 1))
-
-        self.shield_bar = pyglet.sprite.Sprite(
-            pyglet.image.create(sw, 10, blue_sprite),
-            20, window_height - 20, batch=BarBatch)
-
-        self.health_bar = pyglet.sprite.Sprite(
-            pyglet.image.create(hw, 10, red_sprite),
-            20, window_height - 40, batch=BarBatch)
-
-        self.plasma_bar = pyglet.sprite.Sprite(
-            pyglet.image.create(15, ph, green_sprite),
-            window_width - 443, 0, batch=BarBatch)

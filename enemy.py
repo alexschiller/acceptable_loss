@@ -13,7 +13,7 @@ def gen_soldier_base():
         'sprite': load_image('soldier.png'),
         'coord': random.choice([[-50, random.randint(0, window_height)], [random.randint(0, window_width), -50]]),  # noqa
         'kbr': 10,
-        'health': 10,
+        'health': 30,
         'speed': 1,
         'guns': [Gun(master, base=missile)],
     }

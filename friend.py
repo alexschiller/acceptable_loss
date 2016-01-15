@@ -81,34 +81,6 @@ class Friend(Character):
         self.required_updates()
 
 
-# class Carpet(Friend):
-#     def __init__(self, *args, **kwargs):
-#         super(Carpet, self).__init__(*args, **kwargs)
-#         self.ret = calc_vel_xy(kwargs['base']['mouse'][0], kwargs['base']['mouse'][1],
-#             self.sprite.x, self.sprite.y, self.speed)
-
-#         x_dist = kwargs['base']['mouse'][0] - float(self.sprite.x)
-#         y_dist = kwargs['base']['mouse'][1] - float(self.sprite.y)
-#         self.sprite.rotation = (math.degrees(math.atan2(y_dist, x_dist)) * -1) + 90
-
-#     def check_object_collision(self, o):
-#         pass
-
-#     def update(self):
-#         self.health -= self.speed
-#         try:
-#             self.check_object_collision(self.closest_object())
-#         except:
-#             pass
-#         self.sprite.x += self.ret[0]
-#         self.sprite.y += self.ret[1]
-
-#         loc = self.select_target()
-#         self.shoot(loc[0], loc[1])
-
-#         if self.health <= 0:
-#             self.on_death()
-
 class Cannon(Friend):
     def __init__(self, *args, **kwargs):
         super(Cannon, self).__init__(*args, **kwargs)

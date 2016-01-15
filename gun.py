@@ -66,20 +66,22 @@ class Gun(object):
         self.gun_fire_sound = self.base['gun_fire_sound']
         self.on_hit_sound = self.base['on_hit_sound']
 
-    def fire(self, start_x, start_y, target_x, target_y, enemy):
+    def fire(self, start_x, start_y, target_x, target_y, enemy, ignore_rof=False):
         dist_x = start_x - target_x
         dist_y = start_y - target_y
         enemy_range = math.hypot(dist_x, dist_y)
 
-        if self.can_fire(enemy_range):
+        if self.can_fire(enemy_range, ignore_rof=ignore_rof):
             play_sound(self.gun_fire_sound)
             self.bullets.append(Bullet(self.base, start_x, start_y, target_x, target_y, enemy_range, enemy)) # noqa
             return True
         return False
 
-    def can_fire(self, enemy_range):
+    def can_fire(self, enemy_range, ignore_rof):
         if enemy_range <= self.travel:
-            if self.rofl == self.rof:
+            if ignore_rof:
+                return True
+            elif self.rofl == self.rof:
                 self.rofl -= self.rof
                 return True
         return False
@@ -192,7 +194,7 @@ red_laser = {
 pm_magnum = {
     'damage': 5,
     'travel': 300,
-    'velocity': 80,
+    'velocity': 30,
     'accuracy': 95,
     'rof': .5,
     'crit_chance': 5,
