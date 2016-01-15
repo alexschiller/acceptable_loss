@@ -21,12 +21,12 @@ class Effect(object):
         self.travelled = 0
 
 class Text(object):
-    def __init__(self, start_x, start_y, text, f_color, f_size): # noqa
+    def __init__(self, start_x, start_y, text, f_color, f_size, time=30): # noqa
 
         self.sprite = pyglet.text.Label(text, font_name='Sans Serif', color=f_color, font_size=f_size, x=start_x, y=start_y, anchor_x='left',anchor_y='center', batch=gfx_batch) # noqa        
         self.vel_x = random.randint(-2, 2)
         self.vel_y = random.randint(1, 2)
-        self.travel = abs(self.vel_x) + abs(self.vel_y) * 30
+        self.travel = abs(self.vel_x) + abs(self.vel_y) * time
         self.travelled = 0
 
 class SpriteEffect(object):
@@ -56,12 +56,14 @@ class SpriteEffect(object):
                     esizex=random.randint(1, 4), esizey=random.randint(1, 4),)
             )
 
-    def message(self, start_x, start_y, text):
+    def message(self, start_x, start_y, text, time=30):
         self.effects.append(
             Text(start_x=start_x, start_y=start_y,
                 text=str(text),
                 f_color=(255, 0, 0, 150),
-                f_size=14)
+                f_size=14,
+                time=time
+            ) # noqa
         )
 
     def bullet_hit(self, start_x, start_y, text):

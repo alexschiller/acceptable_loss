@@ -30,7 +30,10 @@ class Plasmaslinger(Player):
         for p in self.delayed:
             p[0] -= 1
             if p[0] == 0:
-                p[1]()
+                try:
+                    p[1]()
+                except:
+                    'failed delayed action'
                 self.delayed.remove(p)
 
     def slot_one_fire(self):
@@ -88,14 +91,14 @@ class Plasmaslinger(Player):
         return False
 
     def magnum_double_tap(self):
-        if self.action_checks(20):
+        if self.action_checks(10):
             if self.gun_one.fire(self.sprite.x, self.sprite.y, self.target.sprite.x, self.target.sprite.y, self, self.target, True): # noqa  
                 self.delayed.append(
                     [2,
                         partial(self.gun_one.fire, self.sprite.x, self.sprite.y, self.target.sprite.x, self.target.sprite.y, self, self.target, True) # noqa
                     ]) # noqa
                 self.trigger_global_cooldown()
-                self.plasma -= 20
+                self.plasma -= 10
 
     def magnum_action_shot(self):
         if self.action_checks(11):
@@ -106,9 +109,22 @@ class Plasmaslinger(Player):
             self.acc -= self.evade
 
     def magnum_california_prayer_book(self):
-        if self.action_checks(20):
+        if self.action_checks(30):
             if self.gun_one.fire(self.sprite.x, self.sprite.y, self.target.sprite.x, self.target.sprite.y, self, self.target, True): # noqa  
                 self.trigger_global_cooldown()
-                lottery = random.choice([[1, 'W'], [20, 'L']])
-                self.master.spriteeffect.message(self.sprite.x, self.sprite.y, lottery[1]) # noqa
-                self.plasma -= lottery[0]
+                keep_going = 1
+                keep_count = 0
+                while keep_going:
+                    if random.choice([1, 1, 1, 0]):
+                        keep_count += 1
+                        self.delayed.append(
+                            [4 * keep_count,
+                            partial(self.gun_one.fire, self.sprite.x,
+                            self.sprite.y, self.target.sprite.x,
+                            self.target.sprite.y, self, self.target, True)]
+                        )
+                    else:
+                        keep_going = 0
+
+                self.master.spriteeffect.message(self.sprite.x, self.sprite.y, 'wins: ' + str(keep_count), time=90) # noqa
+                self.plasma -= 30
