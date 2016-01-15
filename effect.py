@@ -64,6 +64,14 @@ class SpriteEffect(object):
                 f_size=8)
         )
 
+    def bullet_evade(self, start_x, start_y, text):
+        self.effects.append(
+            Text(start_x=start_x, start_y=start_y,
+                text=str(text),
+                f_color=(0, 0, 255, 155),
+                f_size=8)
+        )
+
     def bullet_crit(self, start_x, start_y, text):
         self.effects.append(
             Text(start_x=start_x, start_y=start_y,

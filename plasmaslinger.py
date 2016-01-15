@@ -6,11 +6,12 @@ class Plasmaslinger(Player):
         self.max_plasma = 100
         self.slot_one_time = None
         self.vat = pyglet.sprite.Sprite(load_image('plasma_vat.png', anchor=False), window_width-472, 0, batch=gfx_batch),  # noqa
+        self.hp_shield_bar = pyglet.sprite.Sprite(load_image('hp_shield.png', anchor=False), window_width - 1050, 0, batch=gfx_batch),  # noqa
+        self.evade_acc_bar = pyglet.sprite.Sprite(load_image('evade_acc.png', anchor=False), window_width - 415, 0, batch=gfx_batch),  # noqa
         self.delayed = []
         self.global_cooldown = False
 
     def global_cooldown_reset(self):  # this is a super tacky way to do this for sure...
-        print "muh triggers"
         self.global_cooldown = False
 
     def trigger_global_cooldown(self):
@@ -28,10 +29,10 @@ class Plasmaslinger(Player):
         if self.target:
             if not self.global_cooldown:
                 if self.plasma >= 20:
-                    if self.gun.fire(self.sprite.x, self.sprite.y, self.target.sprite.x, self.target.sprite.y, self.target, True): # noqa  
+                    if self.gun.fire(self.sprite.x, self.sprite.y, self.target.sprite.x, self.target.sprite.y, self, self.target, True): # noqa  
                         self.delayed.append(
                             [2,
-                                partial(self.gun.fire, self.sprite.x, self.sprite.y, self.target.sprite.x, self.target.sprite.y, self.target, True) # noqa
+                                partial(self.gun.fire, self.sprite.x, self.sprite.y, self.target.sprite.x, self.target.sprite.y, self, self.target, True) # noqa
                             ]) # noqa
                         self.trigger_global_cooldown()
                         self.plasma -= 20
@@ -40,7 +41,7 @@ class Plasmaslinger(Player):
         if self.target:
             if not self.global_cooldown:
                 if self.plasma >= 30:
-                    if self.slot_two.fire(self.sprite.x, self.sprite.y, self.target.sprite.x, self.target.sprite.y, self.target, True): # noqa
+                    if self.slot_two.fire(self.sprite.x, self.sprite.y, self.target.sprite.x, self.target.sprite.y, self, self.target, True): # noqa
                         self.trigger_global_cooldown()
                         self.plasma -= 30
 
@@ -64,18 +65,23 @@ class Plasmaslinger(Player):
 
         if self.shield < self.max_shield:
             self.shield += .016
-        ph = int(max(120 * self.plasma / 100, 1))
-        sw = int(max(200 * self.shield / self.max_shield, 1))
-        hw = int(max(200 * self.health / self.max_health, 1))
+        ph = int(max(115 * self.plasma / 100, 1))
+        sw = int(max(115 * self.shield / self.max_shield, 1))
+        hw = int(max(115 * self.health / self.max_health, 1))
+        ae = (window_width - 410) + self.evade / 10 * 70
 
         self.shield_bar = pyglet.sprite.Sprite(
-            pyglet.image.create(sw, 10, blue_sprite),
-            20, window_height - 20, batch=BarBatch)
+            pyglet.image.create(sw, 15, blue_sprite),
+            window_width - 1045, 30, batch=BarBatch)
 
         self.health_bar = pyglet.sprite.Sprite(
-            pyglet.image.create(hw, 10, red_sprite),
-            20, window_height - 40, batch=BarBatch)
+            pyglet.image.create(hw, 15, red_sprite),
+            window_width - 1045, 5, batch=BarBatch)
 
         self.plasma_bar = pyglet.sprite.Sprite(
             pyglet.image.create(15, ph, green_sprite),
-            window_width - 443, 0, batch=BarBatch)
+            window_width - 443, 5, batch=BarBatch)
+
+        self.ae_bar = pyglet.sprite.Sprite(
+            pyglet.image.create(70, 20, white_sprite),
+            ae, 5, batch=BarBatch)

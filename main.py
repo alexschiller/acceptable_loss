@@ -275,7 +275,7 @@ class MainState(object):
             my += 2
         if key_handler[key.S]:
             my -= 2
-        master.move_player(mx, my)
+        master.player.move(mx, my)
 
         if key_handler[key._1]:
             master.player.slot_one_fire()

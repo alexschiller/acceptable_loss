@@ -8,7 +8,7 @@ import math
 from collide import * # noqa
 
 class Bullet(object):
-    def __init__(self, base, start_x, start_y, target_x, target_y, enemy_range, enemy):  # noqa
+    def __init__(self, base, start_x, start_y, target_x, target_y, enemy_range, enemy, shooter_acc):  # noqa
         # Base stats
         self.base = base
         self.damage = self.base['damage']
@@ -23,11 +23,15 @@ class Bullet(object):
 
         # Calculate shit here
         self.crit = False
-        self.hit = random.randint(0, 100) < self.accuracy
+        self.evade = False
+        self.hit = random.randint(0, 100) < self.accuracy + shooter_acc
 
         if self.hit and random.randint(0, 100) < self.crit_chance:
             self.crit = True
             self.damage = self.damage * self.crit_multiplier
+
+        if self.hit and random.randint(0, 100) < enemy.evade:
+            self.evade = True
 
         self.sprite = pyglet.sprite.Sprite(base['image'],
             start_x, start_y, batch=BulletBatch)
@@ -66,14 +70,14 @@ class Gun(object):
         self.gun_fire_sound = self.base['gun_fire_sound']
         self.on_hit_sound = self.base['on_hit_sound']
 
-    def fire(self, start_x, start_y, target_x, target_y, enemy, ignore_rof=False):
+    def fire(self, start_x, start_y, target_x, target_y, shooter, enemy, ignore_rof=False): # noqa
         dist_x = start_x - target_x
         dist_y = start_y - target_y
         enemy_range = math.hypot(dist_x, dist_y)
 
         if self.can_fire(enemy_range, ignore_rof=ignore_rof):
             play_sound(self.gun_fire_sound)
-            self.bullets.append(Bullet(self.base, start_x, start_y, target_x, target_y, enemy_range, enemy)) # noqa
+            self.bullets.append(Bullet(self.base, start_x, start_y, target_x, target_y, enemy_range, enemy, shooter.acc)) # noqa
             return True
         return False
 
@@ -95,7 +99,9 @@ class Gun(object):
             pass
 
     def display_bullet_outcome(self, bullet, x, y):
-        if bullet.crit:
+        if bullet.evade:
+            self.master.spriteeffect.bullet_evade(x, y, 'evade') # noqa
+        elif bullet.crit:
             self.master.spriteeffect.bullet_crit(x, y, bullet.damage) # noqa
         elif bullet.hit:
             self.master.spriteeffect.bullet_hit(x, y, bullet.damage) # noqa
@@ -110,7 +116,7 @@ class Gun(object):
         for bullet in self.bullets:
             bullet.update()
             if bullet.travelled > bullet.enemy_range:
-                if bullet.hit:
+                if bullet.hit and not bullet.evade:
                     try:
                         bullet.enemy.on_hit(bullet)
                     except:
@@ -181,7 +187,7 @@ red_laser = {
     'damage': 1,
     'travel': 300,
     'velocity': 25,
-    'accuracy': 85,
+    'accuracy': 75,
     'rof': 10,
     'crit_chance': 5,
     'crit_multiplier': 2,
@@ -192,10 +198,10 @@ red_laser = {
 }
 
 pm_magnum = {
-    'damage': 5,
+    'damage': 8,
     'travel': 300,
     'velocity': 30,
-    'accuracy': 95,
+    'accuracy': 65,
     'rof': .5,
     'crit_chance': 5,
     'crit_multiplier': 2,

@@ -109,13 +109,6 @@ class Master(object):
             f.sprite.x += mx
             f.sprite.y += my
 
-    def move_player(self, mx, my):
-        if mx and my:
-            mx = mx / 1.41
-            my = my / 1.41
-        self.player.sprite.x += mx
-        self.player.sprite.y += my
-
 master = Master()
 
 # Batches
@@ -130,7 +123,7 @@ MenuBatch = pyglet.graphics.Batch()
 MenuBackground = pyglet.graphics.Batch()
 SelectBatch = pyglet.graphics.Batch()
 HotbarBatch = pyglet.graphics.Batch()
-HotbarButtonBatch= pyglet.graphics.Batch()
+HotbarButtonBatch = pyglet.graphics.Batch()
 
 # Manually Built Static Sprites
 green_sprite = pyglet.image.SolidColorImagePattern(color=(0, 255, 0, 150))
@@ -139,6 +132,7 @@ green_bar = pyglet.image.create(200, 10, green_sprite)
 blue_sprite = pyglet.image.SolidColorImagePattern(color=(0, 0, 255, 150))
 blue_bar = pyglet.image.create(200, 10, blue_sprite)
 
+white_sprite = pyglet.image.SolidColorImagePattern(color=(255, 255, 255, 150))
 red_sprite = pyglet.image.SolidColorImagePattern(color=(255, 0, 0, 150))
 red_bar = pyglet.image.create(200, 10, red_sprite)
 

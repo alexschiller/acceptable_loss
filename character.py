@@ -14,6 +14,8 @@ class Character(object):
         self.health_bar = None
         self.target = None
         self.blood_color = [138, 7, 7, 255]
+        self.evade = 0
+        self.acc = 0
 
     def update_health_bar(self):
         hw = int(self.sprite.width * 2 * self.health / self.max_health)
@@ -31,7 +33,7 @@ class Character(object):
 
     def attack(self):
         if self.target:
-            self.gun.fire(self.sprite.x, self.sprite.y, self.target.sprite.x, self.target.sprite.y, self.target) # noqa            
+            self.gun.fire(self.sprite.x, self.sprite.y, self.target.sprite.x, self.target.sprite.y, self, self.target) # noqa            
 
     def update_rotation(self):
         if self.target:
