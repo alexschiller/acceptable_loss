@@ -219,7 +219,7 @@ master.home = pyglet.sprite.Sprite(load_image('home.png'),
 # for i in range(2):
 #   master.enemies.append(Slime(master, base=gen_slime_base() )) # noqa
 
-for i in range(5):
+for i in range(0):
     master.objects.append(Box(master)) # noqa
 
 master.friends = [Cannon(master, base=gen_cannon_base())]
