@@ -56,6 +56,14 @@ class SpriteEffect(object):
                     esizex=random.randint(1, 4), esizey=random.randint(1, 4),)
             )
 
+    def message(self, start_x, start_y, text):
+        self.effects.append(
+            Text(start_x=start_x, start_y=start_y,
+                text=str(text),
+                f_color=(255, 0, 0, 150),
+                f_size=14)
+        )
+
     def bullet_hit(self, start_x, start_y, text):
         self.effects.append(
             Text(start_x=start_x, start_y=start_y,

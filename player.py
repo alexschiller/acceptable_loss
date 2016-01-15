@@ -59,7 +59,6 @@ class Player(Character):
         elif self.evade <= 0:
             self.evade = 0
         self.acc = 10 - self.evade
-        print self.evade, self.acc
 
     def slot_one_fire(self):
         if self.target:
@@ -131,5 +130,5 @@ class Player(Character):
             20, window_height - 40, batch=BarBatch)
 
         self.energy_bar = pyglet.sprite.Sprite(
-            pyglet.image.create(ew, 5, blue_sprite),
+            pyglet.image.create(ew, 10, blue_sprite),
             20, window_height - 60, batch=BarBatch)

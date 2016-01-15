@@ -1,4 +1,6 @@
 from player import * # noqa
+import random
+
 class Plasmaslinger(Player):
     def __init__(self, *args, **kwargs):
         super(Plasmaslinger, self).__init__(*args, **kwargs)
@@ -8,6 +10,12 @@ class Plasmaslinger(Player):
         self.vat = pyglet.sprite.Sprite(load_image('plasma_vat.png', anchor=False), window_width-472, 0, batch=gfx_batch),  # noqa
         self.hp_shield_bar = pyglet.sprite.Sprite(load_image('hp_shield.png', anchor=False), window_width - 1050, 0, batch=gfx_batch),  # noqa
         self.evade_acc_bar = pyglet.sprite.Sprite(load_image('evade_acc.png', anchor=False), window_width - 415, 0, batch=gfx_batch),  # noqa
+        self.gun_one = Gun(master, base=pm_magnum)
+        self.gun_two = Gun(master, base=pm_carbine)
+
+        self.guns = [self.gun_one, self.gun_two]
+        self.gun = self.guns[1]
+        self.master.register_guns([self.gun_one, self.gun_two])
         self.delayed = []
         self.global_cooldown = False
 
@@ -26,24 +34,10 @@ class Plasmaslinger(Player):
                 self.delayed.remove(p)
 
     def slot_one_fire(self):
-        if self.target:
-            if not self.global_cooldown:
-                if self.plasma >= 20:
-                    if self.gun.fire(self.sprite.x, self.sprite.y, self.target.sprite.x, self.target.sprite.y, self, self.target, True): # noqa  
-                        self.delayed.append(
-                            [2,
-                                partial(self.gun.fire, self.sprite.x, self.sprite.y, self.target.sprite.x, self.target.sprite.y, self, self.target, True) # noqa
-                            ]) # noqa
-                        self.trigger_global_cooldown()
-                        self.plasma -= 20
+        self.magnum_double_tap()
 
     def slot_two_fire(self):
-        if self.target:
-            if not self.global_cooldown:
-                if self.plasma >= 30:
-                    if self.slot_two.fire(self.sprite.x, self.sprite.y, self.target.sprite.x, self.target.sprite.y, self, self.target, True): # noqa
-                        self.trigger_global_cooldown()
-                        self.plasma -= 30
+        self.magnum_california_prayer_book()
 
     def update_plasma(self):
         if self.plasma < self.max_plasma:
@@ -85,3 +79,36 @@ class Plasmaslinger(Player):
         self.ae_bar = pyglet.sprite.Sprite(
             pyglet.image.create(70, 20, white_sprite),
             ae, 5, batch=BarBatch)
+
+    def action_checks(self, plasma):
+        if self.target:
+            if not self.global_cooldown:
+                if self.plasma >= plasma:
+                    return True
+        return False
+
+    def magnum_double_tap(self):
+        if self.action_checks(20):
+            if self.gun_one.fire(self.sprite.x, self.sprite.y, self.target.sprite.x, self.target.sprite.y, self, self.target, True): # noqa  
+                self.delayed.append(
+                    [2,
+                        partial(self.gun_one.fire, self.sprite.x, self.sprite.y, self.target.sprite.x, self.target.sprite.y, self, self.target, True) # noqa
+                    ]) # noqa
+                self.trigger_global_cooldown()
+                self.plasma -= 20
+
+    def magnum_action_shot(self):
+        if self.action_checks(11):
+            self.acc += self.evade
+            if self.gun_one.fire(self.sprite.x, self.sprite.y, self.target.sprite.x, self.target.sprite.y, self, self.target, True): # noqa  
+                self.trigger_global_cooldown()
+                self.plasma -= 20
+            self.acc -= self.evade
+
+    def magnum_california_prayer_book(self):
+        if self.action_checks(20):
+            if self.gun_one.fire(self.sprite.x, self.sprite.y, self.target.sprite.x, self.target.sprite.y, self, self.target, True): # noqa  
+                self.trigger_global_cooldown()
+                lottery = random.choice([[1, 'W'], [20, 'L']])
+                self.master.spriteeffect.message(self.sprite.x, self.sprite.y, lottery[1]) # noqa
+                self.plasma -= lottery[0]

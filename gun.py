@@ -198,12 +198,26 @@ red_laser = {
 }
 
 pm_magnum = {
-    'damage': 8,
+    'damage': 7,
     'travel': 300,
     'velocity': 30,
     'accuracy': 65,
     'rof': .5,
-    'crit_chance': 5,
+    'crit_chance': 10,
+    'crit_multiplier': 3,
+    'image': load_image('pm_magnum.png'),
+    'gun_fire_sound': load_sound('laser.wav'),
+    'on_hit_sound': load_sound('on_hit.wav'),
+    'effects': [],
+}
+
+pm_carbine = {
+    'damage': 3,
+    'travel': 600,
+    'velocity': 30,
+    'accuracy': 85,
+    'rof': 2,
+    'crit_chance': 2,
     'crit_multiplier': 2,
     'image': load_image('pm_magnum.png'),
     'gun_fire_sound': load_sound('laser.wav'),
