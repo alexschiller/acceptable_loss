@@ -94,6 +94,8 @@ save_1 = {
     'armor_gems': [],  # list of equipped gems here
 
     'gun_one': {
+        'name': 'Level 2 Carbine (10/100)',
+        'gun_class': 'magnum',
         'level': 2,
         'damage': 7,
         'travel': 300,
@@ -118,6 +120,8 @@ save_1 = {
         },
     },
     'gun_two': {
+        'name': 'Level 1 Carbine (50/100)',
+        'gun_class': 'carbine',
         'level': 1,
         'damage': 3,
         'travel': 600,
@@ -143,8 +147,8 @@ save_1 = {
             },
         },
     },
-    'unequipped_guns': [],
-    'inventory': [
+    'gun_inventory': [],
+    'gem_inventory': [
 
         {'color': 'red',
         'level': 2,

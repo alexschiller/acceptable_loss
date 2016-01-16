@@ -219,7 +219,7 @@ pm_carbine = {
     'rof': 2,
     'crit_chance': 2,
     'crit_multiplier': 2,
-    'image': load_image('pm_magnum.png'),
+    'image': load_image('snipe.png'),
     'gun_fire_sound': load_sound('laser.wav'),
     'on_hit_sound': load_sound('on_hit.wav'),
     'effects': [],

@@ -126,5 +126,5 @@ class Plasmaslinger(Player):
                     else:
                         keep_going = 0
 
-                self.master.spriteeffect.message(self.sprite.x, self.sprite.y, 'wins: ' + str(keep_count), time=90) # noqa
+                self.master.spriteeffect.message(self.sprite.x, self.sprite.y, 'shot: ' + str(keep_count), time=90) # noqa
                 self.plasma -= 30

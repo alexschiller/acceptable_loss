@@ -6,20 +6,6 @@ import pyglet
 import math
 from gun import * # noqa
 
-
-# class LootEffect(object):
-#     def __init__(self, start_x, start_y, vel_x, vel_y, travel=20, ecolor=[0, 0, 0], esizex=3, esizey=3): # noqa
-
-#         effect_color = pyglet.image.SolidColorImagePattern(color=(ecolor[0], ecolor[1], ecolor[2], 255)) # noqa
-#         effect_shape = pyglet.image.create(esizex, esizey, effect_color)
-
-#         self.sprite = pyglet.sprite.Sprite(effect_shape,
-#         start_x, start_y, batch=EffectsBatch)
-#         self.vel_x = vel_x
-#         self.vel_y = vel_y
-#         self.travel = travel
-#         self.travelled = 0
-
 class Content(object):
     def __init__(self, loot): # noqa
         self.loot = loot
@@ -106,7 +92,7 @@ class Loot(object):
         self.current_loot.remove(package)
 
     def give_loot(self, content):
-        print "got content loot?"
+        pass
 
     def delete_content(self, content):
         self.give_loot(content)
