@@ -268,13 +268,13 @@ class MainState(object):
         if key_handler[key.TAB]:
             master.pip.closest_enemy()
         if key_handler[key.D]:
-            mx += 2
+            mx += 1
         if key_handler[key.A]:
-            mx -= 2
+            mx -= 1
         if key_handler[key.W]:
-            my += 2
+            my += 1
         if key_handler[key.S]:
-            my -= 2
+            my -= 1
         master.player.move(mx, my)
 
         if key_handler[key._1]:

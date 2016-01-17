@@ -8,6 +8,7 @@ from utility import * # noqa
 from friend import * # noqa
 from loot import * # noqa
 from plasmaslinger import * # noqa
+# from data import load_save, save_1
 import math
 
 class Threat(object):
@@ -207,7 +208,8 @@ master.resources = Resources(master)
 master.radar = Radar(master)
 master.threat = Threat(master)
 master.spriteeffect = SpriteEffect(master)
-master.player = Plasmaslinger(master, base=plasmaslinger_base)
+# master.player = load_save(save_1)
+master.player = Player(master, base=plasmaslinger_base)
 master.pip = Pip(master)
 
 master.home = pyglet.sprite.Sprite(load_image('home.png'),

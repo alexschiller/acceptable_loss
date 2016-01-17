@@ -32,6 +32,8 @@ plasmaslinger_base = {
 class Player(Character):
     def __init__(self, *args, **kwargs):
         super(Player, self).__init__(*args, **kwargs)
+        self.hp_shield_bar = pyglet.sprite.Sprite(load_image('hp_shield.png', anchor=False), window_width - 1050, 0, batch=gfx_batch),  # noqa
+        self.evade_acc_bar = pyglet.sprite.Sprite(load_image('evade_acc.png', anchor=False), window_width - 415, 0, batch=gfx_batch),  # noqa
 
         self.build_character(kwargs['base'])
 
@@ -42,9 +44,12 @@ class Player(Character):
         self.max_shield = 10
         self.shield = 10
         self.blood_color = (30, 30, 30, 255)
-        self.slot_one = kwargs['base']['slot_one']
-        self.slot_two = kwargs['base']['slot_two']
-        self.guns = [self.slot_one, self.slot_two]
+        self.gun_one = Gun(master, base=pm_magnum)
+        self.gun_two = Gun(master, base=pm_carbine)
+
+        self.guns = [self.gun_one, self.gun_two]
+        self.gun = self.guns[1]
+
         self.master.register_guns(self.guns)
         self.acc = 0
         self.evade = 0
@@ -61,12 +66,12 @@ class Player(Character):
         self.acc = 10 - self.evade
 
     def slot_one_fire(self):
-        if self.target:
-            self.slot_one.fire(self.sprite.x, self.sprite.y, self.target.sprite.x, self.target.sprite.y, self, self.target) # noqa
+        pass
+        # self.magnum_double_tap()
 
     def slot_two_fire(self):
-        if self.target:
-            self.slot_two.fire(self.sprite.x, self.sprite.y, self.target.sprite.x, self.target.sprite.y, self, self.target) # noqa            
+        pass
+        # self.magnum_california_prayer_book()
 
     def attack(self):
         if self.target:
@@ -100,12 +105,10 @@ class Player(Character):
             mx = mx / 1.41
             my = my / 1.41
         self.update_evade(mx, my)
-        self.sprite.x += mx
-        self.sprite.y += my
+        self.sprite.x += mx * self.speed
+        self.sprite.y += my * self.speed
 
     def update(self):
-        # if self.shield < self.max_shield:
-        #     self.shield += .001
         try:
             self.check_object_collision(self.closest_object())
         except:
@@ -117,18 +120,18 @@ class Player(Character):
         if self.shield < self.max_shield:
             self.shield += .016
 
-        sw = int(max(200 * self.shield / self.max_shield, 1))
-        hw = int(max(200 * self.health / self.max_health, 1))
-        ew = int(max(200 * self.energy / self.max_energy, 1))
+        sw = int(max(115 * self.shield / self.max_shield, 1))
+        hw = int(max(115 * self.health / self.max_health, 1))
+        ae = (window_width - 410) + self.evade / 10 * 70
 
         self.shield_bar = pyglet.sprite.Sprite(
-            pyglet.image.create(sw, 10, green_sprite),
-            20, window_height - 20, batch=BarBatch)
+            pyglet.image.create(sw, 15, blue_sprite),
+            window_width - 1045, 30, batch=BarBatch)
 
         self.health_bar = pyglet.sprite.Sprite(
-            pyglet.image.create(hw, 10, red_sprite),
-            20, window_height - 40, batch=BarBatch)
+            pyglet.image.create(hw, 15, red_sprite),
+            window_width - 1045, 5, batch=BarBatch)
 
-        self.energy_bar = pyglet.sprite.Sprite(
-            pyglet.image.create(ew, 10, blue_sprite),
-            20, window_height - 60, batch=BarBatch)
+        self.ae_bar = pyglet.sprite.Sprite(
+            pyglet.image.create(70, 20, white_sprite),
+            ae, 5, batch=BarBatch)

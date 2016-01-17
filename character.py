@@ -6,7 +6,7 @@ import pyglet
 from gun import * # noqa
 
 class Character(object):
-    def __init__(self, master, **kwargs):
+    def __init__(self, master, ability=None, **kwargs):
         self.master = master
         self.spriteeffect = master.spriteeffect
         self.enemies = master.enemies
