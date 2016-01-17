@@ -5,6 +5,7 @@ from character import * # noqa
 import pyglet
 from gun import * # noqa
 from functools import partial # noqa
+from plasmaslinger import PlasmaslingerAbility
 
 player_base = {
     'sprite': load_image('dreadnaught.png'),
@@ -34,7 +35,6 @@ class Player(Character):
         super(Player, self).__init__(*args, **kwargs)
         self.hp_shield_bar = pyglet.sprite.Sprite(load_image('hp_shield.png', anchor=False), window_width - 1050, 0, batch=gfx_batch),  # noqa
         self.evade_acc_bar = pyglet.sprite.Sprite(load_image('evade_acc.png', anchor=False), window_width - 415, 0, batch=gfx_batch),  # noqa
-
         self.build_character(kwargs['base'])
 
         # Player specific defaults
@@ -54,6 +54,8 @@ class Player(Character):
         self.acc = 0
         self.evade = 0
 
+        self.ability = PlasmaslingerAbility(master, self, self.gun_one, self.gun_two)
+
     def update_evade(self, mx, my):
         if (abs(mx) + abs(my)) > 0:
             self.evade += .1
@@ -66,12 +68,11 @@ class Player(Character):
         self.acc = 10 - self.evade
 
     def slot_one_fire(self):
-        pass
-        # self.magnum_double_tap()
+        self.ability.magnum_california_prayer_book()
 
     def slot_two_fire(self):
         pass
-        # self.magnum_california_prayer_book()
+        self.ability.magnum_five_beans_in_the_wheel()
 
     def attack(self):
         if self.target:
@@ -109,6 +110,7 @@ class Player(Character):
         self.sprite.y += my * self.speed
 
     def update(self):
+        self.ability.update()
         try:
             self.check_object_collision(self.closest_object())
         except:

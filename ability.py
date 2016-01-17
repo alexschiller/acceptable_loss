@@ -4,7 +4,8 @@ class Ability(object):
     def __init__(self, master, owner, gun_one, gun_two):
         self.gun_one = gun_one
         self.gun_two = gun_two
-
+        self.master = master
+        self.owner = owner
         self.delayed = []
         self.global_cooldown = False
 
