@@ -12,9 +12,21 @@ def gen_soldier_base():
     base = {
         'sprite': load_image('soldier.png'),
         'coord': random.choice([[-50, random.randint(0, window_height)], [random.randint(0, window_width), -50]]),  # noqa
-        'kbr': 10,
+        'shield_max': 0,
+        'shield_regen': 0,
+        'shield': 0,
+        'health_max': 30,
+        'health_regen': 0,
         'health': 30,
-        'speed': 1,
+        'damage_raw': 0,
+        'damage_percent': 0,
+        'attack_speed': 0,
+        'crit': 0,
+        'crit_damage': 0,
+        'accuracy': 0,
+        'evade': 0,
+        'armor': 0,
+        'speed': 2,
         'guns': [Gun(master, base=missile)],
     }
     return base
@@ -81,4 +93,3 @@ class Soldier(Enemy):
         self.sprite.y -= ret[1] * 2
         self.player.sprite.x += ret[0]
         self.player.sprite.y += ret[1]
-        self.health -= 10  # squish

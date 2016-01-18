@@ -41,9 +41,6 @@ class Master(object):
         for f in self.friends:
             f.update()
 
-        for g in self.guns:
-            g.update()
-
         for b in self.buildings:
             b.update()
 
@@ -55,10 +52,6 @@ class Master(object):
         self.radar.update()
         self.pip.update()
         self.loot.update()
-
-    def register_guns(self, guns):
-        for gun in guns:
-            self.guns.append(gun)
 
     def update_button(self, x, y, mode):
         for button in self.buildings:

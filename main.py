@@ -291,8 +291,6 @@ class MainState(object):
         #         master.player.sprite.y, mouse_position[0],
         #         mouse_position[1]
         # )
-        if key_handler[key.E]:
-            master.player.next_gun()
 
         if key_handler[key.F] and master.player.energy >= 100:
             # teleport(master, mouse_position)

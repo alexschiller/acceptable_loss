@@ -8,7 +8,7 @@ import math
 from collide import * # noqa
 
 class Bullet(object):
-    def __init__(self, base, start_x, start_y, target_x, target_y, enemy_range, enemy, shooter_acc):  # noqa
+    def __init__(self, base, start_x, start_y, target_x, target_y, enemy_range, enemy, shooter_acc, image):  # noqa
         # Base stats
         self.base = base
         self.damage = self.base['damage']
@@ -33,7 +33,8 @@ class Bullet(object):
         if self.hit and random.randint(0, 100) < enemy.evade:
             self.evade = True
 
-        self.sprite = pyglet.sprite.Sprite(base['image'],
+        img = image or base['image']
+        self.sprite = pyglet.sprite.Sprite(img,
             start_x, start_y, batch=BulletBatch)
 
         dist_x = target_x - float(start_x)
@@ -70,14 +71,14 @@ class Gun(object):
         self.gun_fire_sound = self.base['gun_fire_sound']
         self.on_hit_sound = self.base['on_hit_sound']
 
-    def fire(self, start_x, start_y, target_x, target_y, shooter, enemy, ignore_rof=False): # noqa
+    def fire(self, start_x, start_y, target_x, target_y, shooter, enemy, ignore_rof=False, image=None): # noqa
         dist_x = start_x - target_x
         dist_y = start_y - target_y
         enemy_range = math.hypot(dist_x, dist_y)
 
         if self.can_fire(enemy_range, ignore_rof=ignore_rof):
             play_sound(self.gun_fire_sound)
-            self.bullets.append(Bullet(self.base, start_x, start_y, target_x, target_y, enemy_range, enemy, shooter.acc)) # noqa
+            self.bullets.append(Bullet(self.base, start_x, start_y, target_x, target_y, enemy_range, enemy, shooter.acc, image)) # noqa
             return True
         return False
 

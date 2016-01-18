@@ -1,4 +1,3 @@
-
 plasma_infusion = {
     'flavor_text': 0,
     'description': 0,
@@ -42,12 +41,21 @@ plasmaslinger_class = {
     'mech': 'plasmaslinger.png',
     'abilities': plasmaslinger_abilities,
     'base_stats': {
-        'hp': 50,
-        'armor': 4,
-        'shield': 10,
+        'shield_max': 10,
         'shield_regen': 1,
-        'speed': 3,
+        'shield': 10,
+        'health_max': 50,
+        'health_regen': 0,
+        'health': 50,
+        'damage_raw': 0,
+        'damage_percent': 0,
+        'attack_speed': 0,
+        'crit': 0,
+        'crit_damage': 0,
+        'accuracy': 0,
         'evade': 0,
+        'armor': 4,
+        'speed': 3,
     },
 }
 
@@ -169,3 +177,7 @@ save_1 = {
         'effect': 'fire'},
     ]
 }
+
+def load_save(save_file):
+    player_object = None
+    return player_object

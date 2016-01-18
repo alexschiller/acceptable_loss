@@ -56,7 +56,7 @@ class BolaEffect(object):
                 self.target.sprite.x,
                 self.target.sprite.y,
                 self.owner.owner, self.target,
-            True)
+            True, self.owner.plasma_shot)
         self.remove_bola()
 
     def update(self):
@@ -77,9 +77,12 @@ class PlasmaslingerAbility(Ability):
         self.max_plasma = 100
         self.vat = pyglet.sprite.Sprite(load_image('plasma_vat.png', anchor=False), window_width-472, 0, batch=gfx_batch),  # noqa
         self.queue = []
+        self.plasma_shot = load_image('bola_shot.png')
+        self.bushwhack_shot = load_image('bushwhack_shot.png')
 
     def update(self):
         self.update_plasma()
+        self.update_guns()
         self.update_delayed()
         for q in self.queue:
             q.update()
@@ -95,6 +98,10 @@ class PlasmaslingerAbility(Ability):
                 if self.plasma >= plasma:
                     return True
         return False
+
+    def update_guns(self):
+        for g in self.guns:
+            g.update()
 
     def update_plasma(self):
         if self.plasma < self.max_plasma:
@@ -134,16 +141,8 @@ class PlasmaslingerAbility(Ability):
             self.trigger_global_cooldown()
             self.plasma -= 30
 
-    # def magnum_action_shot(self):
-    #     if self.action_checks(11):
-    #         self.acc += self.evade
-    #         if self.gun_one.fire(self.sprite.x, self.sprite.y, self.target.sprite.x, self.target.sprite.y, self, self.target, True): # noqa  
-    #             self.trigger_global_cooldown()
-    #             self.plasma -= 20
-    #         self.acc -= self.evade
-
     def magnum_california_prayer_book(self):
-        if self.action_checks(30):
+        if self.action_checks(5):
             keep_going = 1
             keep_count = 0
             while keep_going:
@@ -158,7 +157,18 @@ class PlasmaslingerAbility(Ability):
                     keep_going = 0
             self.master.spriteeffect.message(self.owner.sprite.x, self.owner.sprite.y, 'shot: ' + str(keep_count), time=90) # noqa                    
             self.trigger_global_cooldown()
-            self.plasma -= 30
+            self.plasma -= 5
+
+    def carbine_bushwhack(self):
+        if self.action_checks(10):
+            if self.gun_two.fire(self.owner.sprite.x,
+                self.owner.sprite.y,
+                self.owner.target.sprite.x,
+                self.owner.target.sprite.y,
+                self.owner, self.owner.target,
+            True, self.bushwhack_shot):
+                self.trigger_global_cooldown()
+                self.plasma -= 10
 
             # if self.gun_one.fire(self.sprite.x, self.sprite.y, self.target.sprite.x, self.target.sprite.y, self, self.target, True): # noqa  
             #     self.trigger_global_cooldown()
