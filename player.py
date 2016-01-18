@@ -71,7 +71,6 @@ class Player(Character):
         self.ability.magnum_california_prayer_book()
 
     def slot_two_fire(self):
-        pass
         self.ability.magnum_five_beans_in_the_wheel()
 
     def attack(self):
