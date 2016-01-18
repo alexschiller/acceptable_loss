@@ -82,6 +82,7 @@ class Button(object):
 
     def do_action(self):
         func()
+        print "Hello fucker"
 
 
 class DraggableButton(Button):
