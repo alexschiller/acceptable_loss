@@ -19,11 +19,9 @@ frame_width = 50
 
 class Master(object):
     def __init__(self):
+        self.player_controller = None
         self.player = None
-        self.enemies = []
-        self.friends = []
-        self.guns = []
-        self.objects = []
+        self.people = {'red': [], 'blue': []}
         self.spriteeffect = None
         self.buildings = []
 
@@ -34,23 +32,24 @@ class Master(object):
         self.loot = None
 
     def update(self):
+        for p in self.people['blue']:
+            p.update()
 
-        for e in self.enemies:
-            e.update()
-
-        for f in self.friends:
-            f.update()
+        try:
+            for p in self.people['red']:
+                p.update()
+        except:
+            print "kale fail"
 
         for b in self.buildings:
             b.update()
 
-        self.player.update()
+        # self.player.update()
         self.spriteeffect.update()
         self.resources.update()
         self.update_camera()
         self.threat.update()
         self.radar.update()
-        self.pip.update()
         self.loot.update()
 
     def update_button(self, x, y, mode):
@@ -75,12 +74,9 @@ class Master(object):
         self.move_all(mx, my)
 
     def move_all(self, mx, my):
-        for o in self.objects:
-            o.sprite.x += mx
-            o.sprite.y += my
 
-        self.player.sprite.x += mx
-        self.player.sprite.y += my
+        # self.player.sprite.x += mx
+        # self.player.sprite.y += my
         self.home.x += mx
         self.home.y += my
         for p in self.loot.current_loot:
@@ -91,16 +87,13 @@ class Master(object):
             c.sprite.x += mx
             c.sprite.y += my
 
-        for e in self.enemies:
-            e.sprite.x += mx
-            e.sprite.y += my
-        for gun in self.guns:
-            for b in gun.bullets:
-                b.sprite.x += mx
-                b.sprite.y += my
-        for f in self.friends:
-            f.sprite.x += mx
-            f.sprite.y += my
+        for p in self.people['red']:
+            p.sprite.x += mx
+            p.sprite.y += my
+
+        for p in self.people['blue']:
+            p.sprite.x += mx
+            p.sprite.y += my
 
 master = Master()
 

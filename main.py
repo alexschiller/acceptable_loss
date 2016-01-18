@@ -1,4 +1,3 @@
-import math
 import pyglet
 
 from pyglet.gl import * # noqa
@@ -166,14 +165,14 @@ class MainState(object):
         self.Pause = 0
         self.Build = 0
         self.Menu = 0
-        for i in range(10):
-            master.enemies.append(Soldier(master, base=gen_soldier_base() )) # noqa
+        # for i in range(10):
+            # master.enemies.append(Soldier(master, base=gen_soldier_base() )) # noqa
 
         # for i in range(1):
             # master.enemies.append(Portal(master, base=gen_portal_base() )) # noqa            
 
-        for i in range(0):
-            master.enemies.append(Slime(master, base=gen_slime_base() )) # noqa
+        # for i in range(0):
+            # master.enemies.append(Slime(master, base=gen_slime_base() )) # noqa
 
     def on_draw(self):
         window.clear()
@@ -210,29 +209,9 @@ class MainState(object):
 
     def on_mouse_motion(self, x, y, dx, dy):
         pass
-        # x_dist = x - float(master.player.sprite.x)
-        # y_dist = y - float(master.player.sprite.y)
-
-        # deg = (math.degrees(math.atan2(y_dist, x_dist)) * -1) + 90
-
-        # master.player.sprite.rotation = deg
-        # print dx, dy
 
     def on_mouse_drag(self, x, y, dx, dy, buttons, modifiers):
-        x_dist = x - float(master.player.sprite.x)
-        y_dist = y - float(master.player.sprite.y)
-
-        deg = (math.degrees(math.atan2(y_dist, x_dist)) * -1) + 90
-        # if master.player.shoot(mouse_position[0], mouse_position[1]): # noqa
-        #     ret = calc_vel_xy(
-        #         master.player.sprite.x, master.player.sprite.y,
-        #         mouse_position[0], mouse_position[1],
-        #         master.player.gun.base['recoil']
-        #     )
-        #     print ret
-        #     master.player.sprite.x += ret[0]
-        #     master.player.sprite.y += ret[1]
-        master.player.sprite.rotation = deg
+        master.player_controller.rotate(x, y)
 
     def on_key_press(self, ts):
         pass
@@ -269,7 +248,7 @@ class MainState(object):
             master.player.sprite.y = master.home.y
             master.move_all(-readjust_x, -readjust_y)
         if key_handler[key.TAB]:
-            master.pip.closest_enemy()
+            master.player_controller.target_closest_enemy()
         if key_handler[key.D]:
             mx += 1
         if key_handler[key.A]:
@@ -278,13 +257,14 @@ class MainState(object):
             my += 1
         if key_handler[key.S]:
             my -= 1
-        master.player.move(mx, my)
+        master.player_controller.move(mx, my)
 
         if key_handler[key._1]:
-            master.player.slot_one_fire()
+            Character(master, enemy_soldier_base)
+            # master.player_controller.slot_one_fire()
 
         if key_handler[key._2]:
-            master.player.slot_two_fire()
+            master.player_controller.slot_two_fire()
 
         # master.player.move(mx, my)
 
@@ -304,8 +284,8 @@ class MainState(object):
 
 class BuildState(MainState):
     def __init__(self):
-        for i in range(len(master.enemies)):
-            master.enemies.pop(0)
+        # for i in range(len(master.enemies)):
+            # master.enemies.pop(0)
         self.Pause = 0
         self.Build = 0
         self.Menu = 0
@@ -314,37 +294,22 @@ class BuildState(MainState):
         # master.buildings.append(Placeable(load_image('brick.png', anchor=False), 400, 400, None, BuildingBatch)) # noqa
 
     def on_mouse_release(self, x, y, button, modifiers):
-        # master.update_button(x, y, 1)
         Buildmenu.on_mouse_press(x, y, 1)
         HotBar.update(x, y, 1)
 
     def on_mouse_press(self, x, y, button, modifiers):
-        master.pip.update_target()
-        # if master.player.shoot(mouse_position[0], mouse_position[1]): # noqa
-        #     ret = calc_vel_xy(
-        #         master.player.sprite.x, master.player.sprite.y,
-        #         mouse_position[0], mouse_position[1], master.player.gun.base['recoil']
-        #     ) # noqa
-        #     master.player.sprite.x += ret[0]
-        #     master.player.sprite.y += ret[1]
-        # master.update_button(x, y, 0)
+        master.player_controller.update_target()
         Buildmenu.on_mouse_press(x, y, 0)
         HotBar.update(x, y, 0)
 
     def on_mouse_motion(self, x, y, dx, dy):
-        master.pip.sprite.x = x
-        master.pip.sprite.y = y
-        x_dist = x - float(master.player.sprite.x)
-        y_dist = y - float(master.player.sprite.y)
-
-        deg = (math.degrees(math.atan2(y_dist, x_dist)) * -1) + 90
-
-        master.player.sprite.rotation = deg
-        # print dx, dy
+        master.player_controller.sprite.x = x
+        master.player_controller.sprite.y = y
+        master.player_controller.rotate(x, y)
 
     def on_mouse_drag(self, x, y, dx, dy, buttons, modifiers):
-        master.pip.sprite.x = x
-        master.pip.sprite.y = y
+        master.player_controller.sprite.x = x
+        master.player_controller.sprite.y = y
         # x_dist = x - float(master.player.sprite.x)
         # y_dist = y - float(master.player.sprite.y)
         master.update_button_image(x, y, dx, dy)

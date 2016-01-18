@@ -1,6 +1,7 @@
 from box import * # noqa
 from effect import * # noqa
-from enemy import * # noqa
+# from enemy import * # noqa
+from character import * # noqa
 from energy import * # noqa
 from gun import * # noqa
 from player import * # noqa
@@ -31,7 +32,7 @@ class Threat(object):
         self.threat_timer()
         if self.threat > 2:
             self.threat -= 2
-            self.master.enemies.append(Soldier(self.master, base=gen_soldier_base())) # noqa
+            Character(self.master, enemy_soldier_base)
 
 class Radar(object):
     def __init__(self, master):
@@ -59,15 +60,15 @@ class Radar(object):
         self.to_draw = []
 
     def update(self):
-        x1 = self.master.player.sprite.x
-        y1 = self.master.player.sprite.y
+        # x1 = self.master.player.sprite.x
+        # y1 = self.master.player.sprite.y
 
         to_draw = []
-        for e in self.master.enemies:
-            if abs(x1 - e.sprite.x) + abs(y1 - e.sprite.y) <= self.radar_range:
-                x_loc = self.x_mid - ((x1 - e.sprite.x) / self.radar_scale)
-                y_loc = self.y_mid - ((y1 - e.sprite.y) / self.radar_scale)
-                to_draw.append(pyglet.sprite.Sprite(self.red_dot, x_loc, y_loc, batch=gfx_batch)) # noqa
+        # for e in self.master.enemies:
+        #     if abs(x1 - e.sprite.x) + abs(y1 - e.sprite.y) <= self.radar_range:
+        #         x_loc = self.x_mid - ((x1 - e.sprite.x) / self.radar_scale)
+        #         y_loc = self.y_mid - ((y1 - e.sprite.y) / self.radar_scale)
+        #         to_draw.append(pyglet.sprite.Sprite(self.red_dot, x_loc, y_loc, batch=gfx_batch)) # noqa
         self.to_draw = to_draw
 
 class Resources(object):
@@ -120,108 +121,17 @@ class Resources(object):
         self.update_timer()
         self.update_labs()
 
-class Pip(object):  # Personal Information Panel (PIP)
-    def __init__(self, master):
-        self.master = master
-        self.player = master.player
-        self.black_sprite = pyglet.image.SolidColorImagePattern(color=(0, 0, 0, 150))
-        self.black_dot = pyglet.image.create(10, 10, self.black_sprite)
-        self.sprite = pyglet.sprite.Sprite(self.black_dot,
-                    0, 0, batch=gfx_batch)
-        self.collision = SpriteCollision(self.sprite)
-
-        self.marker = []
-
-    def update(self):
-        self.marker = []
-        if self.player.target:
-            try:
-                x_dist = self.player.target.sprite.x - float(self.master.player.sprite.x)
-                y_dist = self.player.target.sprite.y - float(self.master.player.sprite.y)
-                self.build_target(self.player.target)
-                master.player.attack()
-            except:
-                self.player.target = None
-        else:
-            x_dist = self.sprite.x - float(self.master.player.sprite.x)
-            y_dist = self.sprite.y - float(self.master.player.sprite.y)
-        deg = (math.degrees(math.atan2(y_dist, x_dist)) * -1) + 90
-        self.master.player.sprite.rotation = deg
-
-    def closest_enemy(self):
-        try:
-            min_dist = float("inf")
-            x1 = self.master.player.sprite.x
-            y1 = self.master.player.sprite.y
-            if len(self.master.enemies) == 0:
-                return False
-            for e in self.master.enemies:
-                dist = abs(math.hypot(x1 - e.sprite.x, y1 - e.sprite.y))
-                if dist < min_dist:
-                    min_dist = dist
-                    self.player.target = e
-        except:
-            self.player.target = None
-
-    def build_target(self, e):
-        # frame = 10
-        bar = 2
-        # half = 5
-        self.player.target = e
-        h = e.sprite.height
-        w = e.sprite.width
-        v = max(h, w)
-        v2 = v / 2
-        x = e.sprite.x
-        y = e.sprite.y
-
-        vs = pyglet.image.create(bar, v2, red_sprite)
-        hs = pyglet.image.create(v2, bar, red_sprite)
-
-        self.marker = [
-            #  Bottom two verticals
-            pyglet.sprite.Sprite(vs, x - v - 2, y - v, batch=gfx_batch),  # noqa 
-            pyglet.sprite.Sprite(vs, x + v, y - v, batch=gfx_batch),  # noqa 
-            #  Bottom two horizontals
-            pyglet.sprite.Sprite(hs, x - v - 2, y - v, batch=gfx_batch),  # noqa 
-            pyglet.sprite.Sprite(hs, x + v - v2 + 2, y - v, batch=gfx_batch),  # noqa 
-            #  Top two verticals
-            pyglet.sprite.Sprite(vs, x - v - 2, y + v, batch=gfx_batch),  # noqa 
-            pyglet.sprite.Sprite(vs, x + v, y + v, batch=gfx_batch),  # noqa 
-            #  Top two horizontals
-            pyglet.sprite.Sprite(hs, x - v - 2, y + v + 5, batch=gfx_batch),  # noqa 
-            pyglet.sprite.Sprite(hs, x + v - v2 + 2, y + v + 5, batch=gfx_batch),  # noqa 
-
-        ]
-
-    def update_target(self):
-        red_sprite = pyglet.image.SolidColorImagePattern(color=(255, 0, 0, 150))
-        self.red_dot = pyglet.image.create(5, 5, red_sprite)
-
-        for e in master.enemies:
-            if collide(self.collision, e.collision):
-                self.build_target(e)
-                break
 
 master.loot = Loot(master)
 master.resources = Resources(master)
 master.radar = Radar(master)
 master.threat = Threat(master)
 master.spriteeffect = SpriteEffect(master)
+
 # master.player = load_save(save_1)
-master.player = Player(master, base=plasmaslinger_base)
-master.pip = Pip(master)
+
+master.player = Player(master, base=player_base)
+master.player_controller = master.player.controller
 
 master.home = pyglet.sprite.Sprite(load_image('home.png'),
             window_width_half, window_height_half, batch=gfx_batch)
-
-# for i in range(5):
-#     master.enemies.append(Soldier(master, base=gen_soldier_base() )) # noqa
-
-# for i in range(2):
-#   master.enemies.append(Slime(master, base=gen_slime_base() )) # noqa
-
-for i in range(0):
-    master.objects.append(Box(master)) # noqa
-
-master.friends = [Cannon(master, base=gen_cannon_base())]

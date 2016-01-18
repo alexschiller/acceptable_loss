@@ -110,8 +110,8 @@ save_1 = {
         'velocity': 30,
         'accuracy': 65,
         'rof': .5,
-        'crit_chance': 10,
-        'crit_multiplier': 3,
+        'crit': 10,
+        'crit_damage': 3,
         'image': load_image('pm_magnum.png'), # noqa
         'gun_fire_sound': load_sound('laser.wav'), # noqa
         'on_hit_sound': load_sound('on_hit.wav'), # noqa
@@ -136,8 +136,8 @@ save_1 = {
         'velocity': 30,
         'accuracy': 85,
         'rof': 2,
-        'crit_chance': 2,
-        'crit_multiplier': 2,
+        'crit': 2,
+        'crit_damage': 2,
         'image': load_image('pm_magnum.png'), # noqa
         'gun_fire_sound': load_sound('laser.wav'), # noqa
         'on_hit_sound': load_sound('on_hit.wav'), # noqa

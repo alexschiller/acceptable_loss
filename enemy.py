@@ -37,7 +37,6 @@ class Enemy(Character):
 
         self.build_character(kwargs['base'])
 
-        self.ai_time = random.randint(0, 60)
 
         self.touch_damage = 0
 
@@ -81,15 +80,3 @@ class Enemy(Character):
             self.on_collide()
 
         self.required_updates()
-
-class Soldier(Enemy):
-    def __init__(self, *args, **kwargs):
-        super(Soldier, self).__init__(*args, **kwargs)
-
-    def on_collide(self):
-        ret = calc_vel_xy(self.player.sprite.x, self.player.sprite.y,
-        self.sprite.x, self.sprite.y, 10)
-        self.sprite.x -= ret[0] * 2
-        self.sprite.y -= ret[1] * 2
-        self.player.sprite.x += ret[0]
-        self.player.sprite.y += ret[1]
