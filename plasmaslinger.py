@@ -40,23 +40,29 @@ class BolaEffect(object):
             x1 = self.sprite.x
             y1 = self.sprite.y
             self.target = None
-            for e in self.master.enemies:
+            for e in self.owner.owner.enemies:
                 dist = abs(math.hypot(x1 - e.sprite.x, y1 - e.sprite.y))
                 if dist < min_dist:
                     min_dist = dist
                     self.target = e
+            return min_dist
         except:
             self.target = None
 
     def shoot(self):
-        self.get_target()
+        enemy_range = self.get_target()
         if self.target:
-            self.owner.gun_one.fire(self.sprite.x,
+            bullet_base = self.owner.build_bullet(
+                self.owner.gun_one,
+                self.sprite.x,
                 self.sprite.y,
                 self.target.sprite.x,
                 self.target.sprite.y,
-                self.owner.owner, self.target,
-            True, self.owner.plasma_shot)
+                enemy_range,
+                self.target,)
+            bullet_base['damage']
+            bullet_base['image'] = self.owner.plasma_shot
+            self.owner.thrown.append(Thrown(self.master, self.owner, bullet_base))
         self.remove_bola()
 
     def update(self):
@@ -103,6 +109,14 @@ class PlasmaslingerAbility(Ability):
             self.plasma += .3 * self.plasma / self.max_plasma + .05
         else:
             self.plasma = self.max_plasma
+
+    def enemy_in_range(self, enemy, gun):
+            dist_x = self.owner.sprite.x - enemy.sprite.x
+            dist_y = self.owner.sprite.y - enemy.sprite.y
+            dist = math.hypot(dist_x, dist_y)
+            if dist < gun['travel']:
+                return dist
+            return False
 
     # def magnum_double_tap(self):
     #     if self.action_checks(10):
@@ -172,14 +186,6 @@ class PlasmaslingerAbility(Ability):
                 self.trigger_global_cooldown()
                 self.plasma -= 10
 
-    def enemy_in_range(self, enemy, gun):
-            dist_x = self.owner.sprite.x - enemy.sprite.x
-            dist_y = self.owner.sprite.y - enemy.sprite.y
-            dist = math.hypot(dist_x, dist_y)
-            if dist < gun['travel']:
-                return dist
-            return False
-
     def carbine_crackerjack(self):
         if not self.global_cooldown and self.plasma >= 30:
             for e in self.owner.enemies:
@@ -198,22 +204,3 @@ class PlasmaslingerAbility(Ability):
                     self.thrown.append(Thrown(master, self, bullet_base))
             self.trigger_global_cooldown()
             self.plasma -= 30
-
-
-            # if self.gun_one.fire(self.sprite.x, self.sprite.y, self.target.sprite.x, self.target.sprite.y, self, self.target, True): # noqa  
-            #     self.trigger_global_cooldown()
-            #     keep_going = 1
-            #     keep_count = 0
-            #     while keep_going:
-            #         if random.choice([1, 1, 1, 0]):
-            #             keep_count += 1
-            #             self.delayed.append(
-            #                 [4 * keep_count,
-            #                 partial(self.gun_one.fire, self.sprite.x,
-            #                 self.sprite.y, self.target.sprite.x,
-            #                 self.target.sprite.y, self, self.target, True)]
-            #             )
-            #         else:
-            #             keep_going = 0
-
-                # self.master.spriteeffect.message(self.sprite.x, self.sprite.y, 'shot: ' + str(keep_count), time=90) # noqa

@@ -120,7 +120,7 @@ class PlayerController(Controller):
         self.marker = []
 
     def slot_one_fire(self):
-        self.puppet.ability.carbine_bushwhack()
+        self.puppet.ability.magnum_california_prayer_book()
 
     def slot_two_fire(self):
         self.puppet.ability.carbine_crackerjack()
@@ -406,7 +406,7 @@ class Character(object):
         self.controller = base['controller'](self)
         self.stats = StatsManager(base['stats'])
         self.ability = base['ability'](
-            base['ability_build'],
+            self.master,
             self,
             base['weapon_slot_one'],
             base['weapon_slot_two']
