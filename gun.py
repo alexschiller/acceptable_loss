@@ -204,12 +204,12 @@ pm_carbine = {
         'level': 1,
         'damage': 3,
         'travel': 600,
-        'velocity': 30,
+        'velocity': 100,
         'accuracy': 85,
         'rof': 2,
         'crit': 2,
-        'crit_multiplier': 2,
-        'image': load_image('pm_magnum.png'), # noqa
+        'crit_damage': 2,
+        'image': load_image('snipe.png'), # noqa
         'gun_fire_sound': load_sound('laser.wav'), # noqa
         'on_hit_sound': load_sound('on_hit.wav'), # noqa
         'effects': [],
@@ -229,17 +229,32 @@ pm_carbine = {
 
 
 pm_magnum = {
-    'damage': 7,
-    'travel': 300,
-    'velocity': 30,
-    'accuracy': 65,
-    'rof': .5,
-    'crit': 10,
-    'crit_multiplier': 3,
-    'image': load_image('pm_magnum.png'),
-    'gun_fire_sound': load_sound('laser.wav'),
-    'on_hit_sound': load_sound('on_hit.wav'),
-    'effects': [],
+        'name': 'Level 1 Magnum (50/100)',
+        'gun_class': 'magnum',
+        'level': 1,
+        'damage': 7,
+        'travel': 400,
+        'velocity': 40,
+        'accuracy': 75,
+        'rof': 1,
+        'crit': 10,
+        'crit_damage': 3,
+        'image': load_image('pm_magnum.png'), # noqa
+        'gun_fire_sound': load_sound('laser.wav'), # noqa
+        'on_hit_sound': load_sound('on_hit.wav'), # noqa
+        'effects': [],
+        'gem_slots': {
+            '1': {
+                'color': 'red',
+                'current_gem': {
+                    'color': 'red',
+                    'level': 2,
+                    'damage': 10,
+                    'accuracy': 5,
+                    'effect': 'fire'
+                },
+            },
+        },
 }
 
 # pm_carbine = {

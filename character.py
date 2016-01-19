@@ -28,32 +28,48 @@ class Controller(object):
         # if self.target:
             # self.gun.fire(self.sprite.x, self.sprite.y, self.target.sprite.x, self.target.sprite.y, self, self.target) # noqa                    
 
-    def auto_attack():
+    def auto_attack(self):
         pass
 
-    def switch_auto_attack():
+    def switch_auto_attack(self):
         pass
 
-    def slot_one_fire():
+    def slot_one_fire(self):
         pass
 
-    def slot_two_fire():
+    def slot_two_fire(self):
         pass
 
-    def slot_three_fire():
+    def slot_three_fire(self):
         pass
 
-    def slot_four_fire():
+    def slot_four_fire(self):
         pass
 
-    def slot_five_fire():
+    def slot_five_fire(self):
         pass
 
-    def slot_six_fire():
+    def slot_six_fire(self):
         pass
 
     def update(self):
-        pass
+        if self.puppet.target:
+            self.rotate(self.puppet.target.sprite.x, self.puppet.target.sprite.y)
+            if self.puppet.ability.gun_one['travel'] > math.hypot(
+                self.puppet.sprite.x - self.puppet.target.sprite.x,
+                self.puppet.sprite.y - self.puppet.target.sprite.y
+            ):
+                self.puppet.ability.auto_attack()
+            else:
+                ret = calc_vel_xy(self.puppet.target.sprite.x,
+                    self.puppet.target.sprite.y,
+                    self.puppet.sprite.x,
+                    self.puppet.sprite.y,
+                    1)
+                self.move(ret[0], ret[1])
+
+        else:
+            self.target_closest_enemy()
 
     ## AI Commands
 
@@ -70,6 +86,7 @@ class Controller(object):
                     min_dist = dist
                     self.puppet.target = e
         except:
+            print "fail"
             self.puppet.target = None
 
     def update_movement(self):
@@ -81,6 +98,7 @@ class Controller(object):
 
     def update_attack(self):
         pass
+
         # if math.hypot(abs(self.puppet.sprite.x - self.puppet.target.sprite.x), abs(self.puppet.sprite.y - self.puppet.target.sprite.y)) < self.puppet.gun.travel: # noqa
         # self.attack()
 
@@ -100,6 +118,12 @@ class PlayerController(Controller):
         red_sprite = pyglet.image.SolidColorImagePattern(color=(255, 0, 0, 150))
         self.red_dot = pyglet.image.create(5, 5, red_sprite)
         self.marker = []
+
+    def slot_one_fire(self):
+        self.puppet.ability.carbine_bushwhack()
+
+    def slot_two_fire(self):
+        self.puppet.ability.carbine_crackerjack()
 
     def update_target(self):
         for e in self.puppet.enemies:
@@ -149,7 +173,7 @@ class PlayerController(Controller):
             self.rotate(self.sprite.x, self.sprite.y)
 
     def update(self):
-        # self.puppet.update_bars()
+        self.puppet.update_bars()
         self.check_target()
 
 
@@ -179,6 +203,7 @@ class StatsManager(object):
         self._speed = base.get('speed', 0)
         self.delayed = []
 
+        self.mods = 0
         self.mod = {
             'shield_max': 0,
             'shield_regen': 0,
@@ -212,11 +237,13 @@ class StatsManager(object):
         for p in self.delayed:
             p[0] -= 1
             if p[0] == 0:
+                self.mods -= 1
                 self.mod[p[1]] -= p[2]
                 self.delayed.remove(p)
 
     def temp_stat_change(self, time, stat, modifier):
         self.mod[stat] += modifier
+        self.mods += 1
         self.delayed.append([time, stat, modifier])
         pass
 
@@ -297,44 +324,44 @@ class StatsManager(object):
     def speed(self):
         return self._speed + self.mod['speed']
 
-enemy_soldier_base = {
-    'sprite': load_image('soldier.png'),
-    # 'coord': random.choice([[-50, random.randint(0, window_height)], [random.randint(0, window_width), -50]]),  # noqa
-    'coord': [500, 500],  # noqa
-    'weapon_slot_one': pm_magnum,
-    'weapon_slot_two': pm_carbine,
-    'ability': Ability,
-    'ability_build': None,
-    'color': 'red',
-    'friends': 'red',
-    'enemies': 'blue',
-    'blood_color': (255, 10, 10, 255),
-    'controller': Controller,
-    'stats': {
-        'shield_max': 5,
-        'shield_regen': 1,
-        'shield': 5,
-        'health_max': 10,
-        'health_regen': 0,
-        'health': 10,
-        'damage_raw': 0,
-        'damage_percent': 1,
-        'attack_speed': 1,
-        'crit': 0,
-        'crit_damage': 0,
-        'accuracy': 0,
-        'evade': 0,
-        'armor': 1,
-        'speed': 2
-    },
-}
+def enemy_soldier_base():
+    return {
+        'sprite': load_image('soldier.png'),
+        'coord': random.choice([[-50, random.randint(0, window_height)], [random.randint(0, window_width), -50]]),  # noqa
+        'weapon_slot_one': pm_magnum,
+        'weapon_slot_two': pm_carbine,
+        'ability': Ability,
+        'ability_build': None,
+        'color': 'red',
+        'friends': 'red',
+        'enemies': 'blue',
+        'blood_color': (255, 10, 10, 255),
+        'controller': Controller,
+        'stats': {
+            'shield_max': 5,
+            'shield_regen': 1,
+            'shield': 5,
+            'health_max': 10,
+            'health_regen': 0,
+            'health': 10,
+            'damage_raw': 0,
+            'damage_percent': 1,
+            'attack_speed': 1,
+            'crit': 0,
+            'crit_damage': 0,
+            'accuracy': 0,
+            'evade': 0,
+            'armor': 1,
+            'speed': 2
+        },
+    }
 
 player_base = {
     'sprite': load_image('dreadnaught.png'),
     'coord': [window_width / 2, window_height / 2],
     'weapon_slot_one': pm_magnum,
     'weapon_slot_two': pm_carbine,
-    'ability': Ability,
+    'ability': PlasmaslingerAbility,
     'ability_build': None,
     'color': 'blue',
     'friends': 'blue',
@@ -348,9 +375,9 @@ player_base = {
         'health_max': 50,
         'health_regen': 0,
         'health': 50,
-        'damage_raw': 0,
+        'damage_raw': 1,
         'damage_percent': 1,
-        'attack_speed': 1,
+        'attack_speed': 2,
         'crit': 0,
         'crit_damage': 0,
         'accuracy': 0,
@@ -401,6 +428,11 @@ class Character(object):
                 self.sprite.x - self.sprite.width,
                 self.sprite.y + self.sprite.height + 5, batch=BarBatch))
 
+    def update_bar_position(self):
+        for n, bar in enumerate(self.bars):
+            bar.x = self.sprite.x - self.sprite.width
+            bar.y = self.sprite.y + self.sprite.height + n * 5
+
     def death_check(self):
         if self.stats.health <= 0:
             self.on_death()
@@ -412,6 +444,7 @@ class Character(object):
         self.master.loot.pack_package(self.generate_loot(), self.sprite.x, self.sprite.y)
         try:
             self.sprite.delete()
+            self.ability.thrown = []
             self.master.people[self.base['color']].remove(self)
         except:
             pass
@@ -424,7 +457,7 @@ class Character(object):
             self.spriteeffect.bullet_wound(bullet.vel_x, bullet.vel_y, self.sprite.x, self.sprite.y, splatter, self.blood_color) # noqa
 
     def update(self):
-        self.update_bars()
+        self.update_bar_position()
         self.controller.update()
         self.ability.update()
         self.death_check()

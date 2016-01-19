@@ -30,7 +30,7 @@ class BolaEffect(object):
         self.master.spriteeffect.bola_explosion(self.sprite.x, self.sprite.y)
         try:
             self.sprite.delete()
-            self.owner.queue.remove(self)
+            self.owner.thrown.remove(self)
         except:
             pass
 
@@ -76,16 +76,15 @@ class PlasmaslingerAbility(Ability):
         self.plasma = 100
         self.max_plasma = 100
         self.vat = pyglet.sprite.Sprite(load_image('plasma_vat.png', anchor=False), window_width-472, 0, batch=gfx_batch),  # noqa
-        self.queue = []
         self.plasma_shot = load_image('bola_shot.png')
         self.bushwhack_shot = load_image('bushwhack_shot.png')
 
     def update(self):
-        self.update_plasma()
-        self.update_guns()
         self.update_delayed()
-        for q in self.queue:
-            q.update()
+        self.update_plasma()
+
+        for t in self.thrown:
+            t.update()
 
         ph = int(max(115 * self.plasma / 100, 1))
         self.plasma_bar = pyglet.sprite.Sprite(
@@ -99,47 +98,43 @@ class PlasmaslingerAbility(Ability):
                     return True
         return False
 
-    def update_guns(self):
-        for g in self.guns:
-            g.update()
-
     def update_plasma(self):
         if self.plasma < self.max_plasma:
             self.plasma += .3 * self.plasma / self.max_plasma + .05
         else:
             self.plasma = self.max_plasma
 
-    def magnum_double_tap(self):
-        if self.action_checks(10):
-            if self.gun_one.fire(self.owner.sprite.x,
-                self.owner.sprite.y,
-                self.owner.target.sprite.x,
-                self.owner.target.sprite.y,
-                self.owner, self.owner.target,
-            True):
-                self.delayed.append(
-                    [2,
-                        partial(self.gun_one.fire,
-                        self.owner.sprite.x,
-                        self.owner.sprite.y,
-                        self.owner.target.sprite.x,
-                        self.owner.target.sprite.y,
-                        self.owner,
-                        self.owner.target, True)
-                    ]) # noqa
-                self.trigger_global_cooldown()
-                self.plasma -= 10
+    # def magnum_double_tap(self):
+    #     if self.action_checks(10):
+    #         if self.gun_one.fire(self.owner.sprite.x,
+    #             self.owner.sprite.y,
+    #             self.owner.target.sprite.x,
+    #             self.owner.target.sprite.y,
+    #             self.owner, self.owner.target,
+    #         True):
+    #             self.delayed.append(
+    #                 [2,
+    #                     partial(self.gun_one.fire,
+    #                     self.owner.sprite.x,
+    #                     self.owner.sprite.y,
+    #                     self.owner.target.sprite.x,
+    #                     self.owner.target.sprite.y,
+    #                     self.owner,
+    #                     self.owner.target, True)
+    #                 ]) # noqa
+    #             self.trigger_global_cooldown()
+    #             self.plasma -= 10
 
-    def magnum_five_beans_in_the_wheel(self):
-        if self.action_checks(30):
-            for i in range(5):
-                self.queue.append(
-                    BolaEffect(self.master, self, self.owner.sprite.x,
-                    self.owner.sprite.y, self.owner.target.sprite.x,
-                    self.owner.target.sprite.y,)
-                )
-            self.trigger_global_cooldown()
-            self.plasma -= 30
+    # def magnum_five_beans_in_the_wheel(self):
+    #     if self.action_checks(30):
+    #         for i in range(5):
+    #             self.thrown.append(
+    #                 BolaEffect(self.master, self, self.owner.sprite.x,
+    #                 self.owner.sprite.y, self.owner.target.sprite.x,
+    #                 self.owner.target.sprite.y,)
+    #             )
+    #         self.trigger_global_cooldown()
+    #         self.plasma -= 30
 
     def magnum_california_prayer_book(self):
         if self.action_checks(5):
@@ -147,7 +142,7 @@ class PlasmaslingerAbility(Ability):
             keep_count = 0
             while keep_going:
                 if random.choice([1, 1, 1, 0]):
-                    self.queue.append(
+                    self.thrown.append(
                         BolaEffect(self.master, self, self.owner.sprite.x,
                             self.owner.sprite.y, self.owner.target.sprite.x,
                             self.owner.target.sprite.y,)
@@ -161,14 +156,49 @@ class PlasmaslingerAbility(Ability):
 
     def carbine_bushwhack(self):
         if self.action_checks(10):
-            if self.gun_two.fire(self.owner.sprite.x,
-                self.owner.sprite.y,
-                self.owner.target.sprite.x,
-                self.owner.target.sprite.y,
-                self.owner, self.owner.target,
-            True, self.bushwhack_shot):
+            enemy_range = self.can_ability_shoot(self.gun_two)
+            if enemy_range:
+                bullet_base = self.build_bullet(
+                    self.gun_two,
+                    self.owner.sprite.x,
+                    self.owner.sprite.y,
+                    self.owner.target.sprite.x,
+                    self.owner.target.sprite.y,
+                    enemy_range,
+                    self.owner.target,)
+                bullet_base['damage'] *= 1.9
+                bullet_base['image'] = self.bushwhack_shot
+                self.thrown.append(Thrown(master, self, bullet_base))
                 self.trigger_global_cooldown()
                 self.plasma -= 10
+
+    def enemy_in_range(self, enemy, gun):
+            dist_x = self.owner.sprite.x - enemy.sprite.x
+            dist_y = self.owner.sprite.y - enemy.sprite.y
+            dist = math.hypot(dist_x, dist_y)
+            if dist < gun['travel']:
+                return dist
+            return False
+
+    def carbine_crackerjack(self):
+        if not self.global_cooldown and self.plasma >= 30:
+            for e in self.owner.enemies:
+                enemy_range = self.enemy_in_range(e, self.gun_two)
+                if enemy_range:
+                    bullet_base = self.build_bullet(
+                        self.gun_two,
+                        self.owner.sprite.x,
+                        self.owner.sprite.y,
+                        e.sprite.x,
+                        e.sprite.y,
+                        enemy_range,
+                        e,)
+                    bullet_base['damage']
+                    bullet_base['image'] = self.bushwhack_shot
+                    self.thrown.append(Thrown(master, self, bullet_base))
+            self.trigger_global_cooldown()
+            self.plasma -= 30
+
 
             # if self.gun_one.fire(self.sprite.x, self.sprite.y, self.target.sprite.x, self.target.sprite.y, self, self.target, True): # noqa  
             #     self.trigger_global_cooldown()

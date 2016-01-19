@@ -35,11 +35,8 @@ class Master(object):
         for p in self.people['blue']:
             p.update()
 
-        try:
-            for p in self.people['red']:
-                p.update()
-        except:
-            print "kale fail"
+        for p in self.people['red']:
+            p.update()
 
         for b in self.buildings:
             b.update()

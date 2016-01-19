@@ -100,32 +100,8 @@ class Ability(object):
         self.global_cooldown = False
         self.aa_cooldown = False
         self.thrown = []
-        # 'shield_max': 10,
-        # 'shield_regen': 1,
-        # 'shield': 10,
-        # 'health_max': 50,
-        # 'health_regen': 0,
-        # 'health': 50,
-        # 'damage_raw': 0,
-        # 'damage_percent': 100,
-        # 'attack_speed': 0,
-        # 'crit': 0,
-        # 'crit_damage': 0,
-        # 'accuracy': 0,
-        # 'evade': 0,
-        # 'armor': 4,
-        # 'speed': 3
 
-    def build_bullet(self, start_x, start_y, target_x, target_y, enemy_range, enemy, image=None): # noqa
-        gun = {'damage': 3,
-            'travel': 600,
-            'velocity': 30,
-            'accuracy': 85,
-            'rof': 1,
-            'crit': 2,
-            'crit_damage': 2,
-            'image': load_image('pm_magnum.png')}
-
+    def build_bullet(self, gun, start_x, start_y, target_x, target_y, enemy_range, enemy, image=None): # noqa
         calc_gun = {}
         calc_gun['damage'] = (self.owner.stats.damage_raw + gun['damage']) * self.owner.stats.damage_percent # noqa
         calc_gun['travel'] = gun['travel']
@@ -184,10 +160,21 @@ class Ability(object):
                     return dist
         return False
 
+    def can_ability_shoot(self, gun):
+        if not self.global_cooldown:
+            if self.owner.target:
+                dist_x = self.owner.sprite.x - self.owner.target.sprite.x
+                dist_y = self.owner.sprite.y - self.owner.target.sprite.y
+                dist = math.hypot(dist_x, dist_y)
+                if dist < gun['travel']:
+                    return dist
+        return False
+
     def auto_attack(self):
         enemy_range = self.can_aa_shoot()
         if enemy_range:
             bullet_base = self.build_bullet(
+                self.gun_two,
                 self.owner.sprite.x,
                 self.owner.sprite.y,
                 self.owner.target.sprite.x,

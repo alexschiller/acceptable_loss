@@ -260,8 +260,8 @@ class MainState(object):
         master.player_controller.move(mx, my)
 
         if key_handler[key._1]:
-            Character(master, enemy_soldier_base)
-            # master.player_controller.slot_one_fire()
+            # Character(master, enemy_soldier_base())
+            master.player_controller.slot_one_fire()
 
         if key_handler[key._2]:
             master.player_controller.slot_two_fire()
