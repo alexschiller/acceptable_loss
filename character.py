@@ -4,6 +4,7 @@ from utility import * # noqa
 import pyglet
 from gun import * # noqa
 from plasmaslinger import * # noqa
+from spectre import * # noqa
 
 class Controller(object):
     def __init__(self, puppet):
@@ -86,7 +87,6 @@ class Controller(object):
                     min_dist = dist
                     self.puppet.target = e
         except:
-            print "fail"
             self.puppet.target = None
 
     def update_movement(self):
@@ -120,7 +120,7 @@ class PlayerController(Controller):
         self.marker = []
 
     def slot_one_fire(self):
-        self.puppet.ability.magnum_california_prayer_book()
+        self.puppet.ability.magnum_double_tap()
 
     def slot_two_fire(self):
         self.puppet.ability.carbine_crackerjack()
@@ -248,10 +248,14 @@ class StatsManager(object):
         pass
 
     def update_stats(self):
-        if self.shield < self.shield_max:
-            self._shield += self._shield_regen / 60
-        if self.health < self.health_max:
-            self._health += self._health_regen / 60
+        if self._shield < self.shield_max:
+            self._shield += self.shield_regen / 60.0
+        else:
+            self._shield = self.shield_max
+        if self._health < self.health_max:
+            self._health += self.health_regen / 60.0
+        else:
+            self._health = self.health_max
 
     def update(self):
         self.update_stats()
@@ -277,12 +281,20 @@ class StatsManager(object):
         return self._shield
 
     @property
+    def shield_regen(self):
+        return self._shield_regen + self.mod['shield_regen']
+
+    @property
     def health_max(self):
         return self._health_max + self.mod['health_max']
 
     @property
     def health(self):
         return self._health
+
+    @property
+    def health_regen(self):
+        return self._health_regen + self.mod['health_regen']
 
     @property
     def damage_raw(self):
@@ -360,8 +372,8 @@ player_base = {
     'sprite': load_image('dreadnaught.png'),
     'coord': [window_width / 2, window_height / 2],
     'weapon_slot_one': pm_magnum,
-    'weapon_slot_two': pm_carbine,
-    'ability': PlasmaslingerAbility,
+    'weapon_slot_two': sp_blade,
+    'ability': SpectreAbility,
     'ability_build': None,
     'color': 'blue',
     'friends': 'blue',
@@ -377,7 +389,7 @@ player_base = {
         'health': 50,
         'damage_raw': 1,
         'damage_percent': 1,
-        'attack_speed': 2,
+        'attack_speed': 1,
         'crit': 0,
         'crit_damage': 0,
         'accuracy': 0,
@@ -409,7 +421,7 @@ class Character(object):
             self.master,
             self,
             base['weapon_slot_one'],
-            base['weapon_slot_two']
+            base['weapon_slot_two'],
         )
 
     def update_bars(self):
@@ -457,6 +469,7 @@ class Character(object):
             self.spriteeffect.bullet_wound(bullet.vel_x, bullet.vel_y, self.sprite.x, self.sprite.y, splatter, self.blood_color) # noqa
 
     def update(self):
+        self.stats.update()
         self.update_bar_position()
         self.controller.update()
         self.ability.update()

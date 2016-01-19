@@ -227,6 +227,34 @@ pm_carbine = {
         },
 }
 
+sp_blade = {
+        'name': 'Level 1 Carbine (50/100)',
+        'gun_class': 'blade',
+        'level': 1,
+        'damage': 1,
+        'travel': 50,
+        'velocity': 50,
+        'accuracy': 85,
+        'rof': 10,
+        'crit': 2,
+        'crit_damage': 2,
+        'image': load_image('blade.png'), # noqa
+        'gun_fire_sound': load_sound('laser.wav'), # noqa
+        'on_hit_sound': load_sound('on_hit.wav'), # noqa
+        'effects': [],
+        'gem_slots': {
+            '1': {
+                'color': 'red',
+                'current_gem': {
+                    'color': 'red',
+                    'level': 2,
+                    'damage': 10,
+                    'accuracy': 5,
+                    'effect': 'fire'
+                },
+            },
+        },
+}
 
 pm_magnum = {
         'name': 'Level 1 Magnum (50/100)',

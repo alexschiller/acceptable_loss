@@ -156,7 +156,7 @@ class Ability(object):
                 dist_x = self.owner.sprite.x - self.owner.target.sprite.x
                 dist_y = self.owner.sprite.y - self.owner.target.sprite.y
                 dist = math.hypot(dist_x, dist_y)
-                if dist < self.gun_one['travel']:
+                if dist < self.gun_two['travel']:
                     return dist
         return False
 

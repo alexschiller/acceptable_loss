@@ -118,37 +118,45 @@ class PlasmaslingerAbility(Ability):
                 return dist
             return False
 
-    # def magnum_double_tap(self):
-    #     if self.action_checks(10):
-    #         if self.gun_one.fire(self.owner.sprite.x,
-    #             self.owner.sprite.y,
-    #             self.owner.target.sprite.x,
-    #             self.owner.target.sprite.y,
-    #             self.owner, self.owner.target,
-    #         True):
-    #             self.delayed.append(
-    #                 [2,
-    #                     partial(self.gun_one.fire,
-    #                     self.owner.sprite.x,
-    #                     self.owner.sprite.y,
-    #                     self.owner.target.sprite.x,
-    #                     self.owner.target.sprite.y,
-    #                     self.owner,
-    #                     self.owner.target, True)
-    #                 ]) # noqa
-    #             self.trigger_global_cooldown()
-    #             self.plasma -= 10
+    def add_bullet(self, bullet_base):
+        self.thrown.append(Thrown(master, self, bullet_base))
 
-    # def magnum_five_beans_in_the_wheel(self):
-    #     if self.action_checks(30):
-    #         for i in range(5):
-    #             self.thrown.append(
-    #                 BolaEffect(self.master, self, self.owner.sprite.x,
-    #                 self.owner.sprite.y, self.owner.target.sprite.x,
-    #                 self.owner.target.sprite.y,)
-    #             )
-    #         self.trigger_global_cooldown()
-    #         self.plasma -= 30
+    def magnum_double_tap(self):
+        if self.action_checks(10):
+            enemy_range = self.can_ability_shoot(self.gun_one)
+            if enemy_range:
+                bullet_base = self.build_bullet(
+                    self.gun_one,
+                    self.owner.sprite.x,
+                    self.owner.sprite.y,
+                    self.owner.target.sprite.x,
+                    self.owner.target.sprite.y,
+                    enemy_range,
+                    self.owner.target,)
+                bullet_base['image'] = self.plasma_shot
+                self.add_bullet(bullet_base)
+                self.delayed.append([5, partial(self.add_bullet, bullet_base)])
+                self.trigger_global_cooldown()
+                self.plasma -= 10
+
+    def magnum_five_beans_in_the_wheel(self):
+        if self.action_checks(10):
+            enemy_range = self.can_ability_shoot(self.gun_one)
+            if enemy_range:
+                bullet_base = self.build_bullet(
+                    self.gun_two,
+                    self.owner.sprite.x,
+                    self.owner.sprite.y,
+                    self.owner.target.sprite.x,
+                    self.owner.target.sprite.y,
+                    enemy_range,
+                    self.owner.target,)
+                bullet_base['damage'] *= .5
+                bullet_base['image'] = self.bushwhack_shot
+                self.owner.stats.temp_stat_change(180, 'health_regen', bullet_base['damage']) # noqa
+                self.thrown.append(Thrown(master, self, bullet_base))
+                self.trigger_global_cooldown()
+                self.plasma -= 10
 
     def magnum_california_prayer_book(self):
         if self.action_checks(5):
@@ -187,7 +195,7 @@ class PlasmaslingerAbility(Ability):
                 self.plasma -= 10
 
     def carbine_crackerjack(self):
-        if not self.global_cooldown and self.plasma >= 30:
+        if not self.global_cooldown and self.plasma >= 10:
             for e in self.owner.enemies:
                 enemy_range = self.enemy_in_range(e, self.gun_two)
                 if enemy_range:
@@ -203,4 +211,4 @@ class PlasmaslingerAbility(Ability):
                     bullet_base['image'] = self.bushwhack_shot
                     self.thrown.append(Thrown(master, self, bullet_base))
             self.trigger_global_cooldown()
-            self.plasma -= 30
+            self.plasma -= 10
