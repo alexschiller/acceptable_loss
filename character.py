@@ -120,7 +120,7 @@ class PlayerController(Controller):
         self.marker = []
 
     def slot_one_fire(self):
-        self.puppet.ability.magnum_double_tap()
+        self.puppet.ability.sniper_grand_entrance()
 
     def slot_two_fire(self):
         self.puppet.ability.carbine_crackerjack()
@@ -371,8 +371,8 @@ def enemy_soldier_base():
 player_base = {
     'sprite': load_image('dreadnaught.png'),
     'coord': [window_width / 2, window_height / 2],
-    'weapon_slot_one': pm_magnum,
-    'weapon_slot_two': sp_blade,
+    'weapon_slot_one': sp_blade,
+    'weapon_slot_two': pm_carbine,
     'ability': SpectreAbility,
     'ability_build': None,
     'color': 'blue',

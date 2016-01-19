@@ -85,7 +85,7 @@ class SpectreAbility(Ability):
         self.vul_max = 100
 
         self.vat = pyglet.sprite.Sprite(load_image('opp_vul_bar.png', anchor=False), window_width-472, 0, batch=gfx_batch),  # noqa
-        # self.plasma_shot = load_image('bola_shot.png')
+        self.shadow_shot = load_image('shadow.png')
         # self.bushwhack_shot = load_image('bushwhack_shot.png')
 
     def update(self):
@@ -105,12 +105,12 @@ class SpectreAbility(Ability):
             pyglet.image.create(15, vh, white_sprite),
             window_width - 433, 5, batch=BarBatch)
 
-    # def action_checks(self, plasma):
-    #     if self.owner.target:
-    #         if not self.global_cooldown:
-    #             if self.plasma >= plasma:
-    #                 return True
-    #     return False
+    def action_checks(self, opp, vul):
+        if self.owner.target:
+            if not self.global_cooldown:
+                if self.opp >= opp and self.vul >= vul:
+                    return True
+        return False
 
     # def update_plasma(self):
     #     if self.plasma < self.max_plasma:
@@ -129,23 +129,38 @@ class SpectreAbility(Ability):
     def add_bullet(self, bullet_base):
         self.thrown.append(Thrown(master, self, bullet_base))
 
-    # def magnum_double_tap(self):
-    #     if self.action_checks(10):
-    #         enemy_range = self.can_ability_shoot(self.gun_one)
-    #         if enemy_range:
-    #             bullet_base = self.build_bullet(
-    #                 self.gun_one,
-    #                 self.owner.sprite.x,
-    #                 self.owner.sprite.y,
-    #                 self.owner.target.sprite.x,
-    #                 self.owner.target.sprite.y,
-    #                 enemy_range,
-    #                 self.owner.target,)
-    #             bullet_base['image'] = self.plasma_shot
-    #             self.add_bullet(bullet_base)
-    #             self.delayed.append([5, partial(self.add_bullet, bullet_base)])
-    #             self.trigger_global_cooldown()
-    #             self.plasma -= 10
+    def sniper_grand_entrance(self):
+        if self.action_checks(10, 0):
+            enemy_range = self.can_ability_shoot(self.gun_two)
+            if enemy_range:
+                bullet_base = self.build_bullet(
+                    self.gun_two,
+                    self.owner.sprite.x,
+                    self.owner.sprite.y,
+                    self.owner.target.sprite.x,
+                    self.owner.target.sprite.y,
+                    enemy_range,
+                    self.owner.target,)
+                bullet_base['damage'] *= 3
+                bullet_base['image'] = self.shadow_shot
+                bullet_base['velocity'] = 50
+                self.add_bullet(bullet_base)
+                # self.master.spriteeffect.teleport(self.owner.sprite.x, self.owner.sprite.y) # noqa
+                self.owner.sprite.x = self.owner.target.sprite.x + random.randint(-30, 30)
+                self.owner.sprite.y = self.owner.target.sprite.y + random.randint(-30, 30)
+                bullet_base2 = self.build_bullet(
+                    self.gun_one,
+                    self.owner.sprite.x,
+                    self.owner.sprite.y,
+                    self.owner.target.sprite.x,
+                    self.owner.target.sprite.y,
+                    50,
+                    self.owner.target,)
+                bullet_base2['damage'] *= 3
+
+                self.add_bullet(bullet_base2)
+
+                self.trigger_global_cooldown()
 
     # def magnum_five_beans_in_the_wheel(self):
     #     if self.action_checks(10):
