@@ -1,0 +1,8 @@
+Addison things to do:
+Hot bar
+Inventory
+Level generation
+Requirements document
+Buildings
+Building menu
+Building collision etc
