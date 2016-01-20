@@ -162,6 +162,39 @@ class SpectreAbility(Ability):
 
                 self.trigger_global_cooldown()
 
+    def sniper_grand_exit(self):
+        if self.action_checks(10, 0):
+            enemy_range = self.can_ability_shoot(self.gun_one)
+            if enemy_range:
+                bullet_base = self.build_bullet(
+                    self.gun_one,
+                    self.owner.sprite.x,
+                    self.owner.sprite.y,
+                    self.owner.target.sprite.x,
+                    self.owner.target.sprite.y,
+                    enemy_range,
+                    self.owner.target,)
+                bullet_base['damage'] *= 1.5
+                self.add_bullet(bullet_base)
+                # self.master.spriteeffect.teleport(self.owner.sprite.x, self.owner.sprite.y) # noqa
+                self.owner.sprite.x = self.owner.target.sprite.x + random.choice([-300, 300]) # noqa
+                self.owner.sprite.y = self.owner.target.sprite.y + random.choice([-300, 300]) # noqa
+                bullet_base2 = self.build_bullet(
+                    self.gun_two,
+                    self.owner.sprite.x,
+                    self.owner.sprite.y,
+                    self.owner.target.sprite.x,
+                    self.owner.target.sprite.y,
+                    500,
+                    self.owner.target,)
+                bullet_base2['damage'] *= 1.5
+                bullet_base2['velocity'] = 50
+                bullet_base2['image'] = self.shadow_shot
+
+                self.add_bullet(bullet_base2)
+
+                self.trigger_global_cooldown()
+
     # def magnum_five_beans_in_the_wheel(self):
     #     if self.action_checks(10):
     #         enemy_range = self.can_ability_shoot(self.gun_one)

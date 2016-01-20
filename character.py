@@ -123,7 +123,7 @@ class PlayerController(Controller):
         self.puppet.ability.sniper_grand_entrance()
 
     def slot_two_fire(self):
-        self.puppet.ability.carbine_crackerjack()
+        self.puppet.ability.sniper_grand_exit()
 
     def update_target(self):
         for e in self.puppet.enemies:

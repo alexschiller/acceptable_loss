@@ -238,7 +238,7 @@ sp_blade = {
         'rof': 10,
         'crit': 2,
         'crit_damage': 2,
-        'image': load_image('blade.png'), # noqa
+        'image': load_image('shadow_sword.png'), # noqa
         'gun_fire_sound': load_sound('laser.wav'), # noqa
         'on_hit_sound': load_sound('on_hit.wav'), # noqa
         'effects': [],
