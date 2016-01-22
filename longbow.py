@@ -84,7 +84,7 @@ class AoeThrown(Thrown):
         self.hit = True
         b_x = self.sprite.x
         b_y = self.sprite.y
-        self.master.spriteeffect.plasma_explosion(b_x, b_y)
+        self.master.spriteeffect.explosion(b_x, b_y)
         for e in self.owner.owner.enemies:
             if abs(math.hypot(b_x - e.sprite.x, b_y - e.sprite.y)) < 100:
                 self.enemy.on_hit(self)
@@ -96,39 +96,51 @@ class AoeThrown(Thrown):
         self.sprite.delete()
         self.owner.thrown.remove(self)
 
-class PlasmaslingerAbility(Ability):
+class LongbowAbility(Ability):
     def __init__(self, *args, **kwargs):
-        super(PlasmaslingerAbility, self).__init__(*args, **kwargs)
-        self.plasma = 100
-        self.max_plasma = 100
-        self.vat = pyglet.sprite.Sprite(load_image('plasma_vat.png', anchor=False), window_width-472, 0, batch=gfx_batch),  # noqa
-        self.plasma_shot = load_image('bola_shot.png')
-        self.bushwhack_shot = load_image('bushwhack_shot.png')
+        super(LongbowAbility, self).__init__(*args, **kwargs)
+        self.bul = 30
+        self.mis = 10
+        self.bul_max = 30
+        self.mis_max = 10
+
+        self.vat = pyglet.sprite.Sprite(load_image('autoloader.png', anchor=False), window_width-472, 0, batch=gfx_batch),  # noqa
+
+    def update_ammo(self):
+        if self.bul < self.bul_max:
+            self.bul += .01
+        if self.mis < self.mis_max:
+            self.mis += .005
 
     def update(self):
         self.update_delayed()
-        self.update_plasma()
+        self.update_ammo()
 
         for t in self.thrown:
             t.update()
 
-        ph = int(max(115 * self.plasma / 100, 1))
-        self.plasma_bar = pyglet.sprite.Sprite(
-            pyglet.image.create(15, ph, green_sprite),
-            window_width - 443, 5, batch=BarBatch)
+        oh = int(max(90 * self.bul / self.bul_max, 1))
+        self.opp_bar = pyglet.sprite.Sprite(
+            pyglet.image.create(15, oh, orange_sprite),
+            window_width - 472, 5, batch=BarBatch)
 
-    def action_checks(self, plasma):
+        vh = int(max(90 * round(self.mis / self.mis_max, 1), 1))
+        self.vul_bar = pyglet.sprite.Sprite(
+            pyglet.image.create(20, vh, red_sprite),
+            window_width - 440, 5, batch=BarBatch)
+
+    def action_checks(self, bul, mis):
         if self.owner.target:
             if not self.global_cooldown:
-                if self.plasma >= plasma:
+                if self.bul >= bul and self.mis >= mis:
                     return True
         return False
 
-    def update_plasma(self):
-        if self.plasma < self.max_plasma:
-            self.plasma += .3 * self.plasma / self.max_plasma + .05
-        else:
-            self.plasma = self.max_plasma
+    # def update_plasma(self):
+    #     if self.plasma < self.max_plasma:
+    #         self.plasma += .3 * self.plasma / self.max_plasma + .05
+    #     else:
+    #         self.plasma = self.max_plasma
 
     def enemy_in_range(self, enemy, gun):
             dist_x = self.owner.sprite.x - enemy.sprite.x
@@ -141,8 +153,8 @@ class PlasmaslingerAbility(Ability):
     def add_bullet(self, bullet_base):
         self.thrown.append(Thrown(master, self, bullet_base))
 
-    def magnum_double_tap(self):
-        if self.action_checks(10):
+    def missile_launch(self):
+        if self.action_checks(0, 1):
             enemy_range = self.can_ability_shoot(self.gun_one)
             if enemy_range:
                 bullet_base = self.build_bullet(
@@ -153,73 +165,18 @@ class PlasmaslingerAbility(Ability):
                     self.owner.target.sprite.y,
                     enemy_range,
                     self.owner.target,)
-                bullet_base['image'] = self.plasma_shot
-                self.add_bullet(bullet_base)
-                self.delayed.append([5, partial(self.add_bullet, bullet_base)])
+                bullet_base['velocity'] = 25
+                bullet_base['enemy_range'] -= 50
+                self.thrown.append(AoeThrown(master, self, bullet_base))
                 self.trigger_global_cooldown()
-                self.plasma -= 10
+                self.mis -= 1
 
-    def magnum_five_beans_in_the_wheel(self):
-        if self.action_checks(10):
+    def missile_everyone(self):
+        if self.action_checks(0, 1):
             enemy_range = self.can_ability_shoot(self.gun_one)
             if enemy_range:
                 bullet_base = self.build_bullet(
-                    self.gun_two,
-                    self.owner.sprite.x,
-                    self.owner.sprite.y,
-                    self.owner.target.sprite.x,
-                    self.owner.target.sprite.y,
-                    enemy_range,
-                    self.owner.target,)
-                bullet_base['damage'] *= .5
-                bullet_base['image'] = self.bushwhack_shot
-                self.owner.stats.temp_stat_change(180, 'health_regen', bullet_base['damage']) # noqa
-                self.thrown.append(Thrown(master, self, bullet_base))
-                self.trigger_global_cooldown()
-                self.plasma -= 10
-
-    def magnum_california_prayer_book(self):
-        if self.action_checks(5):
-            keep_going = 1
-            keep_count = 0
-            while keep_going:
-                if random.choice([1, 1, 1, 0]):
-                    self.thrown.append(
-                        BolaEffect(self.master, self, self.owner.sprite.x,
-                            self.owner.sprite.y, self.owner.target.sprite.x,
-                            self.owner.target.sprite.y,)
-                    )
-                    keep_count += 1
-                else:
-                    keep_going = 0
-            self.master.spriteeffect.message(self.owner.sprite.x, self.owner.sprite.y, 'shot: ' + str(keep_count), time=90) # noqa                    
-            self.trigger_global_cooldown()
-            self.plasma -= 5
-
-    def carbine_bushwhack(self):
-        if self.action_checks(10):
-            enemy_range = self.can_ability_shoot(self.gun_two)
-            if enemy_range:
-                bullet_base = self.build_bullet(
-                    self.gun_two,
-                    self.owner.sprite.x,
-                    self.owner.sprite.y,
-                    self.owner.target.sprite.x,
-                    self.owner.target.sprite.y,
-                    enemy_range,
-                    self.owner.target,)
-                bullet_base['damage'] *= 1.9
-                bullet_base['image'] = self.bushwhack_shot
-                self.thrown.append(Thrown(master, self, bullet_base))
-                self.trigger_global_cooldown()
-                self.plasma -= 10
-
-    def carbine_cowboy_cocktail(self):
-        if self.action_checks(20):
-            enemy_range = self.can_ability_shoot(self.gun_two)
-            if enemy_range:
-                bullet_base = self.build_bullet(
-                    self.gun_two,
+                    self.gun_one,
                     self.owner.sprite.x,
                     self.owner.sprite.y,
                     self.owner.target.sprite.x,
@@ -227,26 +184,6 @@ class PlasmaslingerAbility(Ability):
                     enemy_range,
                     self.owner.target,)
                 bullet_base['velocity'] = 25
-                bullet_base['image'] = self.bushwhack_shot
                 self.thrown.append(AoeThrown(master, self, bullet_base))
                 self.trigger_global_cooldown()
-                self.plasma -= 10
-
-    def carbine_crackerjack(self):
-        if not self.global_cooldown and self.plasma >= 10:
-            for e in self.owner.enemies:
-                enemy_range = self.enemy_in_range(e, self.gun_two)
-                if enemy_range:
-                    bullet_base = self.build_bullet(
-                        self.gun_two,
-                        self.owner.sprite.x,
-                        self.owner.sprite.y,
-                        e.sprite.x,
-                        e.sprite.y,
-                        enemy_range,
-                        e,)
-                    bullet_base['damage']
-                    bullet_base['image'] = self.bushwhack_shot
-                    self.thrown.append(Thrown(master, self, bullet_base))
-            self.trigger_global_cooldown()
-            self.plasma -= 10
+                self.mis -= 1

@@ -32,7 +32,8 @@ class Threat(object):
         self.threat_timer()
         if self.threat > 2:
             self.threat -= 2
-            Character(self.master, enemy_soldier_base())
+            random.choice([Character(self.master, enemy_soldier_base()),
+                Character(self.master, enemy_zombie_base())])
 
 class Radar(object):
     def __init__(self, master):
