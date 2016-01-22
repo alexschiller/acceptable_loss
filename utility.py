@@ -87,10 +87,16 @@ class Master(object):
         for p in self.people['red']:
             p.sprite.x += mx
             p.sprite.y += my
+            for a in p.ability.thrown:
+                a.sprite.x += mx
+                a.sprite.y += my
 
         for p in self.people['blue']:
             p.sprite.x += mx
             p.sprite.y += my
+            for a in p.ability.thrown:
+                a.sprite.x += mx
+                a.sprite.y += my
 
 master = Master()
 
@@ -115,6 +121,11 @@ green_bar = pyglet.image.create(200, 10, green_sprite)
 
 blue_sprite = pyglet.image.SolidColorImagePattern(color=(0, 0, 255, 150))
 blue_bar = pyglet.image.create(200, 10, blue_sprite)
+
+
+orange_sprite = pyglet.image.SolidColorImagePattern(color=(180, 107, 50, 255))
+camo_sprite = pyglet.image.SolidColorImagePattern(color=(100, 107, 50, 255))
+
 
 white_sprite = pyglet.image.SolidColorImagePattern(color=(255, 255, 255, 150))
 red_sprite = pyglet.image.SolidColorImagePattern(color=(255, 0, 0, 150))

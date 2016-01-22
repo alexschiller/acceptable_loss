@@ -5,6 +5,7 @@ import pyglet
 from gun import * # noqa
 from plasmaslinger import * # noqa
 from spectre import * # noqa
+from longbow import * # noqa
 
 class Controller(object):
     def __init__(self, puppet):
@@ -120,10 +121,10 @@ class PlayerController(Controller):
         self.marker = []
 
     def slot_one_fire(self):
-        self.puppet.ability.sniper_grand_entrance()
+        self.puppet.ability.missile_launch()
 
     def slot_two_fire(self):
-        self.puppet.ability.sniper_grand_exit()
+        self.puppet.ability.magnum_california_prayer_book()
 
     def update_target(self):
         for e in self.puppet.enemies:
@@ -338,7 +339,7 @@ class StatsManager(object):
 
 def enemy_soldier_base():
     return {
-        'sprite': load_image('soldier.png'),
+        'sprite': load_image(random.choice(['soldier.png', 'green_soldier.png'])), # noqa
         'coord': random.choice([[-50, random.randint(0, window_height)], [random.randint(0, window_width), -50]]),  # noqa
         'weapon_slot_one': pm_magnum,
         'weapon_slot_two': pm_carbine,
@@ -368,7 +369,102 @@ def enemy_soldier_base():
         },
     }
 
+def enemy_zombie_base():
+    return {
+        'sprite': load_image('zombie.png'),
+        'coord': random.choice([[-50, random.randint(0, window_height)], [random.randint(0, window_width), -50]]),  # noqa
+        'weapon_slot_one': en_zombie,
+        'weapon_slot_two': en_zombie,
+        'ability': Ability,
+        'ability_build': None,
+        'color': 'red',
+        'friends': 'red',
+        'enemies': 'blue',
+        'blood_color': (255, 10, 10, 255),
+        'controller': Controller,
+        'stats': {
+            'shield_max': 0,
+            'shield_regen': 0,
+            'shield': 0,
+            'health_max': 10,
+            'health_regen': 1,
+            'health': 10,
+            'damage_raw': 0,
+            'damage_percent': 1,
+            'attack_speed': 1,
+            'crit': 0,
+            'crit_damage': 0,
+            'accuracy': 0,
+            'evade': 10,
+            'armor': 3,
+            'speed': 4
+        },
+    }
+
 player_base = {
+    'sprite': load_image('dreadnaught.png'),
+    'coord': [window_width / 2, window_height / 2],
+    'weapon_slot_one': lb_missile,
+    'weapon_slot_two': lb_autocannon,
+    'ability': LongbowAbility,
+    'ability_build': None,
+    'color': 'blue',
+    'friends': 'blue',
+    'enemies': 'red',
+    'blood_color': (30, 30, 30, 255),
+    'controller': PlayerController,
+    'stats': {
+        'shield_max': 10,
+        'shield_regen': 1,
+        'shield': 10,
+        'health_max': 50,
+        'health_regen': 0,
+        'health': 50,
+        'damage_raw': 1,
+        'damage_percent': 1,
+        'attack_speed': 1,
+        'crit': 0,
+        'crit_damage': 0,
+        'accuracy': 0,
+        'evade': 0,
+        'armor': 4,
+        'speed': 3
+    },
+}
+
+player_base_1 = {
+    'sprite': load_image('dreadnaught.png'),
+    'coord': [window_width / 2, window_height / 2],
+    'weapon_slot_one': pm_magnum,
+    'weapon_slot_two': pm_carbine,
+    'ability': PlasmaslingerAbility,
+    'ability_build': None,
+    'color': 'blue',
+    'friends': 'blue',
+    'enemies': 'red',
+    'blood_color': (30, 30, 30, 255),
+    'controller': PlayerController,
+    'stats': {
+        'shield_max': 10,
+        'shield_regen': 1,
+        'shield': 10,
+        'health_max': 50,
+        'health_regen': 0,
+        'health': 50,
+        'damage_raw': 1,
+        'damage_percent': 1,
+        'attack_speed': 1,
+        'crit': 0,
+        'crit_damage': 0,
+        'accuracy': 0,
+        'evade': 0,
+        'armor': 4,
+        'speed': 3
+    },
+}
+
+
+player_base_2 = {
     'sprite': load_image('dreadnaught.png'),
     'coord': [window_width / 2, window_height / 2],
     'weapon_slot_one': sp_blade,
@@ -398,6 +494,7 @@ player_base = {
         'speed': 3
     },
 }
+
 
 class Character(object):
     def __init__(self, master, base, **kwargs):

@@ -122,6 +122,18 @@ class SpriteEffect(object):
                     esizex=random.randint(3, 6), esizey=random.randint(3, 6))
             )
 
+    def plasma_explosion(self, start_x, start_y):
+        for e in range(50):
+            self.effects.append(
+                Effect(start_x=start_x + random.randint(-5, 5),
+                    start_y=start_y + random.randint(-5, 5),
+                    vel_x=random.randint(-10, 10), vel_y=random.randint(-10, 10),
+                    travel=50,
+                    ecolor=[random.randint(0, 50), random.randint(190, 255),
+                        random.randint(0, 50)],
+                    esizex=random.randint(3, 6), esizey=random.randint(3, 6))
+            )
+
     def bola_explosion(self, start_x, start_y):
         for e in range(10):
             self.effects.append(
