@@ -107,6 +107,7 @@ MenuBackground = pyglet.graphics.Batch()
 SelectBatch = pyglet.graphics.Batch()
 HotbarBatch = pyglet.graphics.Batch()
 HotbarButtonBatch = pyglet.graphics.Batch()
+TerrainBatch = pyglet.graphics.Batch()
 
 # Manually Built Static Sprites
 green_sprite = pyglet.image.SolidColorImagePattern(color=(0, 255, 0, 150))
