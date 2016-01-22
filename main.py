@@ -148,7 +148,7 @@ class PauseState():
     def on_draw(self):
         window.clear()
         pyglet.gl.glClearColor(0.75, 0.75, 0.75, 1)  # gray back
-
+        TerrainBatch.draw()
         BuildingBatch.draw()
         BulletBatch.draw()
         gfx_batch.draw()
@@ -177,6 +177,7 @@ class MainState(object):
     def on_draw(self):
         window.clear()
         pyglet.gl.glClearColor(0.75, 0.75, 0.75, 1)  # gray back
+        TerrainBatch.draw()
         master.player.sprite.draw()
         BulletBatch.draw()
         EffectsBatch.draw()

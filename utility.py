@@ -7,6 +7,7 @@ from pyglet.gl import * # noqa
 from pyglet.window import key # noqa
 from pyglet.window import mouse # noqa
 from collide import * # noqa
+from levelgenerator import * # noqa
 # Window sizes
 window_height = 800
 window_width = 1400
@@ -15,6 +16,7 @@ window_height_half = float(window_height / 2)
 window_width_half = float(window_width / 2)
 
 frame_width = 50
+TerrainBatch = pyglet.graphics.Batch()
 
 
 class Master(object):
@@ -24,6 +26,12 @@ class Master(object):
         self.people = {'red': [], 'blue': []}
         self.spriteeffect = None
         self.buildings = []
+
+        # comment out this block to get rid of room color stuff
+        self.room_manager = RoomManager()
+        self.room_manager.setup(13)
+        self.room_manager.parent.create_sprites(0, 0, TerrainBatch)
+        # end of block, block party that is
 
         self.resources = None
         self.radar = None
@@ -76,6 +84,11 @@ class Master(object):
         # self.player.sprite.y += my
         self.home.x += mx
         self.home.y += my
+        try:
+            self.room_manager.move_all(mx, my)
+        except:
+            pass
+
         for p in self.loot.current_loot:
             p.sprite.x += mx
             p.sprite.y += my
@@ -113,7 +126,6 @@ MenuBackground = pyglet.graphics.Batch()
 SelectBatch = pyglet.graphics.Batch()
 HotbarBatch = pyglet.graphics.Batch()
 HotbarButtonBatch = pyglet.graphics.Batch()
-TerrainBatch = pyglet.graphics.Batch()
 
 # Manually Built Static Sprites
 green_sprite = pyglet.image.SolidColorImagePattern(color=(0, 255, 0, 150))
