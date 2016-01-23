@@ -87,7 +87,7 @@ class AoeThrown(Thrown):
         self.master.spriteeffect.plasma_explosion(b_x, b_y)
         for e in self.owner.owner.enemies:
             if abs(math.hypot(b_x - e.sprite.x, b_y - e.sprite.y)) < 100:
-                self.enemy.on_hit(self)
+                e.on_hit(self)                
                 self.display_outcome()
 
     def delete_thrown(self):

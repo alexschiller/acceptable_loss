@@ -87,7 +87,7 @@ class AoeThrown(Thrown):
         self.master.spriteeffect.explosion(b_x, b_y)
         for e in self.owner.owner.enemies:
             if abs(math.hypot(b_x - e.sprite.x, b_y - e.sprite.y)) < 100:
-                self.enemy.on_hit(self)
+                e.on_hit(self)
                 self.display_outcome()
 
     def delete_thrown(self):
@@ -135,12 +135,6 @@ class LongbowAbility(Ability):
                 if self.bul >= bul and self.mis >= mis:
                     return True
         return False
-
-    # def update_plasma(self):
-    #     if self.plasma < self.max_plasma:
-    #         self.plasma += .3 * self.plasma / self.max_plasma + .05
-    #     else:
-    #         self.plasma = self.max_plasma
 
     def enemy_in_range(self, enemy, gun):
             dist_x = self.owner.sprite.x - enemy.sprite.x
