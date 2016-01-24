@@ -6,6 +6,7 @@ from gun import * # noqa
 from plasmaslinger import * # noqa
 from spectre import * # noqa
 from longbow import * # noqa
+from gem import Gem
 
 class Controller(object):
     def __init__(self, puppet):
@@ -27,8 +28,6 @@ class Controller(object):
 
     def attack(self):  # necessary?
         pass
-        # if self.target:
-            # self.gun.fire(self.sprite.x, self.sprite.y, self.target.sprite.x, self.target.sprite.y, self, self.target) # noqa                    
 
     def auto_attack(self):
         pass
@@ -547,6 +546,7 @@ class Character(object):
             self.on_death()
 
     def generate_loot(self):
+        self.master.gem.create_loot_gem(5)
         return {'resources': {'mon': random.randint(1, 5), 'sci': random.randint(1, 5)}, 'items': []} # noqa
 
     def on_death(self):

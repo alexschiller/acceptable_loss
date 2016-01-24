@@ -8,6 +8,7 @@ from pyglet.window import key # noqa
 from pyglet.window import mouse # noqa
 from collide import * # noqa
 from levelgenerator import * # noqa
+from gem import Gem
 # Window sizes
 window_height = 800
 window_width = 1400
@@ -23,6 +24,7 @@ class Master(object):
     def __init__(self):
         self.player_controller = None
         self.player = None
+        self.gem = None
         self.people = {'red': [], 'blue': []}
         self.spriteeffect = None
         self.buildings = []
@@ -112,7 +114,7 @@ class Master(object):
                 a.sprite.y += my
 
 master = Master()
-
+master.gem = Gem()
 # Batches
 LabelBatch = pyglet.graphics.Batch()
 BarBatch = pyglet.graphics.Batch()
