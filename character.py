@@ -123,7 +123,8 @@ class PlayerController(Controller):
         self.puppet.ability.missile_launch()
 
     def slot_two_fire(self):
-        self.puppet.ability.magnum_california_prayer_book()
+        #elf.puppet.ability.magnum_california_prayer_book()
+        pass
 
     def update_target(self):
         for e in self.puppet.enemies:
