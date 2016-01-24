@@ -2,7 +2,7 @@ from importer import * # noqa
 import pyglet
 import random
 import json # noqa
-
+from collide import * # noqa
 
 window_height = 800
 window_width = 1400
@@ -16,8 +16,52 @@ sprite_dict['puzzle'] = pyglet.image.create(window_width/2, window_height/2, pyg
 sprite_dict['shop'] = pyglet.image.create(window_width/2, window_height/2, pyglet.image.SolidColorImagePattern(color=(100, 0, 200, 150))) # noqa
 
 
+def calc_vel_xy(tar_x, tar_y, start_x, start_y, velocity):
+    dif_y = tar_y - start_y
+    dif_x = tar_x - start_x
+    try:
+        dir_y = dif_y / abs(dif_y)
+    except:
+        dir_y = 1
+    try:
+        dir_x = dif_x / abs(dif_x)
+    except:
+        dir_x = 1
+    try:
+        perc = float(abs(dif_y)) / (abs(dif_y) + abs(dif_x))
+    except:
+        perc = .1
+    vel_y = perc * velocity * dir_y
+    vel_x = (velocity - abs(vel_y)) * dir_x
+    return (vel_x, vel_y)
+
+
+class Wall(object):
+    def __init__(self, player, x, y, height, width, batch=None):
+        self.player = player
+        image = pyglet.image.create(width, height, pyglet.image.SolidColorImagePattern(color=(0, 0, 0, 255)))
+        self.sprite = pyglet.sprite.Sprite(
+            image,
+            x, y, batch=batch
+        )
+        self.collision = SpriteCollision(self.sprite)
+
+    def on_collide(self):
+        ret = calc_vel_xy(
+            self.player.sprite.x, self.player.sprite.y,
+            self.sprite.x, self.sprite.y, 10
+        )
+        self.player.sprite.x += ret[0]
+        self.player.sprite.y += ret[1]
+
+    def update(self):
+        if collide(self.collision, self.player.collision):
+            self.on_collide()
+
+
 class Room(object):
     def __init__(self, number):
+        self.walls = []
         self.called = False
         self.sprite = None
         self.number = number
@@ -49,6 +93,9 @@ class Room(object):
     def move(self, dx, dy):
         self.sprite.x += dx
         self.sprite.y += dy
+        for wall in self.walls:
+            wall.sprite.x += dx
+            wall.sprite.y += dy
 
     def printobject(self):
         print str(self.number) + " " + str(self.type) + "   begin"
@@ -71,7 +118,7 @@ class Room(object):
             pass
         print str(self.number) + " " + str(self.type) + "   end"
 
-    def create_sprites(self, x, y, batch):
+    def create_sprites(self, x, y, batch, player):
         if self.called is False:
             self.sprite = pyglet.sprite.Sprite(
                 sprite_dict[self.type],
@@ -79,13 +126,21 @@ class Room(object):
             )
             self.called = True
             if self.left is not None:
-                self.left.create_sprites(x - window_width / 2, y, batch)
+                self.left.create_sprites(x - window_width / 2, y, batch, player)
+            else:
+                self.walls.append(Wall(player, self.sprite.x - 30, self.sprite.y, self.sprite.height, 30, batch))
             if self.right is not None:
-                self.right.create_sprites(x + window_width / 2, y, batch)
+                self.right.create_sprites(x + window_width / 2, y, batch, player)
+            else:
+                self.walls.append(Wall(player, self.sprite.x + self.sprite.width, self.sprite.y, self.sprite.height, 30, batch))
             if self.up is not None:
-                self.up.create_sprites(x, y + window_height / 2, batch)
+                self.up.create_sprites(x, y + window_height / 2, batch, player)
+            else:
+                self.walls.append(Wall(player, self.sprite.x, self.sprite.y + self.sprite.height, 30, self.sprite.width, batch))
             if self.down is not None:
-                self.down.create_sprites(x, y - window_height / 2, batch)
+                self.down.create_sprites(x, y - window_height / 2, batch, player)
+            else:
+                self.walls.append(Wall(player, self.sprite.x, self.sprite.y - 30, 30, self.sprite.width, batch))
 
 
 class RoomManager(object):
@@ -146,6 +201,10 @@ class RoomManager(object):
         for room in self.roomlist:
             room.move(dx, dy)
 
+    def update(self):
+        for room in self.roomlist:
+            for wall in room.walls:
+                wall.update()
 
 # with open('testthing.py', 'w') as f:
 #     json.dump(test.grid, f)

@@ -12,6 +12,7 @@ from plasmaslinger import * # noqa
 # from data import load_save, save_1
 import math
 
+
 class Threat(object):
     def __init__(self, master):
         self.master = master
@@ -32,8 +33,13 @@ class Threat(object):
         self.threat_timer()
         if self.threat > 2:
             self.threat -= 2
-            random.choice([Character(self.master, enemy_soldier_base()),
-                Character(self.master, enemy_zombie_base())])
+            random.choice(
+                [
+                    Character(self.master, enemy_soldier_base()),
+                    Character(self.master, enemy_zombie_base())
+                ]
+            )
+
 
 class Radar(object):
     def __init__(self, master):
@@ -56,8 +62,10 @@ class Radar(object):
         self.master = master
         self.radar_range = 1000
         self.radar_scale = self.radar_range / abs(self.x_mid - self.x_min)
-        self.radar_player = pyglet.sprite.Sprite(self.blue_dot,
-            self.x_mid, self.y_mid, batch=gfx_batch)
+        self.radar_player = pyglet.sprite.Sprite(
+            self.blue_dot,
+            self.x_mid, self.y_mid, batch=gfx_batch
+        )
         self.to_draw = []
 
     def update(self):
@@ -71,6 +79,7 @@ class Radar(object):
         #         y_loc = self.y_mid - ((y1 - e.sprite.y) / self.radar_scale)
         #         to_draw.append(pyglet.sprite.Sprite(self.red_dot, x_loc, y_loc, batch=gfx_batch)) # noqa
         self.to_draw = to_draw
+
 
 class Resources(object):
     def __init__(self, master):
@@ -133,6 +142,9 @@ master.spriteeffect = SpriteEffect(master)
 
 master.player = Player(master, base=player_base)
 master.player_controller = master.player.controller
+master.room_manager.parent.create_sprites(0, 0, TerrainBatch, master.player)
 
-master.home = pyglet.sprite.Sprite(load_image('home.png'),
-            window_width_half, window_height_half, batch=gfx_batch)
+master.home = pyglet.sprite.Sprite(
+    load_image('home.png'),
+    window_width_half, window_height_half, batch=gfx_batch
+)
