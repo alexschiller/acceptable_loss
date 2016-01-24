@@ -32,7 +32,6 @@ class Master(object):
         # comment out this block to get rid of room color stuff
         self.room_manager = RoomManager()
         self.room_manager.setup(13)
-        self.room_manager.parent.create_sprites(0, 0, TerrainBatch)
         # end of block, block party that is
 
         self.resources = None
@@ -42,6 +41,7 @@ class Master(object):
         self.loot = None
 
     def update(self):
+        self.room_manager.update()
         for p in self.people['blue']:
             p.update()
 
