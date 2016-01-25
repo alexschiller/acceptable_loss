@@ -10,6 +10,7 @@ from button import Manager, Button,TextBox, DraggableButton, foo # noqa
 from placeable import * # noqa
 from menu import * # noqa
 from hotbar import * # noqa
+from inventory import * # noqa
 
 
 class ProtoKeyStateHandler(key.KeyStateHandler):
@@ -188,6 +189,7 @@ class MainState(object):
         HotbarButtonBatch.draw()
         states.current.test()
         Buildmenu.update()
+        inventorymenu.update()
         window.invalid = False
 
     def test(self):
@@ -227,6 +229,9 @@ class MainState(object):
             if self.Pause == 1:
                 self.Pause = 0
                 states.swap('pause')
+                master.reset()
+                reset_imp()
+
         if key_handler[key.N]:
             self.Menu = 1
         else:
@@ -239,7 +244,8 @@ class MainState(object):
         else:
             if self.Build == 1:
                 self.Build = 0
-                self.swap()
+                inventorymenu.change_flag()
+                # self.swap()
         mx = 0
         my = 0
         if key_handler[key.H]:

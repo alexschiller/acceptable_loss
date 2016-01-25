@@ -1,5 +1,6 @@
 import random
 
+
 class Gem(object):
     def __init__(self):
         self.rarity_dict = { # noqa
@@ -101,7 +102,7 @@ class Gem(object):
     def create_loot_gem(self, enemy_level):
         gem_out = {}
         gem_out['rarity'] = self.roll_rarity()
-        gem_out['color'] = random.choice(['sapphire', 'ruby', 'emerald', 'diamond']) # noqa
+        gem_out['color'] = random.choice(['sapphire', 'topaz', 'ruby', 'emerald', 'diamond']) # noqa
         gem_out['stats'] = {}
 
         prob_stats = random.choice([self.get_weapon_list(), self.get_armor_list()])
@@ -119,3 +120,4 @@ class Gem(object):
                 gem_out['stats'][stat] = random.randint(base[0], base[1])
         gem_out['level'] = stats_levels / num_stats
         print gem_out
+        return gem_out

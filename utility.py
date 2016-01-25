@@ -80,6 +80,20 @@ class Master(object):
 
         self.move_all(mx, my)
 
+    def reset(self):
+        for thing in self.people['red']:
+            thing.on_death()
+        self.room_manager = None
+        self.room_manager = RoomManager()
+
+        self.room_manager.setup(13)
+        self.room_manager.parent.create_sprites(0, 0, TerrainBatch, self.player)
+
+        self.home = pyglet.sprite.Sprite(
+            load_image('home.png'),
+            window_width_half, window_height_half, batch=gfx_batch
+        )
+
     def move_all(self, mx, my):
 
         # self.player.sprite.x += mx
@@ -128,6 +142,9 @@ MenuBackground = pyglet.graphics.Batch()
 SelectBatch = pyglet.graphics.Batch()
 HotbarBatch = pyglet.graphics.Batch()
 HotbarButtonBatch = pyglet.graphics.Batch()
+InventoryBatch = pyglet.graphics.Batch()
+ItemBatch = pyglet.graphics.Batch()
+ItemBorderBatch = pyglet.graphics.Batch()
 
 # Manually Built Static Sprites
 green_sprite = pyglet.image.SolidColorImagePattern(color=(0, 255, 0, 150))
