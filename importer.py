@@ -35,8 +35,8 @@ class Threat(object):
             self.threat -= 2
             random.choice(
                 [
-                    Character(self.master, enemy_soldier_base()),
-                    Character(self.master, enemy_zombie_base())
+                    Character(self.master, enemy_soldier_base(2)),
+                    Character(self.master, enemy_zombie_base(2))
                 ]
             )
 

@@ -1,82 +1,125 @@
 from pyglet.gl import * # noqa
-from collide import * # noqa
+from ability import * # noqa
 from utility import * # noqa
 from character import * # noqa
-# import pyglet
+from controller import * # noqa
 import random
 
-# import itertools
-from gun import * # noqa
+def gen_zombie_gun(level):
+    return {
+        'gun_class': 'Melee',
+        'level': level,
+        'damage_min': 2 * level,
+        'damage_max': 5 * level,
+        'travel': 30,
+        'velocity': 15,
+        'accuracy': 85,
+        'rof': .75,
+        'crit': 5,
+        'crit_damage': 4,
+        'armor_pierce': 2,
+        'image': load_image('slash.png'), # noqa
+        'gun_fire_sound': load_sound('laser.wav'), # noqa
+        'on_hit_sound': load_sound('on_hit.wav'), # noqa
+        'effects': [],
+        'gem_slots': {},
+        }
 
-def gen_soldier_base():
-    base = {
-        'sprite': load_image('soldier.png'),
+def gen_soldier_gun(level):
+    return {
+        'gun_class': 'Rifle',
+        'level': level,
+        'damage_min': 2 * level,
+        'damage_max': 5 * level,
+        'travel': 400,
+        'velocity': 100,
+        'accuracy': 70,
+        'rof': .75,
+        'crit': 2,
+        'crit_damage': 2,
+        'armor_pierce': 1,
+        'image': load_image('snipe.png'), # noqa
+        'gun_fire_sound': load_sound('laser.wav'), # noqa
+        'on_hit_sound': load_sound('on_hit.wav'), # noqa
+        'effects': [],
+        'gem_slots': {},
+        }
+
+
+def enemy_soldier_base(level):
+    return {
+        'sprite': load_image(random.choice(['soldier.png', 'green_soldier.png'])), # noqa
         'coord': random.choice([[-50, random.randint(0, window_height)], [random.randint(0, window_width), -50]]),  # noqa
-        'shield_max': 0,
-        'shield_regen': 0,
-        'shield': 0,
-        'health_max': 30,
-        'health_regen': 0,
-        'health': 30,
-        'damage_raw': 0,
-        'damage_percent': 0,
-        'attack_speed': 0,
-        'crit': 0,
-        'crit_damage': 0,
-        'accuracy': 0,
-        'evade': 0,
-        'armor': 0,
-        'speed': 2,
-        'guns': [Gun(master, base=missile)],
+        'weapon_slot_one': gen_soldier_gun(level),
+        'weapon_slot_two': gen_soldier_gun(level),
+        'armor': {'gem_slots': {}},
+        'ability': Ability,
+        'ability_build': None,
+        'color': 'red',
+        'friends': 'red',
+        'enemies': 'blue',
+        'blood_color': (255, 10, 10, 255),
+        'controller': Controller,
+        'stats': {
+            'level': level,
+            'damage': 0,
+            'damage_min': 0,
+            'damage_max': 0,
+            'damage_perc': 0,
+            'attack_speed_perc': 0,
+            'crit': 5,
+            'crit_damage': 2,
+            'accuracy': 0,
+            'armor_pierce': 0,
+            'shield_max': 5,
+            'shield_max_perc': 0,
+            'shield_regen': 1,
+            'shield_on_hit': 0,
+            'health_max': 10 * level,
+            'health_max_perc': 0,
+            'health_regen': 1 * level / 2,
+            'health_on_hit': 0,
+            'armor': 1 * level,
+            'evade': 0,
+            'speed': 2,
+        },
     }
-    return base
 
-class Enemy(Character):
-    def __init__(self, *args, **kwargs):
-        super(Enemy, self).__init__(*args, **kwargs)
-
-        self.build_character(kwargs['base'])
-
-
-        self.touch_damage = 0
-
-        # enter effect
-        self.spriteeffect.teleport(self.sprite.x, self.sprite.y, 5, 5)
-
-    def generate_loot(self):
-        return {'resources': {'mon': random.randint(1, 5), 'sci': random.randint(1, 5)}, 'items': []} # noqa
-
-    def on_death(self):
-        # For some reason the auto append new enemy is borked
-        # self.enemy.append(Enemy(self.master, base=gen_soldier_base()))
-        # self.spriteeffect.blood(self.sprite.x, self.sprite.y, 30, 50)
-        self.master.loot.pack_package(self.generate_loot(), self.sprite.x, self.sprite.y)
-        try:
-            self.sprite.delete()
-            self.enemies.remove(self)
-        except:
-            pass
-
-    def on_collide(self):
-        ret = calc_vel_xy(self.player.sprite.x, self.player.sprite.y,
-        self.sprite.x, self.sprite.y, 10)
-        self.sprite.x -= ret[0] * 2
-        self.sprite.y -= ret[1] * 2
-        self.player.sprite.x += ret[0]
-        self.player.sprite.y += ret[1]
-
-    def update_target(self):
-        self.target = self.master.player
-
-    def update(self):
-        if self.health_bar:
-            self.update_health_bar()
-        try:
-            self.check_object_collision(self.closest_object())
-        except:
-            pass
-
-        if collide(self.collision, self.player.collision):
-            self.on_collide()
-
-        self.required_updates()
+def enemy_zombie_base(level):
+    return {
+        'sprite': load_image('zombie.png'),
+        'coord': random.choice([[-50, random.randint(0, window_height)], [random.randint(0, window_width), -50]]),  # noqa
+        'weapon_slot_one': gen_zombie_gun(level),
+        'weapon_slot_two': gen_zombie_gun(level),
+        'armor': {'gem_slots': {}},
+        'ability': Ability,
+        'ability_build': None,
+        'color': 'red',
+        'friends': 'red',
+        'enemies': 'blue',
+        'blood_color': (255, 10, 10, 255),
+        'controller': Controller,
+        'stats': {
+            'level': level,
+            'damage': 0,
+            'damage_min': 0,
+            'damage_max': 0,
+            'damage_perc': 0,
+            'attack_speed_perc': 0,
+            'crit': 5,
+            'crit_damage': 2,
+            'accuracy': 0,
+            'armor_pierce': 0,
+            'shield_max': 0,
+            'shield_max_perc': 0,
+            'shield_regen': 0,
+            'shield_on_hit': 0,
+            'health_max': 10 * level,
+            'health_max_perc': 0,
+            'health_regen': 1 * level / 2,
+            'health_on_hit': 0,
+            'armor': 2 * level,
+            'evade': 10,
+            'speed': 3,
+        },
+    }

@@ -14,7 +14,8 @@ class Thrown(object):
         self.master = master
         self.owner = ability
         self.base = base
-        self.damage = self.base['damage']
+        self.damage_min = self.base['damage_min']
+        self.damage_max = self.base['damage_max']
         self.travel = self.base['travel']
         self.velocity = self.base['velocity']
         self.accuracy = self.base['accuracy']
@@ -36,7 +37,10 @@ class Thrown(object):
 
         if self.hit and random.randint(0, 100) < self.crit_chance:
             self.crit = True
-            self.damage = self.damage * self.crit_damage
+            self.damage_min = self.damage_min * self.crit_damage
+            self.damage_max = self.damage_max * self.crit_damage
+
+        self.damage = random.randint(self.damage_min, self.damage_max)
 
         if self.hit and random.randint(0, 100) < self.enemy.stats.evade:
             self.evade = True
@@ -91,9 +95,7 @@ class Thrown(object):
 
 class Ability(object):
     def __init__(self, master, owner, gun_one, gun_two):
-        self.gun_one = gun_one
-        self.gun_two = gun_two
-        self.guns = [self.gun_one, self.gun_two]
+
         self.master = master
         self.owner = owner
         self.delayed = []
@@ -102,23 +104,15 @@ class Ability(object):
         self.thrown = []
 
     def build_bullet(self, gun, start_x, start_y, target_x, target_y, enemy_range, enemy, image=None): # noqa
-        calc_gun = {}
-        calc_gun['damage'] = (self.owner.stats.damage_raw + gun['damage']) * self.owner.stats.damage_percent # noqa
-        calc_gun['travel'] = gun['travel']
-        calc_gun['velocity'] = gun['velocity']
-        calc_gun['accuracy'] = gun['accuracy']
-        calc_gun['rof'] = int(gun['rof'] * self.owner.stats.attack_speed)
-        calc_gun['crit'] = gun['crit'] + self.owner.stats.crit
-        calc_gun['crit_damage'] = gun['crit_damage'] + self.owner.stats.crit_damage # noqa
+        calc_gun = gun
         calc_gun['start_x'] = start_x
         calc_gun['start_y'] = start_y
         calc_gun['target_x'] = target_x
         calc_gun['target_y'] = target_y
-        calc_gun['image'] = gun['image']
         calc_gun['enemy_range'] = enemy_range
         calc_gun['enemy'] = enemy
         calc_gun['image'] = image or gun['image']
-        return calc_gun
+        return gun
 
     def aa_cooldown_reset(self):
         self.aa_cooldown = False
@@ -156,7 +150,7 @@ class Ability(object):
                 dist_x = self.owner.sprite.x - self.owner.target.sprite.x
                 dist_y = self.owner.sprite.y - self.owner.target.sprite.y
                 dist = math.hypot(dist_x, dist_y)
-                if dist < self.gun_two['travel']:
+                if dist < self.owner.stats.gun_two_data['travel']:
                     return dist
         return False
 
@@ -174,7 +168,7 @@ class Ability(object):
         enemy_range = self.can_aa_shoot()
         if enemy_range:
             bullet_base = self.build_bullet(
-                self.gun_two,
+                self.owner.stats.gun_two_data,
                 self.owner.sprite.x,
                 self.owner.sprite.y,
                 self.owner.target.sprite.x,
@@ -183,5 +177,5 @@ class Ability(object):
                 self.owner.target,
             )
             self.thrown.append(Thrown(master, self, bullet_base))
-            time = int(60 / bullet_base['rof'])
+            time = int(60.0 / bullet_base['rof'])
             self.trigger_aa_cooldown(time)
