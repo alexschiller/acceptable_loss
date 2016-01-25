@@ -142,11 +142,11 @@ lb_autocannon = {
         'damage_max': 4,
         'travel': 700,
         'velocity': 100,
-        'accuracy': 70,
-        'rof': 2,
+        'accuracy': 85,
+        'rof': 3,
         'crit': 10,
-        'crit_damage': 5,
-        'armor_pierce': 5,
+        'crit_damage': 3,
+        'armor_pierce': 8,
         'image': load_image('autocannon.png'), # noqa
         'gun_fire_sound': load_sound('laser.wav'), # noqa
         'on_hit_sound': load_sound('on_hit.wav'), # noqa

@@ -66,7 +66,7 @@ class Character(object):
             self.on_death()
 
     def generate_loot(self):
-        self.master.gem.create_loot_gem(5)
+        gem = self.master.gem.create_loot_gem(5)
         self.master.player.inventory.append(gem)
 
         return {'resources': {'mon': random.randint(1, 5), 'sci': random.randint(1, 5)}, 'items': []} # noqa
