@@ -8,6 +8,7 @@ from functools import partial # noqa
 from ability import * # noqa
 # import random
 
+
 class BolaEffect(object):
     def __init__(self, master, owner, start_x, start_y, target_x, target_y): # noqa
         self.sprite = pyglet.sprite.Sprite(load_image('bola.png'), start_x, start_y, batch=gfx_batch) # noqa
@@ -18,8 +19,10 @@ class BolaEffect(object):
         self.target_y = target_y
         self.start_x = start_x
         self.start_y = start_y
-        ret = calc_vel_xy(target_x, target_y,
-            start_x, start_y, random.randint(7, 10))
+        ret = calc_vel_xy(
+            target_x, target_y,
+            start_x, start_y, random.randint(7, 10)
+        )
 
         self.vel_x = ret[0] + random.randint(-2, 2)
         self.vel_y = ret[1] + random.randint(-2, 2)
@@ -76,6 +79,7 @@ class BolaEffect(object):
         except:
             pass
 
+
 class AoeThrown(Thrown):
     def __init__(self, *args, **kwargs):
         super(AoeThrown, self).__init__(*args, **kwargs)
@@ -96,6 +100,7 @@ class AoeThrown(Thrown):
         self.sprite.delete()
         self.owner.thrown.remove(self)
 
+
 class LongbowAbility(Ability):
     def __init__(self, *args, **kwargs):
         super(LongbowAbility, self).__init__(*args, **kwargs)
@@ -110,7 +115,7 @@ class LongbowAbility(Ability):
         if self.bul < self.bul_max:
             self.bul += .01
         if self.mis < self.mis_max:
-            self.mis += .005
+            self.mis += 1   # .005
 
     def update(self):
         self.update_delayed()

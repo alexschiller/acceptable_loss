@@ -132,6 +132,15 @@ class Resources(object):
         self.update_labs()
 
 
+def reset_imp():
+        for item in master.loot.current_loot:
+            del item
+        for item in master.loot.moving_loot:
+            del item
+        master.threat.threat = 0
+        master.threat.threat_time = 0
+        master.room_manager.parent.create_sprites(0, 0, TerrainBatch, master.player)
+
 master.loot = Loot(master)
 master.resources = Resources(master)
 master.radar = Radar(master)

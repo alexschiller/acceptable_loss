@@ -6,7 +6,8 @@ from gun import * # noqa
 from plasmaslinger import * # noqa
 from spectre import * # noqa
 from longbow import * # noqa
-from gem import Gem
+from gem import * # noqa
+
 
 class Controller(object):
     def __init__(self, puppet):
@@ -62,17 +63,19 @@ class Controller(object):
             ):
                 self.puppet.ability.auto_attack()
             else:
-                ret = calc_vel_xy(self.puppet.target.sprite.x,
+                ret = calc_vel_xy(
+                    self.puppet.target.sprite.x,
                     self.puppet.target.sprite.y,
                     self.puppet.sprite.x,
                     self.puppet.sprite.y,
-                    1)
+                    1
+                )
                 self.move(ret[0], ret[1])
 
         else:
             self.target_closest_enemy()
 
-    ## AI Commands
+    # AI Commands
 
     def target_closest_enemy(self):
         try:
@@ -547,7 +550,8 @@ class Character(object):
             self.on_death()
 
     def generate_loot(self):
-        self.master.gem.create_loot_gem(5)
+        gem = self.master.gem.create_loot_gem(5)
+        self.master.player.inventory.append(gem)
         return {'resources': {'mon': random.randint(1, 5), 'sci': random.randint(1, 5)}, 'items': []} # noqa
 
     def on_death(self):

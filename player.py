@@ -13,6 +13,7 @@ class Player(Character):
         self.hp_shield_bar = pyglet.sprite.Sprite(load_image('hp_shield.png', anchor=False), window_width - 1050, 0, batch=gfx_batch),  # noqa
         self.evade_acc_bar = pyglet.sprite.Sprite(load_image('evade_acc.png', anchor=False), window_width - 415, 0, batch=gfx_batch),  # noqa
         self.energy = 100
+        self.inventory = []
 
     def update_bars(self):
         if self.energy < 100:

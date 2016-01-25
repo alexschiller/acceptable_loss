@@ -206,5 +206,19 @@ class RoomManager(object):
             for wall in room.walls:
                 wall.update()
 
+    def delete_all(self):
+        for room in self.roomlist:
+            room.sprite.delete()
+            room.right = None
+            room.left = None
+            room.up = None
+            room.down = None
+            for wall in room.walls:
+                wall.sprite.delete()
+                wall = None
+            room.walls = None
+            room = None
+        self.roomlist = None
+        self = None
 # with open('testthing.py', 'w') as f:
 #     json.dump(test.grid, f)
