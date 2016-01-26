@@ -83,6 +83,7 @@ class Master(object):
     def reset(self):
         for thing in self.people['red']:
             thing.on_death()
+        self.room_manager.delete_all()
         self.room_manager = None
         self.room_manager = RoomManager()
 
