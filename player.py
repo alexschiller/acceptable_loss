@@ -59,6 +59,9 @@ class PlayerController(Controller):
         #elf.puppet.ability.magnum_california_prayer_book()
         pass
 
+    def on_hit(self):
+        pass
+
     def update_target(self):
         for e in self.puppet.enemies:
             if collide(self.collision, e.collision):

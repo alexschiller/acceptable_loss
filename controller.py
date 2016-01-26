@@ -72,20 +72,31 @@ class Controller(object):
 
     ## AI Commands
 
+    def on_hit(self):
+        self.target_enemy()
+
+    def target_enemy(self, distance=float("inf")):
+        if not self.puppet.target:
+            try:
+                min_dist = distance
+                x1 = self.puppet.sprite.x
+                y1 = self.puppet.sprite.y
+                if len(self.puppet.enemies) == 0:
+                    return False
+                for e in self.puppet.enemies:
+                    dist = abs(math.hypot(x1 - e.sprite.x, y1 - e.sprite.y))
+                    if dist < min_dist:
+                        min_dist = dist
+                        self.puppet.target = e
+                        for f in self.puppet.friends:
+                            if not f.target:
+                                if abs(math.hypot(x1 - f.sprite.x, y1 - f.sprite.y)) < 300: # noqa
+                                    f.target = e
+            except:
+                self.puppet.target = None
+
     def target_closest_enemy(self):
-        try:
-            min_dist = float("inf")
-            x1 = self.puppet.sprite.x
-            y1 = self.puppet.sprite.y
-            if len(self.puppet.enemies) == 0:
-                return False
-            for e in self.puppet.enemies:
-                dist = abs(math.hypot(x1 - e.sprite.x, y1 - e.sprite.y))
-                if dist < min_dist:
-                    min_dist = dist
-                    self.puppet.target = e
-        except:
-            self.puppet.target = None
+        self.target_enemy(self.puppet.stats.gun_one_data['travel'] + 50)
 
     def update_movement(self):
         if self.puppet.target:

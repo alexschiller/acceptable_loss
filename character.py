@@ -82,6 +82,7 @@ class Character(object):
 
     def on_hit(self, bullet):
         final_damage = self.stats.update_health(bullet.damage)
+        self.controller.on_hit()
         self.update_bars()
         if final_damage:
             splatter = min(max(int(final_damage / self.stats.health_max) * 30, 5), 20)
