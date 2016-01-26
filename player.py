@@ -97,13 +97,28 @@ class PlayerController(Controller):
 
         ]
 
+    def target_closest_enemy(self, distance=float("inf")):
+        try:
+            min_dist = distance
+            x1 = self.sprite.x
+            y1 = self.sprite.y
+            if len(self.puppet.enemies) == 0:
+                return False
+            for e in self.puppet.enemies:
+                dist = abs(math.hypot(x1 - e.sprite.x, y1 - e.sprite.y))
+                if dist < min_dist:
+                    min_dist = dist
+                    self.puppet.target = e
+        except:
+            self.puppet.target = None
+
     def check_target(self):
         self.marker = []
         if self.puppet.target:
             try:
                 self.rotate(self.puppet.target.sprite.x, self.puppet.target.sprite.y)
                 self.build_target(self.puppet.target)
-                self.puppet.ability.auto_attack()
+                # self.puppet.ability.auto_attack()
             except:
                 self.puppet.target = None
         else:
@@ -111,6 +126,7 @@ class PlayerController(Controller):
 
     def update(self):
         self.puppet.update_bars()
+        self.target_closest_enemy()
         self.check_target()
         for p in self.master.loot.current_loot:
             if abs(self.puppet.sprite.x - p.sprite.x) < 10:

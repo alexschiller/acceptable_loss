@@ -308,6 +308,7 @@ class BuildState(MainState):
         master.player_controller.update_target()
         Buildmenu.on_mouse_press(x, y, 0)
         HotBar.update(x, y, 0)
+        master.player.ability.auto_attack()
 
     def on_mouse_motion(self, x, y, dx, dy):
         master.player_controller.sprite.x = x
