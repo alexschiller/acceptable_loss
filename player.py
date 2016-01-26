@@ -109,7 +109,11 @@ class PlayerController(Controller):
     def update(self):
         self.puppet.update_bars()
         self.check_target()
-
+        for p in self.master.loot.current_loot:
+            if abs(self.puppet.sprite.x - p.sprite.x) < 10:
+                if abs(self.puppet.sprite.y - p.sprite.y) < 10:
+                    if collide(p.collision, self.master.player.collision):
+                        self.master.loot.unpack_package(p)
 
 lb_missile = {
         'gun_class': 'Missile',
@@ -130,7 +134,7 @@ lb_missile = {
         'gem_slots': {
             '1': {
                 'color': 'topaz',
-                'current_gem': {'color': 'topaz', 'level': 1, 'stats': {'crit': 2, 'attack_speed_perc': 5}, 'rarity': 0} # noqa
+                'current_gem': {'color': 'diamond', 'level': 4, 'stats': {'damage': 3, 'accuracy': 6, 'shield_regen': 2, 'shield_on_hit': 1, 'health_max_perc': 8}, 'rarity': 3} # noqa
             },
         },
     }
@@ -154,7 +158,7 @@ lb_autocannon = {
         'gem_slots': {
             '1': {
                 'color': 'topaz',
-                'current_gem': {'color': 'topaz', 'level': 1, 'stats': {'crit': 2, 'attack_speed_perc': 5}, 'rarity': 0} # noqa
+                'current_gem': {'color': 'diamond', 'level': 4, 'stats': {'damage': 3, 'accuracy': 6, 'shield_regen': 2, 'shield_on_hit': 1, 'health_max_perc': 8}, 'rarity': 3} # noqa
             },
         },
     }
@@ -163,7 +167,7 @@ player_armor = {
     'gem_slots': {
         '1': {
             'color': 'topaz',
-            'current_gem': {'color': 'topaz', 'level': 1, 'stats': {'crit': 2, 'attack_speed_perc': 5}, 'rarity': 0} # noqa
+            'current_gem': {'color': 'diamond', 'level': 4, 'stats': {'damage': 3, 'accuracy': 6, 'shield_regen': 2, 'shield_on_hit': 1, 'health_max_perc': 8}, 'rarity': 3} # noqa
             },
         },
     }

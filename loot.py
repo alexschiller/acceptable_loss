@@ -103,9 +103,6 @@ class Loot(object):
             pass
 
     def update(self):
-        for p in self.current_loot:
-            if collide(p.collision, self.master.player.collision):
-                self.unpack_package(p)
         for c in self.moving_loot:
             c.update()
             if c.travelled >= c.travel:

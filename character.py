@@ -84,7 +84,7 @@ class Character(object):
         final_damage = self.stats.update_health(bullet.damage)
         self.update_bars()
         if final_damage:
-            splatter = min(max(int(final_damage / self.stats.health_max) * 30, 5), 50)
+            splatter = min(max(int(final_damage / self.stats.health_max) * 30, 5), 20)
             self.spriteeffect.bullet_wound(bullet.vel_x, bullet.vel_y, self.sprite.x, self.sprite.y, splatter, self.blood_color) # noqa
 
     def update(self):

@@ -202,8 +202,6 @@ class StatsManager(object):
                 self.base[stat] += slots[slot]['current_gem']['stats'][stat]
 
     def generate_gun(self, gun):
-        print self.accuracy
-        print gun['accuracy']
         return {
             'damage_min': (gun['damage_min'] + self.damage_min) * ((100 + self.damage_perc) / 100), # noqa
             'damage_max': (gun['damage_max'] + self.damage_max) * ((100 + self.damage_perc) / 100), # noqa

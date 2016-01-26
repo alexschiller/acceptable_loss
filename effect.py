@@ -111,7 +111,7 @@ class SpriteEffect(object):
             )
 
     def explosion(self, start_x, start_y):
-        for e in range(50):
+        for e in range(30):
             self.effects.append(
                 Effect(start_x=start_x + random.randint(-5, 5),
                     start_y=start_y + random.randint(-5, 5),
