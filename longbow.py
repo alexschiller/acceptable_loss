@@ -37,6 +37,13 @@ class LongbowAbility(Ability):
         self.bul_max = 30
         self.mis_max = 10
 
+        self.g1b = 7
+        self.g1b_max = 7
+        self.g1b_reload = 0
+        self.gun_one_bullets = []
+        for i in range(self.g1b):
+            self.gun_one_bullets.append(pyglet.sprite.Sprite(load_image('bullet_hud.png', anchor=False), i * 7, 0, batch=gfx_batch))  # noqa)
+
         self.vat = pyglet.sprite.Sprite(load_image('autoloader.png', anchor=False), window_width-472, 0, batch=gfx_batch),  # noqa
 
     def update_ammo(self):
@@ -45,12 +52,43 @@ class LongbowAbility(Ability):
         if self.mis < self.mis_max:
             self.mis += .005
 
+        if not self.g1b:
+            self.g1b_reload = 1
+        if self.g1b_reload:
+            self.g1b += .1
+            if self.g1b >= self.g1b_max:
+                self.g1b = self.g1b_max
+                self.g1b_reload = 0
+
+    def auto_attack(self):
+        enemy_range = self.can_aa_shoot()
+        if enemy_range:
+            bullet_base = self.build_bullet(
+                self.owner.stats.gun_two_data,
+                self.owner.sprite.x,
+                self.owner.sprite.y,
+                self.owner.target.sprite.x,
+                self.owner.target.sprite.y,
+                enemy_range,
+                self.owner.target,
+            )
+            if not self.g1b_reload:
+                self.thrown.append(Thrown(master, self, bullet_base))
+                self.g1b -= 1
+                time = int(60.0 / bullet_base['rof'])
+                self.trigger_aa_cooldown(time)
+
     def update(self):
         self.update_delayed()
         self.update_ammo()
 
         for t in self.thrown:
             t.update()
+
+        b1 = max(int(self.g1b * 7), 1)
+        self.g1b_bar = pyglet.sprite.Sprite(
+            pyglet.image.create(b1, 30, orange_sprite),
+            0, 0, batch=BarBatch)
 
         oh = int(max(90 * self.bul / self.bul_max, 1))
         self.opp_bar = pyglet.sprite.Sprite(

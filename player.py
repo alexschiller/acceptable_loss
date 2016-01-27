@@ -42,9 +42,7 @@ class PlayerController(Controller):
         self.master = master
         self.black_sprite = pyglet.image.SolidColorImagePattern(color=(0, 0, 0, 150))
         self.black_dot = pyglet.image.create(10, 10, self.black_sprite)
-
-        self.sprite = pyglet.sprite.Sprite(self.black_dot,
-                    0, 0, batch=gfx_batch)
+        self.sprite = pyglet.sprite.Sprite(self.black_dot, 0, 0, batch=gfx_batch)
 
         self.collision = SpriteCollision(self.sprite)
 
@@ -164,13 +162,13 @@ lb_autocannon = {
         'damage_min': 2,
         'damage_max': 4,
         'travel': 700,
-        'velocity': 100,
+        'velocity': 80,
         'accuracy': 85,
-        'rof': 3,
+        'rof': 10,
         'crit': 10,
         'crit_damage': 3,
         'armor_pierce': 8,
-        'image': load_image('autocannon.png'), # noqa
+        'image': load_image('magnum.png'), # noqa
         'gun_fire_sound': load_sound('laser.wav'), # noqa
         'on_hit_sound': load_sound('on_hit.wav'), # noqa
         'effects': [],
