@@ -7,12 +7,14 @@ from gun import * # noqa
 from functools import partial # noqa
 from longbow import * # noqa
 from controller import Controller
+import itertools
 
 class Player(Character):
     def __init__(self, *args, **kwargs):
         super(Player, self).__init__(*args, **kwargs)
         self.hp_shield_bar = pyglet.sprite.Sprite(load_image('hp_shield.png', anchor=False), window_width - 1050, 0, batch=gfx_batch),  # noqa
         self.evade_acc_bar = pyglet.sprite.Sprite(load_image('evade_acc.png', anchor=False), window_width - 415, 0, batch=gfx_batch),  # noqa
+        self.accuracy_bar = pyglet.sprite.Sprite(load_image('evade_acc.png', anchor=False), window_width - 415, 30, batch=gfx_batch),  # noqa
         self.energy = 100
         self.inventory = []
 
@@ -22,6 +24,8 @@ class Player(Character):
         sw = int(max(115 * self.stats.shield / self.stats.shield_max, 1))
         hw = int(max(115 * self.stats.health / self.stats.health_max, 1))
         ae = (window_width - 410) + self.stats.evade_move / 10 * 70
+
+        ac = (window_width - 410) + int((self.stats.accuracy / 100.0) * 115.0)
 
         self.shield_bar = pyglet.sprite.Sprite(
             pyglet.image.create(sw, 15, blue_sprite),
@@ -35,6 +39,10 @@ class Player(Character):
             pyglet.image.create(70, 20, white_sprite),
             ae, 5, batch=BarBatch)
 
+        self.acc_bar = pyglet.sprite.Sprite(
+            pyglet.image.create(3, 20, red_sprite),
+            ac, 35, batch=BarBatch)
+
 
 class PlayerController(Controller):
     def __init__(self, *args, **kwargs):
@@ -45,7 +53,7 @@ class PlayerController(Controller):
         self.sprite = pyglet.sprite.Sprite(self.black_dot, 0, 0, batch=gfx_batch)
 
         self.collision = SpriteCollision(self.sprite)
-
+        self.timer = itertools.cycle(range(3))
         red_sprite = pyglet.image.SolidColorImagePattern(color=(255, 0, 0, 150))
         self.red_dot = pyglet.image.create(5, 5, red_sprite)
         self.marker = []
@@ -123,14 +131,15 @@ class PlayerController(Controller):
             self.rotate(self.sprite.x, self.sprite.y)
 
     def update(self):
-        self.puppet.update_bars()
-        self.target_closest_enemy()
-        self.check_target()
+        if self.timer.next() == 1:
+            self.puppet.update_bars()
+            self.target_closest_enemy()
         for p in self.master.loot.current_loot:
             if abs(self.puppet.sprite.x - p.sprite.x) < 10:
                 if abs(self.puppet.sprite.y - p.sprite.y) < 10:
                     if collide(p.collision, self.master.player.collision):
                         self.master.loot.unpack_package(p)
+        self.check_target()
 
 lb_missile = {
         'gun_class': 'Missile',

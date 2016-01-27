@@ -255,7 +255,16 @@ class MainState(object):
             master.player.sprite.y = master.home.y
             master.move_all(-readjust_x, -readjust_y)
         if key_handler[key.TAB]:
-            master.player_controller.target_closest_enemy()
+            master.pr.disable()
+            s = StringIO.StringIO()
+            sortby = 'cumulative'
+            ps = pstats.Stats(master.pr, stream=s).sort_stats(sortby)
+            ps.print_stats()
+
+            f = open('output.txt', 'w')
+            f.write(s.getvalue())
+            # print s.getvalue()
+            # master.player_controller.target_closest_enemy()
         if key_handler[key.D]:
             mx += 1
         if key_handler[key.A]:

@@ -31,12 +31,12 @@ class Threat(object):
 
     def update(self):
         self.threat_timer()
-        if self.threat > 2:
-            self.threat -= 2
+        if self.threat > 5:
+            self.threat -= 5
             random.choice(
                 [
-                    Character(self.master, enemy_soldier_base(2)),
-                    Character(self.master, enemy_zombie_base(2))
+                    Character(self.master, enemy_soldier_base(5)),
+                    Character(self.master, enemy_zombie_base(5))
                 ]
             )
 

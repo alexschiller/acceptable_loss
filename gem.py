@@ -119,5 +119,4 @@ class Gem(object):
             else:
                 gem_out['stats'][stat] = random.randint(base[0], base[1])
         gem_out['level'] = stats_levels / num_stats
-        print gem_out
         return gem_out

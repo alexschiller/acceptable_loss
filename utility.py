@@ -9,6 +9,10 @@ from pyglet.window import mouse # noqa
 from collide import * # noqa
 from levelgenerator import * # noqa
 from gem import Gem
+import cProfile
+import pstats # noqa
+import StringIO # noqa
+
 # Window sizes
 window_height = 800
 window_width = 1400
@@ -28,7 +32,8 @@ class Master(object):
         self.people = {'red': [], 'blue': []}
         self.spriteeffect = None
         self.buildings = []
-
+        self.pr = cProfile.Profile()
+        self.pr.enable()
         # comment out this block to get rid of room color stuff
         self.room_manager = RoomManager()
         self.room_manager.setup(13)
@@ -41,6 +46,7 @@ class Master(object):
         self.loot = None
 
     def update(self):
+
         self.room_manager.update()
         for p in self.people['blue']:
             p.update()

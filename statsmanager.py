@@ -78,7 +78,7 @@ class StatsManager(object):
             self._evade_move = 10
         elif self._evade_move <= 0:
             self._evade_move = 0
-        self._accuraccy_move = 10 - self._evade_move
+        self._accuracy_move = 10 - self._evade_move
 
     def update_delayed(self):
         for p in self.delayed:
