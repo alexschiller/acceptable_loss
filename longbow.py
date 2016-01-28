@@ -37,12 +37,28 @@ class LongbowAbility(Ability):
         self.bul_max = 30
         self.mis_max = 10
 
-        self.g1b = 7
-        self.g1b_max = 7
+        self.g1b = 10
+        self.g1b_max = 10
         self.g1b_reload = 0
         self.gun_one_bullets = []
+        self.g1b_len = self.g1b_max * 4
+        self.g1b_bar = pyglet.sprite.Sprite(
+            pyglet.image.create(self.g1b_len, 13, orange_sprite),
+            11, window_height - 139, batch=BarBatch)
         for i in range(self.g1b):
-            self.gun_one_bullets.append(pyglet.sprite.Sprite(load_image('bullet_hud.png', anchor=False), i * 7, 0, batch=gfx_batch))  # noqa)
+            self.gun_one_bullets.append(pyglet.sprite.Sprite(load_image('s_bullet.png', anchor=False), 11 + i * 4, window_height - 140, batch=gfx_batch))  # noqa)
+
+        self.g2b = 15
+        self.g2b_max = 15
+        self.g2b_reload = 0
+        self.gun_two_bullets = []
+        self.g2b_len = self.g2b_max * 4
+        self.g2b_bar = pyglet.sprite.Sprite(
+            pyglet.image.create(self.g2b_len, 13, orange_sprite),
+            11, window_height - 152, batch=BarBatch)
+        for i in range(self.g2b):
+            self.gun_two_bullets.append(pyglet.sprite.Sprite(load_image('s_bullet.png', anchor=False), 11 + i * 4, window_height - 153, batch=gfx_batch))  # noqa)
+
 
         self.vat = pyglet.sprite.Sprite(load_image('autoloader.png', anchor=False), window_width-472, 0, batch=gfx_batch),  # noqa
 
@@ -59,6 +75,14 @@ class LongbowAbility(Ability):
             if self.g1b >= self.g1b_max:
                 self.g1b = self.g1b_max
                 self.g1b_reload = 0
+
+        if not self.g2b:
+            self.g2b_reload = 1
+        if self.g2b_reload:
+            self.g2b += .1
+            if self.g2b >= self.g2b_max:
+                self.g2b = self.g2b_max
+                self.g2b_reload = 0
 
     def auto_attack(self):
         enemy_range = self.can_aa_shoot()
@@ -85,10 +109,8 @@ class LongbowAbility(Ability):
         for t in self.thrown:
             t.update()
 
-        b1 = max(int(self.g1b * 7), 1)
-        self.g1b_bar = pyglet.sprite.Sprite(
-            pyglet.image.create(b1, 30, orange_sprite),
-            0, 0, batch=BarBatch)
+        self.g1b_bar.x = 11 - (self.g1b_len - (self.g1b / float(self.g1b_max) * self.g1b_len)) # noqa
+        self.g2b_bar.x = 11 - (self.g2b_len - (self.g2b / float(self.g2b_max) * self.g2b_len)) # noqa
 
         oh = int(max(90 * self.bul / self.bul_max, 1))
         self.opp_bar = pyglet.sprite.Sprite(

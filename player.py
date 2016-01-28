@@ -12,37 +12,32 @@ import itertools
 class Player(Character):
     def __init__(self, *args, **kwargs):
         super(Player, self).__init__(*args, **kwargs)
-        self.hp_shield_bar = pyglet.sprite.Sprite(load_image('hp_shield.png', anchor=False), window_width - 1050, 0, batch=gfx_batch),  # noqa
-        self.evade_acc_bar = pyglet.sprite.Sprite(load_image('evade_acc.png', anchor=False), window_width - 415, 0, batch=gfx_batch),  # noqa
-        self.accuracy_bar = pyglet.sprite.Sprite(load_image('evade_acc.png', anchor=False), window_width - 415, 30, batch=gfx_batch),  # noqa
+        # self.hp_shield_bar = pyglet.sprite.Sprite(load_image('hp_shield.png', anchor=False), window_width - 1050, 0, batch=gfx_batch),  # noqa
+        # self.evade_acc_bar = pyglet.sprite.Sprite(load_image('evade_acc.png', anchor=False), window_width - 415, 0, batch=gfx_batch),  # noqa
+        # self.accuracy_bar = pyglet.sprite.Sprite(load_image('evade_acc.png', anchor=False), window_width - 415, 30, batch=gfx_batch),  # noqa
+        self.visor = pyglet.sprite.Sprite(load_image('visor.png', anchor=False), -1, window_height-171, batch=gfx_batch),  # noqa
         self.energy = 100
         self.inventory = []
+        self.shield_bar = pyglet.sprite.Sprite(pyglet.image.create(271, 13, blue_sprite),
+            10, window_height - 25, batch=BarBatch)
+        self.health_bar = pyglet.sprite.Sprite(pyglet.image.create(271, 13, red_sprite),
+            10, window_height - 40, batch=BarBatch)
+
+        self.ae_bar = pyglet.sprite.Sprite(
+            pyglet.image.create(50, 13, white_sprite),
+            31, window_height - 168, batch=BarBatch)
+
+        self.acc_bar = pyglet.sprite.Sprite(
+            pyglet.image.create(3, 13, red_sprite),
+            150, window_height - 168, batch=BarBatch)
 
     def update_bars(self):
         if self.energy < 100:
             self.energy = 100
-        sw = int(max(115 * self.stats.shield / self.stats.shield_max, 1))
-        hw = int(max(115 * self.stats.health / self.stats.health_max, 1))
-        ae = (window_width - 410) + self.stats.evade_move / 10 * 70
-
-        ac = (window_width - 410) + int((self.stats.accuracy / 100.0) * 115.0)
-
-        self.shield_bar = pyglet.sprite.Sprite(
-            pyglet.image.create(sw, 15, blue_sprite),
-            window_width - 1045, 30, batch=BarBatch)
-
-        self.health_bar = pyglet.sprite.Sprite(
-            pyglet.image.create(hw, 15, red_sprite),
-            window_width - 1045, 5, batch=BarBatch)
-
-        self.ae_bar = pyglet.sprite.Sprite(
-            pyglet.image.create(70, 20, white_sprite),
-            ae, 5, batch=BarBatch)
-
-        self.acc_bar = pyglet.sprite.Sprite(
-            pyglet.image.create(3, 20, red_sprite),
-            ac, 35, batch=BarBatch)
-
+        self.shield_bar.x = 10 - (271 - (self.stats.shield / float(self.stats.shield_max) * 271)) # noqa
+        self.health_bar.x = 10 - (271 - (self.stats.health / float(self.stats.health_max) * 271)) # noqa
+        self.acc_bar.x = 150 + int(min(self.stats.accuracy, 100))
+        self.ae_bar.x = 31 + self.stats.evade_move / 10 * 50
 
 class PlayerController(Controller):
     def __init__(self, *args, **kwargs):

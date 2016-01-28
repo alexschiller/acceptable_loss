@@ -79,9 +79,9 @@ class Master(object):
         camera_y = (window_height_half - self.player.sprite.y) / window_height_half # noqa
         mx = 0
         my = 0
-        if abs(camera_x) > .1:
+        if abs(camera_x) > .25:
             mx = camera_x * 10
-        if abs(camera_y) > .1:
+        if abs(camera_y) > .25:
             my = camera_y * 10
 
         self.move_all(mx, my)
