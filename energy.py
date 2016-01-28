@@ -3,7 +3,7 @@ from friend import * # noqa
 
 def teleport(master, mouse_position):
     master.player.energy -= 100
-    master.spriteeffect.teleport(master.player.sprite.x, master.player.sprite.y)
+    # master.spriteeffect.teleport(master.player.sprite.x, master.player.sprite.y)
     master.player.sprite.x = mouse_position[0]
     master.player.sprite.y = mouse_position[1]
     master.spriteeffect.teleport(master.player.sprite.x, master.player.sprite.y)

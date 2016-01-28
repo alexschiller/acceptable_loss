@@ -59,6 +59,15 @@ class LongbowAbility(Ability):
         for i in range(self.g2b):
             self.gun_two_bullets.append(pyglet.sprite.Sprite(load_image('s_bullet.png', anchor=False), 11 + i * 4, window_height - 153, batch=gfx_batch))  # noqa)
 
+        self.opp_bar = pyglet.sprite.Sprite(
+            pyglet.image.create(15, 90, orange_sprite),
+            window_width - 472, 5, batch=BarBatch)
+
+        self.vul_bar = pyglet.sprite.Sprite(
+            pyglet.image.create(20, 90, red_sprite),
+            window_width - 440, 5, batch=BarBatch)
+
+
 
         self.vat = pyglet.sprite.Sprite(load_image('autoloader.png', anchor=False), window_width-472, 0, batch=gfx_batch),  # noqa
 
@@ -112,15 +121,8 @@ class LongbowAbility(Ability):
         self.g1b_bar.x = 11 - (self.g1b_len - (self.g1b / float(self.g1b_max) * self.g1b_len)) # noqa
         self.g2b_bar.x = 11 - (self.g2b_len - (self.g2b / float(self.g2b_max) * self.g2b_len)) # noqa
 
-        oh = int(max(90 * self.bul / self.bul_max, 1))
-        self.opp_bar = pyglet.sprite.Sprite(
-            pyglet.image.create(15, oh, orange_sprite),
-            window_width - 472, 5, batch=BarBatch)
-
-        vh = int(max(90 * round(self.mis / self.mis_max, 1), 1))
-        self.vul_bar = pyglet.sprite.Sprite(
-            pyglet.image.create(20, vh, red_sprite),
-            window_width - 440, 5, batch=BarBatch)
+        self.opp_bar.y = 5 - (90 - (self.bul / float(self.bul_max) * 90)) # noqa
+        self.vul_bar.y = 5 - (90 - (self.mis / float(self.mis_max) * 90)) # noqa
 
     def action_checks(self, bul, mis):
         if self.owner.target:

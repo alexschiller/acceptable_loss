@@ -51,7 +51,8 @@ class PlayerController(Controller):
         self.timer = itertools.cycle(range(3))
         red_sprite = pyglet.image.SolidColorImagePattern(color=(255, 0, 0, 150))
         self.red_dot = pyglet.image.create(5, 5, red_sprite)
-        self.marker = []
+        self.marker = None
+        self.timg = load_image('target.png')
 
     def slot_one_fire(self):
         self.puppet.ability.missile_launch()
@@ -70,33 +71,7 @@ class PlayerController(Controller):
                 break
 
     def build_target(self, e):
-        bar = 2
-        self.puppet.target = e
-        h = e.sprite.height
-        w = e.sprite.width
-        v = max(h, w)
-        v2 = v / 2
-        x = e.sprite.x
-        y = e.sprite.y
-
-        vs = pyglet.image.create(bar, v2, red_sprite)
-        hs = pyglet.image.create(v2, bar, red_sprite)
-
-        self.marker = [
-            #  Bottom two verticals
-            pyglet.sprite.Sprite(vs, x - v - 2, y - v, batch=gfx_batch),  # noqa 
-            pyglet.sprite.Sprite(vs, x + v, y - v, batch=gfx_batch),  # noqa 
-            #  Bottom two horizontals
-            pyglet.sprite.Sprite(hs, x - v - 2, y - v, batch=gfx_batch),  # noqa 
-            pyglet.sprite.Sprite(hs, x + v - v2 + 2, y - v, batch=gfx_batch),  # noqa 
-            #  Top two verticals
-            pyglet.sprite.Sprite(vs, x - v - 2, y + v, batch=gfx_batch),  # noqa 
-            pyglet.sprite.Sprite(vs, x + v, y + v, batch=gfx_batch),  # noqa 
-            #  Top two horizontals
-            pyglet.sprite.Sprite(hs, x - v - 2, y + v + 5, batch=gfx_batch),  # noqa 
-            pyglet.sprite.Sprite(hs, x + v - v2 + 2, y + v + 5, batch=gfx_batch),  # noqa 
-
-        ]
+        self.marker = pyglet.sprite.Sprite(self.timg, e.sprite.x - 10, e.sprite.y - 10, batch=gfx_batch)  # noqa 
 
     def target_closest_enemy(self, distance=float("inf")):
         try:

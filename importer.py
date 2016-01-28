@@ -33,12 +33,11 @@ class Threat(object):
         self.threat_timer()
         if self.threat > 5:
             self.threat -= 5
-            random.choice(
-                [
-                    Character(self.master, enemy_soldier_base(5)),
-                    Character(self.master, enemy_zombie_base(5))
-                ]
-            )
+            if len(self.master.people['red']) < 1:
+                    Character(
+                        self.master,
+                        random.choice([enemy_soldier_base(5), enemy_zombie_base(5)])
+                    )
 
 
 class Radar(object):

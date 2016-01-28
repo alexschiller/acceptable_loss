@@ -53,7 +53,7 @@ class SpriteEffect(object):
                     vel_y=e_vel_y,
                     travel=(abs(e_vel_x) + abs(e_vel_y)) * random.randint(5, 10),
                     ecolor=ecolor,
-                    esizex=random.randint(1, 4), esizey=random.randint(1, 4),)
+                    esizex=3, esizey=3,)
             )
 
     def message(self, start_x, start_y, text, time=30):
@@ -105,8 +105,7 @@ class SpriteEffect(object):
                 Effect(start_x=start_x, start_y=start_y,
                     vel_x=random.randint(-20, 20), vel_y=random.randint(-20, 20),
                     travel=random.randint(30, 50),
-                    ecolor=[random.randint(0, 50), random.randint(50, 100),
-                        random.randint(100, 255)],
+                    ecolor=[25, 75, 250],
                     esizex=random.randint(1, 10), esizey=random.randint(1, 10))
             )
 
@@ -117,8 +116,7 @@ class SpriteEffect(object):
                     start_y=start_y + random.randint(-5, 5),
                     vel_x=random.randint(-10, 10), vel_y=random.randint(-10, 10),
                     travel=50,
-                    ecolor=[random.randint(200, 255), random.randint(0, 200),
-                        random.randint(0, 55)],
+                    ecolor=[255, random.randint(0, 200), 25],
                     esizex=random.randint(3, 6), esizey=random.randint(3, 6))
             )
 
