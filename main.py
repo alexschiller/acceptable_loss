@@ -319,12 +319,16 @@ class BuildState(MainState):
     def on_mouse_release(self, x, y, button, modifiers):
         Buildmenu.on_mouse_press(x, y, 1)
         HotBar.update(x, y, 1)
+        if modifiers == 1:
+            inventorymenu.on_mouse_press(x, y, 1)
 
     def on_mouse_press(self, x, y, button, modifiers):
         master.player_controller.update_target()
         Buildmenu.on_mouse_press(x, y, 0)
         HotBar.update(x, y, 0)
         master.player.ability.auto_attack()
+        if modifiers == 1:
+            inventorymenu.on_mouse_press(x, y, 0)
 
     def on_mouse_motion(self, x, y, dx, dy):
         master.player_controller.sprite.x = x
