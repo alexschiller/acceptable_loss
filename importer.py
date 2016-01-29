@@ -136,13 +136,17 @@ class Resources(object):
 
 
 def reset_imp():
-        for item in master.loot.current_loot:
-            del item
-        for item in master.loot.moving_loot:
-            del item
-        master.threat.threat = 0
-        master.threat.threat_time = 0
-        master.room_manager.parent.create_sprites(0, 0, TerrainBatch, master.player)
+    for thing in master.people['red']:
+            thing.on_death()
+    master.room_manager.delete_all()
+    master.room_manager = None
+    master.room_manager = RoomManager(master)
+    for item in master.loot.current_loot:
+        del item
+    for item in master.loot.moving_loot:
+        del item
+    master.threat.threat = 0
+    master.threat.threat_time = 0
 
 master.loot = Loot(master)
 master.resources = Resources(master)
@@ -161,6 +165,7 @@ master.room_manager = RoomManager(master)
 master.room_manager.setup(13)
 master.room_manager.parent.create_sprites(0, 0, TerrainBatch, master.player)
 master.room_manager.add_enemies()
+master.room_manager.create_portal()
 
 master.home = pyglet.sprite.Sprite(
     load_image('home.png'),

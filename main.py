@@ -150,6 +150,7 @@ class PauseState():
         window.clear()
         pyglet.gl.glClearColor(0.75, 0.75, 0.75, 1)  # gray back
         TerrainBatch.draw()
+        PortalBatch.draw()
         BuildingBatch.draw()
         BulletBatch.draw()
         gfx_batch.draw()
@@ -179,6 +180,7 @@ class MainState(object):
         window.clear()
         pyglet.gl.glClearColor(0.75, 0.75, 0.75, 1)  # gray back
         TerrainBatch.draw()
+        PortalBatch.draw()
         master.player.sprite.draw()
         BulletBatch.draw()
         EffectsBatch.draw()
@@ -229,8 +231,6 @@ class MainState(object):
             if self.Pause == 1:
                 self.Pause = 0
                 states.swap('pause')
-                master.reset()
-                reset_imp()
 
         if key_handler[key.N]:
             self.Menu = 1
@@ -248,6 +248,13 @@ class MainState(object):
                 # self.swap()
         mx = 0
         my = 0
+        if key_handler[key.X]:
+            if collide(master.player.collision, master.room_manager.portal.collision):
+                reset_imp()
+                master.reset()
+                master.player.sprite.x = master.home.x
+                master.player.sprite.y = master.home.y
+
         if key_handler[key.H]:
             readjust_x = master.home.x - master.player.sprite.x
             readjust_y = master.home.y - master.player.sprite.y

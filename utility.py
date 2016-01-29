@@ -21,6 +21,7 @@ window_width_half = float(window_width / 2)
 
 frame_width = 50
 TerrainBatch = pyglet.graphics.Batch()
+PortalBatch = pyglet.graphics.Batch()
 
 
 class Master(object):
@@ -82,14 +83,11 @@ class Master(object):
         self.move_all(mx, my)
 
     def reset(self):
-        for thing in self.people['red']:
-            thing.on_death()
-        self.room_manager.delete_all()
-        self.room_manager = None
-        self.room_manager = RoomManager()
+
         self.room_manager.setup(13)
         self.room_manager.parent.create_sprites(0, 0, TerrainBatch, self.player)
         self.room_manager.add_enemies()
+        self.room_manager.create_portal()
 
         self.home = pyglet.sprite.Sprite(
             load_image('home.png'),

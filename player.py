@@ -9,6 +9,7 @@ from longbow import * # noqa
 from controller import Controller
 import itertools
 
+
 class Player(Character):
     def __init__(self, *args, **kwargs):
         super(Player, self).__init__(*args, **kwargs)
@@ -19,9 +20,9 @@ class Player(Character):
         self.energy = 100
         self.inventory = []
         self.shield_bar = pyglet.sprite.Sprite(pyglet.image.create(271, 13, blue_sprite),
-            10, window_height - 25, batch=BarBatch)
+            10, window_height - 25, batch=BarBatch) # noqa
         self.health_bar = pyglet.sprite.Sprite(pyglet.image.create(271, 13, red_sprite),
-            10, window_height - 40, batch=BarBatch)
+            10, window_height - 40, batch=BarBatch) # noqa
 
         self.ae_bar = pyglet.sprite.Sprite(
             pyglet.image.create(50, 13, white_sprite),
@@ -39,6 +40,7 @@ class Player(Character):
         self.acc_bar.x = 150 + int(min(self.stats.accuracy, 100))
         self.ae_bar.x = 31 + self.stats.evade_move / 10 * 50
 
+
 class PlayerController(Controller):
     def __init__(self, *args, **kwargs):
         super(PlayerController, self).__init__(*args, **kwargs)
@@ -53,12 +55,14 @@ class PlayerController(Controller):
         self.red_dot = pyglet.image.create(5, 5, red_sprite)
         self.marker = None
         self.timg = load_image('target.png')
+        self.last_my = 0
+        self.last_mx = 0
 
     def slot_one_fire(self):
         self.puppet.ability.missile_launch()
 
     def slot_two_fire(self):
-        #elf.puppet.ability.magnum_california_prayer_book()
+        # elf.puppet.ability.magnum_california_prayer_book()
         pass
 
     def on_hit(self):
@@ -87,6 +91,19 @@ class PlayerController(Controller):
                     self.puppet.target = e
         except:
             self.puppet.target = None
+
+    def move(self, mx, my):
+        self.last_mx = mx
+        self.last_my = my
+        if mx and my:
+            mx = mx / 1.41
+            my = my / 1.41
+        self.puppet.stats.update_move(mx, my)
+        self.puppet.sprite.x += (self.puppet.stats.speed * mx)
+        self.puppet.sprite.y += (self.puppet.stats.speed * my)
+
+    def undo_move(self):
+        self.move(-self.last_mx, -self.last_my)
 
     def check_target(self):
         self.marker = []

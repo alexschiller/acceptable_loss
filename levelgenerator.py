@@ -5,7 +5,7 @@ import json # noqa
 from collide import * # noqa
 from character import * # noqa
 from enemy import * # noqa
-from utility import * # noqa
+#from utility import * # noqa
 
 window_height = 800
 window_width = 1400
@@ -39,6 +39,30 @@ def calc_vel_xy(tar_x, tar_y, start_x, start_y, velocity):
     return (vel_x, vel_y)
 
 
+class Portal(object):
+    def __init__(self, x, y, width, height, batch, master):
+        h_choice = random.randint(0, height)
+        w_choice = random.randint(0, width)
+        self.sprite = pyglet.sprite.Sprite(
+            load_image('portal.png'),
+            x + w_choice, y + h_choice, batch=batch
+        )
+        self.collision = SpriteCollision(self.sprite)
+        self.manager = master
+
+    def on_colide(self):
+        master.reset()
+
+    def move(self, dx, dy):
+        self.sprite.x += dx
+        self.sprite.y += dy
+
+    def update(self):
+        self.sprite.rotation += 3
+        if self.sprite.rotation > 359:
+            self.sprite.rotation = self.sprite.rotation - 360
+
+
 class Wall(object):
     def __init__(self, player, x, y, height, width, batch=None):
         self.player = player
@@ -50,12 +74,7 @@ class Wall(object):
         self.collision = SpriteCollision(self.sprite)
 
     def on_collide(self):
-        ret = calc_vel_xy(
-            self.player.sprite.x, self.player.sprite.y,
-            self.sprite.x, self.sprite.y, 10
-        )
-        self.player.sprite.x += ret[0]
-        self.player.sprite.y += ret[1]
+        self.player.controller.undo_move()
 
     def update(self):
         if collide(self.collision, self.player.collision):
@@ -158,6 +177,7 @@ class RoomManager(object):
         self.roomlist.append(self.parent)
         self.grid[49][49] = 0
         self.parent.location = [49, 49]
+        self.portal = None
 
     def setup(self, amount):
         for i in range(1, amount):
@@ -207,23 +227,32 @@ class RoomManager(object):
             room_x_max = room_x_min + room.sprite.width
             room_y_min = room.sprite.y
             room_y_max = room_y_min + room.sprite.height
-            Character(self.master,
+            Character(
+                self.master,
                 random.choice([
-                    enemy_soldier_base(3, random.randint(room_x_min, room_x_max),
+                    enemy_soldier_base(
+                        3, random.randint(room_x_min, room_x_max),
                         random.randint(room_y_min, room_y_max)),
 
-                    enemy_zombie_base(3, random.randint(room_x_min, room_x_max),
+                    enemy_zombie_base(
+                        3, random.randint(room_x_min, room_x_max),
                         random.randint(room_y_min, room_y_max))
                 ]))
 
     def move_all(self, dx, dy):
         for room in self.roomlist:
             room.move(dx, dy)
+        self.portal.move(dx, dy)
 
     def update(self):
         for room in self.roomlist:
             for wall in room.walls:
                 wall.update()
+        self.portal.update()
+
+    def create_portal(self):
+        choice = random.choice(self.roomlist)
+        self.portal = Portal(choice.sprite.x, choice.sprite.y, choice.sprite.width, choice.sprite.height, PortalBatch, self.master)
 
     def delete_all(self):
         for room in self.roomlist:
