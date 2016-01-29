@@ -71,15 +71,23 @@ class Master(object):
 
     def update_camera(self):
 
-        camera_x = (window_width_half - self.player.sprite.x) / window_width_half # noqa
-        camera_y = (window_height_half - self.player.sprite.y) / window_height_half # noqa
+        mouse_camera_x = (window_width_half - self.player.controller.sprite.x) / window_width_half # noqa
+        mouse_camera_y = (window_height_half - self.player.controller.sprite.y) / window_height_half # noqa
+
+        player_camera_x = (window_width_half - self.player.sprite.x) / window_width_half # noqa
+        player_camera_y = (window_height_half - self.player.sprite.y) / window_height_half # noqa
         mx = 0
         my = 0
-        if abs(camera_x) > .25:
-            mx = camera_x * 10
-        if abs(camera_y) > .25:
-            my = camera_y * 10
 
+        if abs(player_camera_x) > .8:
+            mx = player_camera_x * 3
+        elif abs(mouse_camera_x) > .5:
+            mx = mouse_camera_x * 5
+
+        if abs(player_camera_y) > .8:
+            my = player_camera_y * 3
+        elif abs(mouse_camera_y) > .5:
+            my = mouse_camera_y * 5
         self.move_all(mx, my)
 
     def reset(self):

@@ -9,6 +9,8 @@ from longbow import * # noqa
 class Controller(object):
     def __init__(self, puppet):
         self.puppet = puppet
+        self.last_my = 0
+        self.last_mx = 0
 
     def move(self, mx, my):
         if mx and my:
@@ -17,6 +19,11 @@ class Controller(object):
         self.puppet.stats.update_move(mx, my)
         self.puppet.sprite.x += (self.puppet.stats.speed * mx)
         self.puppet.sprite.y += (self.puppet.stats.speed * my)
+        self.last_my = mx
+        self.last_mx = my
+
+    def undo_move(self):
+        self.move(-self.last_mx, -self.last_my)
 
     ## Controls
     def rotate(self, x, y):
