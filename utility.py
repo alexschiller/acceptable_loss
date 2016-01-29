@@ -55,10 +55,10 @@ class Master(object):
 
         # self.player.update()
         self.spriteeffect.update()
-        self.resources.update()
+        # self.resources.update()
         self.update_camera()
-        self.threat.update()
-        self.radar.update()
+        # self.threat.update()
+        # self.radar.update()
         self.loot.update()
 
     def update_button(self, x, y, mode):
@@ -80,19 +80,19 @@ class Master(object):
         my = 0
 
         if abs(player_camera_x) > .8:
-            mx = player_camera_x * 3
+            mx = player_camera_x * 10
         elif abs(mouse_camera_x) > .5:
-            mx = mouse_camera_x * 5
+            mx = mouse_camera_x * 10
 
         if abs(player_camera_y) > .8:
-            my = player_camera_y * 3
+            my = player_camera_y * 10
         elif abs(mouse_camera_y) > .5:
-            my = mouse_camera_y * 5
+            my = mouse_camera_y * 10
         self.move_all(mx, my)
 
     def reset(self):
 
-        self.room_manager.setup(13)
+        self.room_manager.setup(3)
         self.room_manager.parent.create_sprites(0, 0, TerrainBatch, self.player)
         self.room_manager.add_enemies()
         self.room_manager.create_portal()
