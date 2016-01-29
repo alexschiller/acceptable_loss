@@ -33,7 +33,7 @@ class Threat(object):
         self.threat_timer()
         if self.threat > 5:
             self.threat -= 5
-            if len(self.master.people['red']) < 1:
+            if len(self.master.people['red']) < 10:
                     Character(
                         self.master,
                         random.choice([enemy_soldier_base(5), enemy_zombie_base(5)])
@@ -95,11 +95,11 @@ class Resources(object):
         self.mon_ps = .15
 
         self.timer = 0
-        self.foo_lab = pyglet.text.Label('F: ' + str(round(self.foo, 1)), font_name='Courier New', font_size=12, x=window_width - 150, y=130, anchor_x='left',anchor_y='center', batch=gfx_batch) # noqa        
-        self.pow_lab = pyglet.text.Label('P: ' + str(round(self.pow, 1)), font_name='Courier New', font_size=12, x=window_width - 150, y=110, anchor_x='left',anchor_y='center', batch=gfx_batch) # noqa        
-        self.eng_lab = pyglet.text.Label('E: ' + str(round(self.eng, 1)), font_name='Courier New', font_size=12, x=window_width - 150, y=90, anchor_x='left',anchor_y='center', batch=gfx_batch) # noqa        
-        self.sci_lab = pyglet.text.Label('S: ' + str(round(self.sci, 1)), font_name='Courier New', font_size=12, x=window_width - 150, y=70, anchor_x='left',anchor_y='center', batch=gfx_batch) # noqa
-        self.mon_lab = pyglet.text.Label('M: ' + str(round(self.mon, 1)), font_name='Courier New', font_size=12, x=window_width - 150, y=50, anchor_x='left',anchor_y='center', batch=gfx_batch) # noqa
+        # self.foo_lab = pyglet.text.Label('F: ' + str(round(self.foo, 1)), font_name='Courier New', font_size=12, x=window_width - 150, y=130, anchor_x='left',anchor_y='center', batch=gfx_batch) # noqa        
+        # self.pow_lab = pyglet.text.Label('P: ' + str(round(self.pow, 1)), font_name='Courier New', font_size=12, x=window_width - 150, y=110, anchor_x='left',anchor_y='center', batch=gfx_batch) # noqa        
+        # self.eng_lab = pyglet.text.Label('E: ' + str(round(self.eng, 1)), font_name='Courier New', font_size=12, x=window_width - 150, y=90, anchor_x='left',anchor_y='center', batch=gfx_batch) # noqa        
+        # self.sci_lab = pyglet.text.Label('S: ' + str(round(self.sci, 1)), font_name='Courier New', font_size=12, x=window_width - 150, y=70, anchor_x='left',anchor_y='center', batch=gfx_batch) # noqa
+        # self.mon_lab = pyglet.text.Label('M: ' + str(round(self.mon, 1)), font_name='Courier New', font_size=12, x=window_width - 150, y=50, anchor_x='left',anchor_y='center', batch=gfx_batch) # noqa
 
     def update_timer(self):
         self.timer += 1
@@ -127,8 +127,9 @@ class Resources(object):
         self.mon_lab.text = 'M: ' + str(round(self.mon, 1))
 
     def update(self):
-        self.update_timer()
-        self.update_labs()
+        pass
+        # self.update_timer()
+        # self.update_labs()
 
 
 def reset_imp():
