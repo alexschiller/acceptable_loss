@@ -7,7 +7,6 @@ from pyglet.gl import * # noqa
 from pyglet.window import key # noqa
 from pyglet.window import mouse # noqa
 from collide import * # noqa
-from levelgenerator import * # noqa
 from gem import Gem
 import cProfile
 import pstats # noqa
@@ -34,10 +33,6 @@ class Master(object):
         self.buildings = []
         self.pr = cProfile.Profile()
         self.pr.enable()
-        # comment out this block to get rid of room color stuff
-        self.room_manager = RoomManager()
-        self.room_manager.setup(13)
-        # end of block, block party that is
 
         self.resources = None
         self.radar = None
@@ -92,9 +87,9 @@ class Master(object):
         self.room_manager.delete_all()
         self.room_manager = None
         self.room_manager = RoomManager()
-
         self.room_manager.setup(13)
         self.room_manager.parent.create_sprites(0, 0, TerrainBatch, self.player)
+        self.room_manager.add_enemies()
 
         self.home = pyglet.sprite.Sprite(
             load_image('home.png'),

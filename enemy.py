@@ -46,10 +46,10 @@ def gen_soldier_gun(level):
         }
 
 
-def enemy_soldier_base(level):
+def enemy_soldier_base(level, x, y):
     return {
         'sprite': load_image(random.choice(['soldier.png', 'green_soldier.png'])), # noqa
-        'coord': random.choice([[-50, random.randint(0, window_height)], [random.randint(0, window_width), -50]]),  # noqa
+        'coord': [x, y],
         'weapon_slot_one': gen_soldier_gun(level),
         'weapon_slot_two': gen_soldier_gun(level),
         'armor': {'gem_slots': {}},
@@ -85,10 +85,10 @@ def enemy_soldier_base(level):
         },
     }
 
-def enemy_zombie_base(level):
+def enemy_zombie_base(level, x, y):
     return {
         'sprite': load_image('zombie.png'),
-        'coord': random.choice([[-50, random.randint(0, window_height)], [random.randint(0, window_width), -50]]),  # noqa
+        'coord': [x, y],
         'weapon_slot_one': gen_zombie_gun(level),
         'weapon_slot_two': gen_zombie_gun(level),
         'armor': {'gem_slots': {}},

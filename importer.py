@@ -1,6 +1,7 @@
 from box import * # noqa
 from effect import * # noqa
 # from enemy import * # noqa
+from levelgenerator import * # noqa
 from character import * # noqa
 from energy import * # noqa
 from gun import * # noqa
@@ -10,34 +11,36 @@ from friend import * # noqa
 from loot import * # noqa
 from plasmaslinger import * # noqa
 # from data import load_save, save_1
-import math
+# import math
 
 
 class Threat(object):
     def __init__(self, master):
-        self.master = master
-        self.threat = 0
-        self.threat_time = 0
+        pass
+    #     self.master = master
+    #     self.threat = 0
+    #     self.threat_time = 0
 
-    def threat_timer(self):
-        self.threat_time += 1
-        if self.threat_time >= 60:
-            self.threat += self.current_threat()
-            self.threat_time = 0
+    # def threat_timer(self):
+    #     self.threat_time += 1
+    #     if self.threat_time >= 60:
+    #         self.threat += self.current_threat()
+    #         self.threat_time = 0
 
-    def current_threat(self):
-        dist = math.hypot(self.master.player.sprite.x - self.master.home.x, self.master.player.sprite.y - self.master.home.y) # noqa
-        return dist / 1000.0 * 1
+    # def current_threat(self):
+    #     dist = math.hypot(self.master.player.sprite.x - self.master.home.x, self.master.player.sprite.y - self.master.home.y) # noqa
+    #     return dist / 1000.0 * 1
 
     def update(self):
-        self.threat_timer()
-        if self.threat > 5:
-            self.threat -= 5
-            if len(self.master.people['red']) < 10:
-                    Character(
-                        self.master,
-                        random.choice([enemy_soldier_base(5), enemy_zombie_base(5)])
-                    )
+        pass
+    #     self.threat_timer()
+    #     if self.threat > 5:
+    #         self.threat -= 5
+    #         if len(self.master.people['red']) < 10:
+    #                 Character(
+    #                     self.master,
+    #                     random.choice([enemy_soldier_base(5), enemy_zombie_base(5)])
+    #                 )
 
 
 class Radar(object):
@@ -146,12 +149,18 @@ master.resources = Resources(master)
 master.radar = Radar(master)
 master.threat = Threat(master)
 master.spriteeffect = SpriteEffect(master)
+# comment out this block to get rid of room color stuff
 
+# end of block, block party that is
 # master.player = load_save(save_1)
 
 master.player = Player(master, base=player_base)
 master.player_controller = master.player.controller
+
+master.room_manager = RoomManager(master)
+master.room_manager.setup(13)
 master.room_manager.parent.create_sprites(0, 0, TerrainBatch, master.player)
+master.room_manager.add_enemies()
 
 master.home = pyglet.sprite.Sprite(
     load_image('home.png'),

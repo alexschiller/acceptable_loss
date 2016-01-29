@@ -3,6 +3,9 @@ import pyglet
 import random
 import json # noqa
 from collide import * # noqa
+from character import * # noqa
+from enemy import * # noqa
+from utility import * # noqa
 
 window_height = 800
 window_width = 1400
@@ -144,7 +147,8 @@ class Room(object):
 
 
 class RoomManager(object):
-    def __init__(self):
+    def __init__(self, master):
+        self.master = master
         self.grid = []
         for i in range(100):
             self.grid.append([-1] * 100)
@@ -196,6 +200,21 @@ class RoomManager(object):
             if self.grid[x[0] + 1][x[1]] != -1:  # down
                 temproom.down = self.roomlist[self.grid[x[0] + 1][x[1]]]
                 self.roomlist[self.grid[x[0] + 1][x[1]]].up = temproom
+
+    def add_enemies(self):
+        for room in self.roomlist:
+            room_x_min = room.sprite.x
+            room_x_max = room_x_min + room.sprite.width
+            room_y_min = room.sprite.y
+            room_y_max = room_y_min + room.sprite.height
+            Character(self.master,
+                random.choice([
+                    enemy_soldier_base(3, random.randint(room_x_min, room_x_max),
+                        random.randint(room_y_min, room_y_max)),
+
+                    enemy_zombie_base(3, random.randint(room_x_min, room_x_max),
+                        random.randint(room_y_min, room_y_max))
+                ]))
 
     def move_all(self, dx, dy):
         for room in self.roomlist:
