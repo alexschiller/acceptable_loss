@@ -438,7 +438,6 @@ class SelectState(object):
         self.buttons = []
         self.difficulty = 0
         self.label_batch = pyglet.graphics.Batch()
-        self.setup()
         self.max_dif = 50
         self.dict = [
             "blank.png", "down_all_down.png",
@@ -451,10 +450,12 @@ class SelectState(object):
             "up_more_up.png", "up_up.png"
         ]
         self.image_dict = {}
+        self.make_images()
+        self.setup()
 
     def make_images(self):
         for item in self.dict:
-            self.image_dict[item] = load_image(item)
+            self.image_dict[item] = load_image(item, False)
 
     def on_mouse_drag(self, x, y, dx, dy, buttons, modifiers):
         self.manager.update_image(x, y, dx, dy)
@@ -476,48 +477,49 @@ class SelectState(object):
 
     def increase_all(self):
         self.difficulty = self.max_dif
+        print self.difficulty
 
     def decrease_all(self):
         self.difficulty = 0
+        print self.difficulty
 
     def increase_five(self):
         self.difficulty += 5
         if self.difficulty > self.max_dif:
             self.difficulty = self.max_dif
+        print self.difficulty
 
     def decrease_five(self):
         self.difficulty -= 5
         if self.difficulty < 0:
             self.difficulty = 0
+        print self.difficulty
 
     def increase(self):
         if self.difficulty > self.max_dif:
             self.difficulty = self.max_dif
+        print self.difficulty
 
     def decrease(self):
         self.difficulty -= 1
         if self.difficulty < 0:
             self.difficulty = 0
+        print self.difficulty
 
     def enter_game(self):
+        print 'stuff'
         ready_level(master, self.difficulty, 5)
 
         states.swap("build")
 
     def setup(self):
-        buttons = ['hi', 'button', 'chain', 'is', 'a', 'go']
-        self.y = 660
-        for label in buttons:
-            button1 = DraggableButton(
-                button, buttonhover, buttondown, 650,
-                self.y, self.increase, self.batch, label, labelbatch=self.label_batch
-            ) # noqa
-            self.y -= 110
-            self.manager.add_button(button1)
-
-        button1 = DraggableButton(button, buttonhover, buttondown, 100,
-                100, self.enter_game, self.batch, "enter",labelbatch=self.label_batch) # noqa
-        self.manager.add_button(button1)
+        func = {
+            'increase': self.increase, 'decrease': self.decrease, 'enter_game': self.enter_game, 'decrease_five': self.decrease_five,
+            'increase_five': self.increase_five, 'increase_all': self.increase_all, 'decrease_all': self.decrease_all
+        }
+        self.buttons = start_state_buttons(self.image_dict, func, self.batch, self.label_batch)
+        for button in self.buttons:
+            self.manager.add_button(button)
 
     def on_draw(self):
         window.clear()

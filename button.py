@@ -55,7 +55,6 @@ class Button(object):
                 self.sprite.y < y and
                 y < self.sprite.y + self.sprite.height):
             self.sprite.image = self.hoversprite
-            print 'whats up kitty cat'
         else:
             self.trigger = 0
             self.sprite.image = self.upsprite
@@ -81,8 +80,11 @@ class Button(object):
                 self.trigger = 1
 
     def do_action(self):
-        func()
-        print "Hello fucker"
+        print "OK"
+        try:
+            self.func()
+        except:
+            pass
 
 
 class DraggableButton(Button):
