@@ -5,10 +5,10 @@ gem_icons = {}
 gem_borders = []
 
 for item in ['wood_border.png', 'bronze_border.png', 'silver_border.png', 'gold_border.png', 'obsidian_border.png', 'platinum_border.png']:
-    gem_borders.append(load_image(item, False))
+    gem_borders.append(load_image(item))
 
 for item in ['sapphire', 'topaz', 'emerald', 'ruby', 'diamond']:
-    gem_icons[item] = load_image(item + '.png', False)
+    gem_icons[item] = load_image(item + '.png')
 
 
 class InventoryButton(object):
@@ -80,8 +80,8 @@ class Inventory(object):
             if i > 49:
                 break
             # 44 x 50
-            x = self.sprite.x + 8 + (i % 7) * 55
-            y = self.sprite.y + 5 + (i / 7) * 55
+            x = self.sprite.x + 8 + (i % 7) * 55 + gem_icons[item['color']].width / 2
+            y = self.sprite.y + 5 + (i / 7) * 55 + gem_icons[item['color']].height / 2
             border = pyglet.sprite.Sprite(
                 gem_borders[item['rarity']],
                 x, y, batch=ItemBorderBatch
