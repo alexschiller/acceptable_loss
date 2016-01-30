@@ -44,13 +44,14 @@ def ready_level(master, difficulty, num_rooms):
     master.room_manager = RoomManager(master)
     master.room_manager.setup(num_rooms)
     master.room_manager.parent.create_sprites(0, 0, TerrainBatch, master.player)
-    master.room_manager.add_enemies()
+    master.room_manager.add_enemies(difficulty)
     master.room_manager.create_portal()
 
     master.home = pyglet.sprite.Sprite(
         load_image('home.png'),
         window_width_half, window_height_half, batch=gfx_batch
     )
+    master.difficulty = difficulty
 
 
 def start_state_buttons(image_dict, func_dict, button_batch, label_batch):
@@ -93,18 +94,11 @@ def start_state_buttons(image_dict, func_dict, button_batch, label_batch):
             image_dict['up_up.png'], image_dict['up_up.png'], image_dict['up.png'], 2 * window_width / 3 - 3 * image_dict['side_up.png'].width,
             window_height / 2 + .5 * image_dict['side_up.png'].height / 2, func_dict['increase'], button_batch, None, labelbatch=label_batch
         ),
-        Button(
-            image_dict['blank.png'], image_dict['blank.png'], image_dict['blank.png'], 2 * window_width / 3 - 7 * image_dict['side_up.png'].width / 2,
-            window_height / 2 - image_dict['side_up.png'].height / 2, None, button_batch, None, labelbatch=label_batch
-        ),
-        Button(
-            image_dict['blank.png'], image_dict['blank.png'], image_dict['blank.png'], 2 * window_width / 3 - 9 * image_dict['side_up.png'].width / 2,
-            window_height / 2 - image_dict['side_up.png'].height / 2, None, button_batch, None, labelbatch=label_batch
-        ),
-        Button(
-            image_dict['blank.png'], image_dict['blank.png'], image_dict['blank.png'], 2 * window_width / 3 - 11 * image_dict['side_up.png'].width / 2,
-            window_height / 2 - image_dict['side_up.png'].height / 2, None, button_batch, None, labelbatch=label_batch
-        ),
+
+
+    ]
+
+    locked_buttons = [
         Button(
             image_dict['blank.png'], image_dict['blank.png'], image_dict['blank.png'], 2 * window_width / 3 - 1 * image_dict['side_up.png'].width,
             window_height / 2 + 3 * image_dict['side_up.png'].height / 2, None, button_batch, None, labelbatch=label_batch
@@ -119,9 +113,24 @@ def start_state_buttons(image_dict, func_dict, button_batch, label_batch):
         ),
         Button(
             image_dict['locked_up.png'], image_dict['locked_up.png'], image_dict['locked_down.png'], 2 * window_width / 3,
-            window_height / 2 + 3 * image_dict['side_up.png'].height / 2, None, button_batch, None, labelbatch=label_batch
+            window_height / 2 + 3 * image_dict['side_up.png'].height / 2, func_dict['increase_max_dif'], button_batch, None, labelbatch=label_batch
         ),
 
 
     ]
-    return buttons
+
+    disp_buttons = [
+        Button(
+            image_dict['blank.png'], image_dict['blank.png'], image_dict['blank.png'], 2 * window_width / 3 - 7 * image_dict['side_up.png'].width / 2,
+            window_height / 2 - image_dict['side_up.png'].height / 2, None, button_batch, None, labelbatch=label_batch
+        ),
+        Button(
+            image_dict['blank.png'], image_dict['blank.png'], image_dict['blank.png'], 2 * window_width / 3 - 9 * image_dict['side_up.png'].width / 2,
+            window_height / 2 - image_dict['side_up.png'].height / 2, None, button_batch, None, labelbatch=label_batch
+        ),
+        Button(
+            image_dict['blank.png'], image_dict['blank.png'], image_dict['blank.png'], 2 * window_width / 3 - 11 * image_dict['side_up.png'].width / 2,
+            window_height / 2 - image_dict['side_up.png'].height / 2, None, button_batch, None, labelbatch=label_batch
+        ),
+    ]
+    return buttons, locked_buttons, disp_buttons
