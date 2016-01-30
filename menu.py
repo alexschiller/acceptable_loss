@@ -220,7 +220,3 @@ class BuildingManager(object):
 
     def build(self, key):
         pass
-
-buildmanager = BuildingManager(building_menu)
-Buildmenu = MenuManager(1200, 0, menu_back)
-Buildmenu.set_build_manager(buildmanager)
