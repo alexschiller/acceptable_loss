@@ -38,7 +38,7 @@ class Master(object):
         self.resources = None
         self.radar = None
         self.home = None
-        self.threat = None
+        # self.threat = None
         self.loot = None
 
     def update(self):
@@ -199,7 +199,7 @@ def play_sound(sound_file):
     if sound_file:
         sound = pyglet.media.Player()
         sound.queue(sound_file)
-       # sound.play() # noqa
+        #  sound.play() # noqa
 
 
 # todo move elsewhere

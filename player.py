@@ -31,13 +31,21 @@ class Player(Character):
         self.acc_bar = pyglet.sprite.Sprite(
             pyglet.image.create(3, 13, red_sprite),
             150, window_height - 168, batch=BarBatch)
+        self.acc_mouse_mod = 0
+
+    def target_distance(self):
+        if self.target:
+            dist = min(math.hypot(self.controller.sprite.x - self.target.sprite.x, self.controller.sprite.y - self.target.sprite.y), 300) # noqa
+            self.acc_mouse_mod = 1 - (dist / 300.0)
+            return self.acc_mouse_mod
+        return 1
 
     def update_bars(self):
         if self.energy < 100:
             self.energy = 100
         self.shield_bar.x = 10 - (271 - (self.stats.shield / float(self.stats.shield_max) * 271)) # noqa
         self.health_bar.x = 10 - (271 - (self.stats.health / float(self.stats.health_max) * 271)) # noqa
-        self.acc_bar.x = 150 + int(min(self.stats.accuracy, 100))
+        self.acc_bar.x = 150 + min(int((self.stats.accuracy + self.stats.gun_two_data['accuracy']) * self.target_distance()), 100) # noqa
         self.ae_bar.x = 31 + self.stats.evade_move / 10 * 50
 
 
@@ -55,8 +63,6 @@ class PlayerController(Controller):
         self.red_dot = pyglet.image.create(5, 5, red_sprite)
         self.marker = None
         self.timg = load_image('target.png')
-        self.last_my = 0
-        self.last_mx = 0
 
     def slot_one_fire(self):
         self.puppet.ability.missile_launch()
@@ -102,19 +108,17 @@ class PlayerController(Controller):
         self.puppet.sprite.x += (self.puppet.stats.speed * mx)
         self.puppet.sprite.y += (self.puppet.stats.speed * my)
 
-    def undo_move(self):
-        self.move(-self.last_mx, -self.last_my)
-
     def check_target(self):
-        self.marker = []
+        # self.marker = []
         if self.puppet.target:
             try:
-                self.rotate(self.puppet.target.sprite.x, self.puppet.target.sprite.y)
+                # self.rotate(self.puppet.target.sprite.x, self.puppet.target.sprite.y)
                 self.build_target(self.puppet.target)
                 # self.puppet.ability.auto_attack()
             except:
                 self.puppet.target = None
         else:
+            # pass
             self.rotate(self.sprite.x, self.sprite.y)
 
     def update(self):
@@ -165,7 +169,7 @@ lb_autocannon = {
         'crit_damage': 3,
         'armor_pierce': 8,
         'image': load_image('magnum.png'), # noqa
-        'gun_fire_sound': load_sound('laser.wav'), # noqa
+        'gun_fire_sound': load_sound('gunshot.wav'), # noqa
         'on_hit_sound': load_sound('on_hit.wav'), # noqa
         'effects': [],
         'gem_slots': {
