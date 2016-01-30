@@ -80,11 +80,11 @@ class Inventory(object):
             if i > 49:
                 break
             # 44 x 50
-            x = self.sprite.x + 8 + (i % 7) * 55 + gem_icons[item['color']].width / 2
-            y = self.sprite.y + 5 + (i / 7) * 55 + gem_icons[item['color']].height / 2
+            x = self.sprite.x + (i % 7) * 55 + 30
+            y = self.sprite.y + (i / 7) * 55 + 30
             border = pyglet.sprite.Sprite(
                 gem_borders[item['rarity']],
-                x, y, batch=ItemBorderBatch
+                x - .5, y, batch=ItemBorderBatch
             )
             gem = pyglet.sprite.Sprite(
                 gem_icons[item['color']],
