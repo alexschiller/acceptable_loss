@@ -11,6 +11,22 @@ from placeable import * # noqa
 from menu import * # noqa
 from hotbar import * # noqa
 from inventory import * # noqa
+HotBar = None
+buildmanager = None
+Buildmenu = None
+inventorymenu = None
+
+
+def load_assets(hb, bm, bum, im):
+    hb = HotBarManager(hotbar_sprite, master) # noqa
+    hb.setup()
+    bm = BuildingManager(building_menu) # noqa
+    bum = MenuManager(1200, 0, menu_back) # noqa
+    bum.set_build_manager(buildmanager)
+    im = Inventory(master) # noqa
+    return hb, bm, bum, im
+
+HotBar, buildmanager, Buildmenu, inventorymenu = load_assets(HotBar, buildmanager, Buildmenu, inventorymenu)
 
 
 class ProtoKeyStateHandler(key.KeyStateHandler):
@@ -441,6 +457,7 @@ class StateManager(object):
         temp = self.past
         self.past = self.current
         self.current = temp
+
 states = StateManager()
 pyglet.clock.schedule_interval(update, 1 / 60.0)
 

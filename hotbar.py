@@ -1,5 +1,4 @@
 from utility import * # noqa
-from importer import * # noqa
 from button import Button, Manager
 hotbar_sprite = pyglet.sprite.Sprite(
     hotbarback,
@@ -28,5 +27,4 @@ class HotBarManager(Manager):
         #     )
         #     self.buttons.append(tempbutton)
 
-HotBar = HotBarManager(hotbar_sprite, master)
-HotBar.setup()
+

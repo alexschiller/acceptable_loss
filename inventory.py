@@ -148,5 +148,3 @@ class Inventory(object):
             )
         except:
             pass
-
-inventorymenu = Inventory(master)
