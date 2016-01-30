@@ -68,8 +68,8 @@ class LongbowAbility(Ability):
             pyglet.image.create(20, 90, red_sprite),
             window_width - 440, 5, batch=BarBatch)
 
-        self.sound_explosion = load_sound('Explosion.wav')
-        self.sound_missile = load_sound('missile.wav')
+        self.sound_explosion = load_sound('laser.wav')
+        self.sound_missile = load_sound('laser.wav')
 
         self.vat = pyglet.sprite.Sprite(load_image('autoloader.png', anchor=False), window_width-472, 0, batch=gfx_batch),  # noqa
 
