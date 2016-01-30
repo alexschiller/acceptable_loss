@@ -11,6 +11,7 @@ from friend import * # noqa
 from loot import * # noqa
 from plasmaslinger import * # noqa
 
+
 def reset_imp():
     for thing in master.people['red']:
             thing.on_death()
@@ -25,7 +26,7 @@ def reset_imp():
     # master.threat.threat_time = 0
 
 
-def ready_level(master):
+def ready_level(master, difficulty, num_rooms):
     master.loot = Loot(master)
     # master.resources = Resources(master)
     # master.radar = Radar(master)
@@ -40,7 +41,7 @@ def ready_level(master):
     master.player_controller = master.player.controller
 
     master.room_manager = RoomManager(master)
-    master.room_manager.setup(5)
+    master.room_manager.setup(num_rooms)
     master.room_manager.parent.create_sprites(0, 0, TerrainBatch, master.player)
     master.room_manager.add_enemies()
     master.room_manager.create_portal()
@@ -50,4 +51,3 @@ def ready_level(master):
         window_width_half, window_height_half, batch=gfx_batch
     )
 
-ready_level(master)

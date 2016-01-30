@@ -17,7 +17,7 @@ Buildmenu = None
 inventorymenu = None
 
 
-def load_assets(hb, bm, bum, im):
+def load_assets(hb, bm, bum, im, difficulty, amount):
     hb = HotBarManager(hotbar_sprite, master) # noqa
     hb.setup()
     bm = BuildingManager(building_menu) # noqa
@@ -25,8 +25,6 @@ def load_assets(hb, bm, bum, im):
     bum.set_build_manager(buildmanager)
     im = Inventory(master) # noqa
     return hb, bm, bum, im
-
-HotBar, buildmanager, Buildmenu, inventorymenu = load_assets(HotBar, buildmanager, Buildmenu, inventorymenu)
 
 
 class ProtoKeyStateHandler(key.KeyStateHandler):
@@ -137,13 +135,9 @@ class PauseState():
         self.manager.update_image(x, y, dx, dy)
 
     def on_mouse_motion(self, x, y, dx, dy):
-        pass
+        self.manager.update_image(x, y, dx, dy)
 
     def on_mouse_release(self, x, y, button, modifiers):
-        # thing = TextState(self.manager.buttons[0])
-        # key_handler.activate()
-        # states.insert(0, thing)
-
         self.manager.update(x, y, 1)
 
     def on_mouse_press(self, x, y, button, modifiers):
@@ -422,7 +416,7 @@ class StartState(object):
             self.shrinking = True
         else:
             if self.flag:
-                states.swap('build')
+                states.swap('select')
         if self.shrinking:
             self.shrink()
         window.invalid = False
@@ -434,6 +428,69 @@ class StartState(object):
         window.clear()
         pyglet.gl.glClearColor(1, 1, 1, 1)  # gray back
         self.batch.draw()
+        window.invalid = False
+
+
+class SelectState(object):
+    def __init__(self):
+        self.batch = pyglet.graphics.Batch()
+        self.manager = Manager()
+        self.buttons = []
+        self.difficulty = 0
+        self.label_batch = pyglet.graphics.Batch()
+        self.setup()
+
+    def on_mouse_drag(self, x, y, dx, dy, buttons, modifiers):
+        self.manager.update_image(x, y, dx, dy)
+
+    def on_mouse_motion(self, x, y, dx, dy):
+        self.manager.update_image(x, y, dx, dy)
+
+    def on_mouse_release(self, x, y, button, modifiers):
+        self.manager.update(x, y, 1)
+
+    def on_mouse_press(self, x, y, button, modifiers):
+        self.manager.update(x, y, 0)
+
+    def update(self, ts):
+        pass
+
+    def test(self):
+        pass
+
+    def increase(self):
+        self.difficulty += 1
+        print self.difficulty
+
+    def decrease(self):
+        self.difficulty -= 1
+        print self.difficulty
+
+    def enter_game(self):
+        ready_level(master, self.difficulty, 5)
+
+        states.swap("build")
+
+    def setup(self):
+        buttons = ['hi', 'button', 'chain', 'is', 'a', 'go']
+        self.y = 660
+        for label in buttons:
+            button1 = DraggableButton(
+                button, buttonhover, buttondown, 650,
+                self.y, self.increase, self.batch, label, labelbatch=self.label_batch
+            ) # noqa
+            self.y -= 110
+            self.manager.add_button(button1)
+
+        button1 = DraggableButton(button, buttonhover, buttondown, 100,
+                100, self.enter_game, self.batch, "enter",labelbatch=self.label_batch) # noqa
+        self.manager.add_button(button1)
+
+    def on_draw(self):
+        window.clear()
+        pyglet.gl.glClearColor(1, 1, 1, 1)  # gray back
+        self.batch.draw()
+        self.label_batch.draw()
         window.invalid = False
 
 
@@ -452,6 +509,8 @@ class StateManager(object):
             self.current = self.pause
         if string == 'build':
             self.current = BuildState()
+        if string == 'select':
+            self.current = SelectState()
 
     def swapback(self):
         temp = self.past
@@ -459,6 +518,9 @@ class StateManager(object):
         self.current = temp
 
 states = StateManager()
+
+HotBar, buildmanager, Buildmenu, inventorymenu = load_assets(HotBar, buildmanager, Buildmenu, inventorymenu, 10, 15)
+
 pyglet.clock.schedule_interval(update, 1 / 60.0)
 
 pyglet.app.run()
