@@ -272,6 +272,7 @@ class MainState(object):
             master.player.sprite.y = master.home.y
             master.move_all(-readjust_x, -readjust_y)
         if key_handler[key.TAB]:
+            pass
             master.pr.disable()
             s = StringIO.StringIO()
             sortby = 'cumulative'
@@ -436,6 +437,8 @@ class SelectState(object):
         self.batch = pyglet.graphics.Batch()
         self.manager = Manager()
         self.buttons = []
+        self.locked_buttons = []
+        self.disp_buttons = []
         self.difficulty = 0
         self.label_batch = pyglet.graphics.Batch()
         self.max_dif = 50
@@ -450,12 +453,47 @@ class SelectState(object):
             "up_more_up.png", "up_up.png"
         ]
         self.image_dict = {}
+        self.number_button_images = []
         self.make_images()
         self.setup()
 
     def make_images(self):
         for item in self.dict:
             self.image_dict[item] = load_image(item, False)
+        for i in range(10):
+            self.number_button_images.append(load_image('blank_' + str(i) + ".png", False))
+        self.number_button_images.append(self.image_dict['blank.png'])
+
+    def set_icons(self, x, y, z, flag):
+        if flag == 0:
+            self.disp_buttons[0].upsprite = self.number_button_images[x]
+            self.disp_buttons[1].upsprite = self.number_button_images[y]
+            self.disp_buttons[2].upsprite = self.number_button_images[z]
+            for button in self.disp_buttons:
+                button.sprite.image = button.upsprite
+        else:
+            self.locked_buttons[0].upsprite = self.number_button_images[x]
+            self.locked_buttons[1].upsprite = self.number_button_images[y]
+            self.locked_buttons[2].upsprite = self.number_button_images[z]
+            for i in range(3):
+                self.locked_buttons[i].sprite.image = self.locked_buttons[i].upsprite
+
+    def update_icons(self):
+        temp = str(self.difficulty)
+        if self.difficulty < 10:
+            self.set_icons(self.difficulty, 10, 10, 0)
+        if self.difficulty > 9:
+            self.set_icons(int(temp[1]), int(temp[0]), 10, 0)
+        if self.difficulty > 99:
+            self.set_icons(int(temp[2]), int(temp[1]), int(temp[0]), 0)
+
+        temp = str(self.max_dif)
+        if self.max_dif < 10:
+            self.set_icons(self.max_dif, 10, 10, 1)
+        if self.max_dif > 9:
+            self.set_icons(int(temp[1]), int(temp[0]), 10, 1)
+        if self.max_dif > 99:
+            self.set_icons(int(temp[2]), int(temp[1]), int(temp[0]), 1)
 
     def on_mouse_drag(self, x, y, dx, dy, buttons, modifiers):
         self.manager.update_image(x, y, dx, dy)
@@ -470,10 +508,13 @@ class SelectState(object):
         self.manager.update(x, y, 0)
 
     def update(self, ts):
-        pass
+        self.update_icons()
 
     def test(self):
         pass
+
+    def increase_max_dif(self):
+        self.max_dif += 1
 
     def increase_all(self):
         self.difficulty = self.max_dif
@@ -496,6 +537,7 @@ class SelectState(object):
         print self.difficulty
 
     def increase(self):
+        self.difficulty += 1
         if self.difficulty > self.max_dif:
             self.difficulty = self.max_dif
         print self.difficulty
@@ -515,10 +557,15 @@ class SelectState(object):
     def setup(self):
         func = {
             'increase': self.increase, 'decrease': self.decrease, 'enter_game': self.enter_game, 'decrease_five': self.decrease_five,
-            'increase_five': self.increase_five, 'increase_all': self.increase_all, 'decrease_all': self.decrease_all
+            'increase_five': self.increase_five, 'increase_all': self.increase_all, 'decrease_all': self.decrease_all,
+            'increase_max_dif': self.increase_max_dif
         }
-        self.buttons = start_state_buttons(self.image_dict, func, self.batch, self.label_batch)
+        self.buttons, self.locked_buttons, self.disp_buttons = start_state_buttons(self.image_dict, func, self.batch, self.label_batch)
         for button in self.buttons:
+            self.manager.add_button(button)
+        for button in self.disp_buttons:
+            self.manager.add_button(button)
+        for button in self.locked_buttons:
             self.manager.add_button(button)
 
     def on_draw(self):

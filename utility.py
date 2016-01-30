@@ -34,6 +34,7 @@ class Master(object):
         self.buildings = []
         self.pr = cProfile.Profile()
         self.pr.enable()
+        self.difficulty = 3
 
         self.resources = None
         self.radar = None
@@ -94,7 +95,8 @@ class Master(object):
 
         self.room_manager.setup(3)
         self.room_manager.parent.create_sprites(0, 0, TerrainBatch, self.player)
-        self.room_manager.add_enemies()
+        self.room_manager.add_enemies(self.difficulty)
+        print self.difficulty
         self.room_manager.create_portal()
 
         self.home = pyglet.sprite.Sprite(

@@ -221,7 +221,7 @@ class RoomManager(object):
                 temproom.down = self.roomlist[self.grid[x[0] + 1][x[1]]]
                 self.roomlist[self.grid[x[0] + 1][x[1]]].up = temproom
 
-    def add_enemies(self):
+    def add_enemies(self, difficulty):
         for room in self.roomlist:
             room_x_min = room.sprite.x
             room_x_max = room_x_min + room.sprite.width
@@ -231,11 +231,11 @@ class RoomManager(object):
                 self.master,
                 random.choice([
                     enemy_soldier_base(
-                        3, random.randint(room_x_min, room_x_max),
+                        difficulty, random.randint(room_x_min, room_x_max),
                         random.randint(room_y_min, room_y_max)),
 
                     enemy_zombie_base(
-                        3, random.randint(room_x_min, room_x_max),
+                        difficulty, random.randint(room_x_min, room_x_max),
                         random.randint(room_y_min, room_y_max))
                 ]))
 
