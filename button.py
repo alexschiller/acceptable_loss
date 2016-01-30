@@ -27,7 +27,7 @@ class Manager(object):
 
 
 class Button(object):
-    def __init__(self, upsprite, hoversprite, downsprite, x, y, callback=None, batch=None, label=None, args=None):
+    def __init__(self, upsprite, hoversprite, downsprite, x, y, callback=None, batch=None, label=None, args=None, labelbatch=LabelBatch):
         self.func = callback
         self.upsprite = upsprite
         self.downsprite = downsprite
@@ -46,7 +46,7 @@ class Button(object):
                 y=self.sprite.y + self.sprite.height / 2,
                 anchor_x='center',
                 anchor_y='center',
-                batch=LabelBatch
+                batch=labelbatch
             )
 
     def on_mouse_motion(self, x, y, dx, dy):
@@ -86,10 +86,10 @@ class Button(object):
 
 
 class DraggableButton(Button):
-    def __init__(self, upsprite, hoversprite, downsprite, x, y, callback=None, batch=None, label=None):
+    def __init__(self, upsprite, hoversprite, downsprite, x, y, callback=None, batch=None, label=None, args=None, labelbatch=LabelBatch):
         super(DraggableButton, self).__init__(
             upsprite, hoversprite, downsprite, x, y,
-            callback, batch, label
+            callback, batch, label, labelbatch=labelbatch
         )
         self.collision = SpriteCollision(self.sprite)
 
