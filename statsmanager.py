@@ -173,7 +173,7 @@ class StatsManager(object):
 
     @property
     def accuracy(self):
-        return self._accuracy + self._accuracy_move + self.mod['accuracy']
+        return (self._accuracy + self._accuracy_move + self.mod['accuracy'])
 
     @property
     def armor(self):
@@ -212,7 +212,8 @@ class StatsManager(object):
             'crit': gun['crit'] + self.crit,
             'crit_damage': gun['crit_damage'] + self.crit_damage,
             'armor_pierce': self.armor_pierce,
-            'image': gun['image']
+            'image': gun['image'],
+            'gun_fire_sound': gun['gun_fire_sound'],
         }
 
     def update_gun(self, gun):

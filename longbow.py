@@ -26,6 +26,7 @@ class AoeThrown(Thrown):
     def delete_thrown(self):
         self.display_outcome()
         self.aoe()
+        play_sound(self.owner.sound_explosion)
         self.sprite.delete()
         self.owner.thrown.remove(self)
 
@@ -67,7 +68,8 @@ class LongbowAbility(Ability):
             pyglet.image.create(20, 90, red_sprite),
             window_width - 440, 5, batch=BarBatch)
 
-
+        self.sound_explosion = load_sound('Explosion.wav')
+        self.sound_missile = load_sound('missile.wav')
 
         self.vat = pyglet.sprite.Sprite(load_image('autoloader.png', anchor=False), window_width-472, 0, batch=gfx_batch),  # noqa
 
@@ -93,11 +95,23 @@ class LongbowAbility(Ability):
                 self.g2b = self.g2b_max
                 self.g2b_reload = 0
 
+    # def can_aa_shoot(self):
+    #     if not self.aa_cooldown:
+    #         x = self.owner.controller.target_closest_enemy()
+    #         print x
+    #         if x:
+    #             dist_x = self.owner.sprite.x - self.owner.target.sprite.x
+    #             dist_y = self.owner.sprite.y - self.owner.target.sprite.y
+    #             dist = math.hypot(dist_x, dist_y)
+    #             if dist < self.owner.stats.gun_two_data['travel']:
+    #                 return dist
+    #     return False
+
     def auto_attack(self):
         enemy_range = self.can_aa_shoot()
         if enemy_range:
             bullet_base = self.build_bullet(
-                self.owner.stats.gun_two_data,
+                self.owner.stats.generate_gun(self.owner.stats.gun_two),
                 self.owner.sprite.x,
                 self.owner.sprite.y,
                 self.owner.target.sprite.x,
@@ -106,6 +120,8 @@ class LongbowAbility(Ability):
                 self.owner.target,
             )
             if not self.g1b_reload:
+                play_sound(self.owner.stats.gun_two_data['gun_fire_sound'])
+                bullet_base['accuracy'] *= self.owner.acc_mouse_mod
                 self.thrown.append(Thrown(master, self, bullet_base))
                 self.g1b -= 1
                 time = int(60.0 / bullet_base['rof'])
@@ -146,6 +162,7 @@ class LongbowAbility(Ability):
         if self.action_checks(0, 1):
             enemy_range = self.can_ability_shoot(self.owner.stats.gun_one_data)
             if enemy_range:
+                play_sound(self.sound_missile)
                 bullet_base = self.build_bullet(
                     self.owner.stats.gun_one_data,
                     self.owner.sprite.x,
