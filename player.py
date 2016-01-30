@@ -169,7 +169,7 @@ lb_autocannon = {
         'crit_damage': 3,
         'armor_pierce': 8,
         'image': load_image('magnum.png'), # noqa
-        'gun_fire_sound': load_sound('gunshot.wav'), # noqa
+        'gun_fire_sound': load_sound('laser.wav'), # noqa
         'on_hit_sound': load_sound('on_hit.wav'), # noqa
         'effects': [],
         'gem_slots': {

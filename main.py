@@ -439,6 +439,22 @@ class SelectState(object):
         self.difficulty = 0
         self.label_batch = pyglet.graphics.Batch()
         self.setup()
+        self.max_dif = 50
+        self.dict = [
+            "blank.png", "down_all_down.png",
+            "down_all_up.png", "down_down.png",
+            "down_more_down.png", "down_more_up.png",
+            "down_up.png", "locked_down.png",
+            "locked_up.png", "side_down.png",
+            "side_up.png", "up.png", "up_all_down.png",
+            "up_all_up.png", "up_more_down.png",
+            "up_more_up.png", "up_up.png"
+        ]
+        self.image_dict = {}
+
+    def make_images(self):
+        for item in self.dict:
+            self.image_dict[item] = load_image(item)
 
     def on_mouse_drag(self, x, y, dx, dy, buttons, modifiers):
         self.manager.update_image(x, y, dx, dy)
@@ -458,13 +474,30 @@ class SelectState(object):
     def test(self):
         pass
 
+    def increase_all(self):
+        self.difficulty = self.max_dif
+
+    def decrease_all(self):
+        self.difficulty = 0
+
+    def increase_five(self):
+        self.difficulty += 5
+        if self.difficulty > self.max_dif:
+            self.difficulty = self.max_dif
+
+    def decrease_five(self):
+        self.difficulty -= 5
+        if self.difficulty < 0:
+            self.difficulty = 0
+
     def increase(self):
-        self.difficulty += 1
-        print self.difficulty
+        if self.difficulty > self.max_dif:
+            self.difficulty = self.max_dif
 
     def decrease(self):
         self.difficulty -= 1
-        print self.difficulty
+        if self.difficulty < 0:
+            self.difficulty = 0
 
     def enter_game(self):
         ready_level(master, self.difficulty, 5)
