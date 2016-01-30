@@ -2,6 +2,7 @@ class StatsManager(object):
     def __init__(self, base, gun_one, gun_two, armor):
 
         self.base = base
+        self.level = base['level']
 
         self.extract_gems(armor['gem_slots'])
         self.extract_gems(gun_one['gem_slots'])
