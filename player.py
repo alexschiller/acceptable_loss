@@ -33,6 +33,22 @@ class Player(Character):
             150, window_height - 168, batch=BarBatch)
         self.acc_mouse_mod = 0
 
+        self.acc_mouse_bar_l = pyglet.sprite.Sprite(
+            pyglet.image.create(20, 2, red_sprite),
+            -50, -50, batch=BarBatch)
+
+        self.acc_mouse_bar_r = pyglet.sprite.Sprite(
+            pyglet.image.create(20, 2, red_sprite),
+            -50, -50, batch=BarBatch)
+
+        self.acc_mouse_bar_t = pyglet.sprite.Sprite(
+            pyglet.image.create(2, 20, red_sprite),
+            -50, -50, batch=BarBatch)
+
+        self.acc_mouse_bar_b = pyglet.sprite.Sprite(
+            pyglet.image.create(2, 20, red_sprite),
+            -50, -50, batch=BarBatch)
+
     def target_distance(self):
         if self.target:
             dist = min(math.hypot(self.controller.sprite.x - self.target.sprite.x, self.controller.sprite.y - self.target.sprite.y), 300) # noqa
@@ -45,7 +61,20 @@ class Player(Character):
             self.energy = 100
         self.shield_bar.x = 10 - (271 - (self.stats.shield / float(self.stats.shield_max) * 271)) # noqa
         self.health_bar.x = 10 - (271 - (self.stats.health / float(self.stats.health_max) * 271)) # noqa
-        self.acc_bar.x = 150 + min(int((self.stats.accuracy + self.stats.gun_two_data['accuracy']) * self.target_distance()), 100) # noqa
+        # self.acc_bar.x = 150 + min(int((self.stats.accuracy + self.stats.gun_two_data['accuracy']) * self.target_distance()), 100) # noqa
+        acc_val = 100 - min(int((self.stats.accuracy + self.stats.gun_two_data['accuracy']) * self.target_distance()), 100) # noqa
+        x = self.controller.sprite.x
+        y = self.controller.sprite.y
+        self.acc_mouse_bar_l.x = x + acc_val + 3
+        self.acc_mouse_bar_r.x = x - acc_val - 20
+        self.acc_mouse_bar_l.y = y
+        self.acc_mouse_bar_r.y = y
+
+        self.acc_mouse_bar_t.x = x
+        self.acc_mouse_bar_b.x = x
+        self.acc_mouse_bar_t.y = y + acc_val + 3
+        self.acc_mouse_bar_b.y = y - acc_val - 20
+
         self.ae_bar.x = 31 + self.stats.evade_move / 10 * 50
 
 
@@ -54,7 +83,7 @@ class PlayerController(Controller):
         super(PlayerController, self).__init__(*args, **kwargs)
         self.master = master
         self.black_sprite = pyglet.image.SolidColorImagePattern(color=(0, 0, 0, 150))
-        self.black_dot = pyglet.image.create(10, 10, self.black_sprite)
+        self.black_dot = pyglet.image.create(1, 1, self.black_sprite)
         self.sprite = pyglet.sprite.Sprite(self.black_dot, 0, 0, batch=gfx_batch)
 
         self.collision = SpriteCollision(self.sprite)
