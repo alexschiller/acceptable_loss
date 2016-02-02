@@ -206,7 +206,8 @@ class StatsManager(object):
         return {
             'damage_min': (gun['damage_min'] + self.damage_min) * ((100 + self.damage_perc) / 100), # noqa
             'damage_max': (gun['damage_max'] + self.damage_max) * ((100 + self.damage_perc) / 100), # noqa
-            'travel': gun['travel'],
+            'range_max': gun['range_max'],
+            'range_min': gun['range_min'],
             'velocity': gun['velocity'],
             'accuracy': gun['accuracy'] + self.accuracy,
             'rof': gun['rof'] * ((100 + self.attack_speed_perc) / 100), # noqa
@@ -215,16 +216,4 @@ class StatsManager(object):
             'armor_pierce': self.armor_pierce,
             'image': gun['image'],
             'gun_fire_sound': gun['gun_fire_sound'],
-        }
-
-    def update_gun(self, gun):
-
-        return {
-            'damage_min': (gun['damage_min'] + self.damage_min) * ((100 + self.damage_perc) / 100), # noqa
-            'damage_max': (gun['damage_max'] + self.damage_max) * ((100 + self.damage_perc) / 100), # noqa
-            'accuracy': gun['accuracy'] + self.accuracy,
-            'rof': (gun['rof'] + self.attack_speed) * ((100 + self.attack_speed_perc) / 100), # noqa
-            'crit': gun['crit'] + self.crit,
-            'crit_damage': gun['crit_damage'] + self.crit_damage,
-            'armor_pierce': self.armor_pierce,
         }

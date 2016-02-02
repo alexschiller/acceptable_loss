@@ -201,7 +201,7 @@ def play_sound(sound_file):
     if sound_file:
         sound = pyglet.media.Player()
         sound.queue(sound_file)
-        #  sound.play() # noqa
+        sound.play() # noqa
 
 
 # todo move elsewhere

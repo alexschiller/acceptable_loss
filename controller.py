@@ -61,7 +61,7 @@ class Controller(object):
     def update(self):
         if self.puppet.target:
             self.rotate(self.puppet.target.sprite.x, self.puppet.target.sprite.y)
-            if self.puppet.stats.gun_one_data['travel'] > math.hypot(
+            if self.puppet.stats.gun_one_data['range_max'] > math.hypot(
                 self.puppet.sprite.x - self.puppet.target.sprite.x,
                 self.puppet.sprite.y - self.puppet.target.sprite.y
             ):
@@ -103,7 +103,7 @@ class Controller(object):
                 self.puppet.target = None
 
     def target_closest_enemy(self):
-        self.target_enemy(self.puppet.stats.gun_one_data['travel'] + 50)
+        self.target_enemy(self.puppet.stats.gun_one_data['range_max'] + 50)
 
     def update_movement(self):
         if self.puppet.target:

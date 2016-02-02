@@ -16,7 +16,6 @@ class Thrown(object):
         self.base = base
         self.damage_min = self.base['damage_min']
         self.damage_max = self.base['damage_max']
-        self.travel = self.base['travel']
         self.velocity = self.base['velocity']
         self.accuracy = self.base['accuracy']
         self.crit_chance = self.base['crit']
@@ -87,10 +86,10 @@ class Thrown(object):
         self.travelled += math.hypot(self.vel_x, self.vel_y)
         if self.travelled > self.enemy_range:
             if self.hit and not self.evade:
-                try:
-                    self.enemy.on_hit(self)
-                except:
-                    pass
+                # try:
+                self.enemy.on_hit(self)
+                # except:
+                    # pass
             self.delete_thrown()
 
 class Ability(object):
@@ -150,8 +149,8 @@ class Ability(object):
                 dist_x = self.owner.sprite.x - self.owner.target.sprite.x
                 dist_y = self.owner.sprite.y - self.owner.target.sprite.y
                 dist = math.hypot(dist_x, dist_y)
-                if dist < self.owner.stats.gun_two_data['travel']:
-                    return dist
+                # if dist < self.owner.stats.gun_two_data['travel']:
+                return dist
         return False
 
     def can_ability_shoot(self, gun):
@@ -160,8 +159,8 @@ class Ability(object):
                 dist_x = self.owner.sprite.x - self.owner.target.sprite.x
                 dist_y = self.owner.sprite.y - self.owner.target.sprite.y
                 dist = math.hypot(dist_x, dist_y)
-                if dist < gun['travel']:
-                    return dist
+                # if dist < gun['travel']:
+                return dist
         return False
 
     def auto_attack(self):
@@ -176,6 +175,7 @@ class Ability(object):
                 enemy_range,
                 self.owner.target,
             )
+            play_sound(self.owner.stats.gun_two_data['gun_fire_sound'])
             self.thrown.append(Thrown(master, self, bullet_base))
             time = int(60.0 / bullet_base['rof'])
             self.trigger_aa_cooldown(time)

@@ -228,6 +228,7 @@ class MainState(object):
     def on_mouse_drag(self, x, y, dx, dy, buttons, modifiers):
         master.player_controller.rotate(x, y)
 
+
     def on_key_press(self, ts):
         pass
 
@@ -349,6 +350,7 @@ class BuildState(MainState):
     def on_mouse_drag(self, x, y, dx, dy, buttons, modifiers):
         master.player_controller.sprite.x = x
         master.player_controller.sprite.y = y
+        master.player.ability.auto_attack()
         # x_dist = x - float(master.player.sprite.x)
         # y_dist = y - float(master.player.sprite.y)
         master.update_button_image(x, y, dx, dy)

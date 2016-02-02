@@ -41,20 +41,23 @@ class Character(object):
         )
 
     def update_bars(self):
-        self.bars = []
-        hw = int(self.sprite.width * 2 * self.stats.health / self.stats.health_max) # noqa
-        sw = int(self.sprite.width * 2 * self.stats.shield / (self.stats.shield_max + .01)) # noqa
-        if hw > 0:
-            self.bars.append(pyglet.sprite.Sprite(
-                pyglet.image.create(hw, 2, red_sprite),
-                self.sprite.x - self.sprite.width,
-                self.sprite.y + self.sprite.height, batch=BarBatch))
+        try:
+            self.bars = []
+            hw = int(self.sprite.width * 2 * self.stats.health / self.stats.health_max) # noqa
+            sw = int(self.sprite.width * 2 * self.stats.shield / (self.stats.shield_max + .01)) # noqa
+            if hw > 0:
+                self.bars.append(pyglet.sprite.Sprite(
+                    pyglet.image.create(hw, 2, red_sprite),
+                    self.sprite.x - self.sprite.width,
+                    self.sprite.y + self.sprite.height, batch=BarBatch))
 
-        if sw > 0:
-            self.bars.append(pyglet.sprite.Sprite(
-                pyglet.image.create(sw, 2, blue_sprite),
-                self.sprite.x - self.sprite.width,
-                self.sprite.y + self.sprite.height + 5, batch=BarBatch))
+            if sw > 0:
+                self.bars.append(pyglet.sprite.Sprite(
+                    pyglet.image.create(sw, 2, blue_sprite),
+                    self.sprite.x - self.sprite.width,
+                    self.sprite.y + self.sprite.height + 5, batch=BarBatch))
+        except:
+            self.bars = []
 
     def update_bar_position(self):
         for n, bar in enumerate(self.bars):

@@ -56,13 +56,17 @@ class Player(Character):
             return self.acc_mouse_mod
         return 1
 
+    def calc_acc(self):
+        acc_val = 100 - min(int((self.stats.accuracy + self.stats.gun_two_data['accuracy']) * self.target_distance()), 100) # noqa
+        return acc_val
+
     def update_bars(self):
         if self.energy < 100:
             self.energy = 100
         self.shield_bar.x = 10 - (271 - (self.stats.shield / float(self.stats.shield_max) * 271)) # noqa
         self.health_bar.x = 10 - (271 - (self.stats.health / float(self.stats.health_max) * 271)) # noqa
         # self.acc_bar.x = 150 + min(int((self.stats.accuracy + self.stats.gun_two_data['accuracy']) * self.target_distance()), 100) # noqa
-        acc_val = 100 - min(int((self.stats.accuracy + self.stats.gun_two_data['accuracy']) * self.target_distance()), 100) # noqa
+        acc_val = self.calc_acc()
         x = self.controller.sprite.x
         y = self.controller.sprite.y
         self.acc_mouse_bar_l.x = x + acc_val + 3
@@ -167,6 +171,8 @@ lb_missile = {
         'damage_min': 8,
         'damage_max': 15,
         'travel': 700,
+        'range_min': 300,
+        'range_max': 600,
         'velocity': 100,
         'accuracy': 70,
         'rof': .5,
@@ -174,7 +180,7 @@ lb_missile = {
         'crit_damage': 2,
         'armor_pierce': 5,
         'image': load_image('missile.png'), # noqa
-        'gun_fire_sound': load_sound('laser.wav'), # noqa
+        'gun_fire_sound': load_sound('missile.wav'), # noqa
         'on_hit_sound': load_sound('on_hit.wav'), # noqa
         'effects': [],
         'gem_slots': {
@@ -191,14 +197,16 @@ lb_autocannon = {
         'damage_min': 2,
         'damage_max': 4,
         'travel': 700,
-        'velocity': 80,
+        'range_min': 200,
+        'range_max': 600,
+        'velocity': 40,
         'accuracy': 85,
         'rof': 10,
         'crit': 10,
         'crit_damage': 3,
         'armor_pierce': 8,
         'image': load_image('magnum.png'), # noqa
-        'gun_fire_sound': load_sound('laser.wav'), # noqa
+        'gun_fire_sound': load_sound('shot.wav'), # noqa
         'on_hit_sound': load_sound('on_hit.wav'), # noqa
         'effects': [],
         'gem_slots': {

@@ -68,8 +68,8 @@ class LongbowAbility(Ability):
             pyglet.image.create(20, 90, red_sprite),
             window_width - 440, 5, batch=BarBatch)
 
-        self.sound_explosion = load_sound('laser.wav')
-        self.sound_missile = load_sound('laser.wav')
+        self.sound_explosion = load_sound('explosion.wav')
+        self.sound_missile = load_sound('missile.wav')
 
         self.vat = pyglet.sprite.Sprite(load_image('autoloader.png', anchor=False), window_width-472, 0, batch=gfx_batch),  # noqa
 
@@ -151,9 +151,8 @@ class LongbowAbility(Ability):
             dist_x = self.owner.sprite.x - enemy.sprite.x
             dist_y = self.owner.sprite.y - enemy.sprite.y
             dist = math.hypot(dist_x, dist_y)
-            if dist < gun['travel']:
-                return dist
-            return False
+            # if dist < gun['travel']:
+            return dist
 
     def add_bullet(self, bullet_base):
         self.thrown.append(Thrown(master, self, bullet_base))
