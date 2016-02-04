@@ -1,16 +1,21 @@
+
 # import random
+import cProfile
+import pstats # noqa
+import StringIO # noqa
 import math # noqa
+
 import pyglet
+
 # import random
 # import itertools
+
 from pyglet.gl import * # noqa
 from pyglet.window import key # noqa
 from pyglet.window import mouse # noqa
 from collide import * # noqa
+
 from gem import Gem
-import cProfile
-import pstats # noqa
-import StringIO # noqa
 
 # Window sizes
 window_height = 800
@@ -80,14 +85,14 @@ class Master(object):
         mx = 0
         my = 0
 
-        if abs(player_camera_x) > .8:
-            mx = player_camera_x * 10
-        elif abs(mouse_camera_x) > .5:
+        # if abs(player_camera_x) > .8:
+        # mx = player_camera_x * 10
+        if abs(mouse_camera_x) > .5:
             mx = mouse_camera_x * 10
 
-        if abs(player_camera_y) > .8:
-            my = player_camera_y * 10
-        elif abs(mouse_camera_y) > .5:
+        # if abs(player_camera_y) > .8:
+        # my = player_camera_y * 10
+        if abs(mouse_camera_y) > .5:
             my = mouse_camera_y * 10
         self.move_all(mx, my)
 

@@ -1,11 +1,12 @@
-from pyglet.gl import * # noqa
-from collide import * # noqa
-from utility import * # noqa
-from character import * # noqa
+from pyglet.gl import *  # noqa
+from collide import *  # noqa
+from utility import *  # noqa
+from character import *  # noqa
+
 import pyglet
-from gun import * # noqa
+from gun import *  # noqa
 from functools import partial # noqa
-from ability import * # noqa
+from ability import *  # noqa
 # import random
 
 
@@ -49,8 +50,8 @@ class LongbowAbility(Ability):
         for i in range(self.g1b):
             self.gun_one_bullets.append(pyglet.sprite.Sprite(load_image('s_bullet.png', anchor=False), 11 + i * 4, window_height - 140, batch=gfx_batch))  # noqa)
 
-        self.g2b = 15
-        self.g2b_max = 15
+        self.g2b = 50
+        self.g2b_max = 50
         self.g2b_reload = 0
         self.gun_two_bullets = []
         self.g2b_len = self.g2b_max * 4

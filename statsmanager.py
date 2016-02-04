@@ -96,14 +96,14 @@ class StatsManager(object):
         pass
 
     def update_stats(self):
-        if self._shield < self.shield_max:
-            self._shield += self.shield_regen / 60.0
+        if self._shield < int(self.shield_max):
+            self._shield += float(self.shield_regen) / 60.0
         else:
-            self._shield = self.shield_max
-        if self._health < self.health_max:
-            self._health += self.health_regen / 60.0
+            self._shield = int(self.shield_max)
+        if self._health < int(self.health_max):
+            self._health += float(self.health_regen) / 60.0
         else:
-            self._health = self.health_max
+            self._health = int(self.health_max)
 
     def update(self):
         self.update_stats()
