@@ -3,23 +3,52 @@ from pyglet.gl import *  # noqa
 from collections import OrderedDict  # noqa
 from time import time  # noqa
 from os.path import abspath  # noqa
-
+from pyglet.window import key # noqa
 import cProfile # noqa
 import pstats # noqa
 import StringIO # noqa
+from energy import * # noqa
+
+from importer import * # noqa
+
+class ProtoKeyStateHandler(key.KeyStateHandler):
+
+    def __init__(self):
+        self.list = []
+        self.active = False
+
+    def on_key_press(self, symbol, modifiers):
+        self[symbol] = True
+        if self.active:
+            self.list.append(symbol)
+
+    def activate(self):
+        self.active = True
+
+    def deactivate(self):
+        self.active = False
+
+    def clear_state(self):
+        self.list = []
+
+    def get_next_item(self):
+        if len(self.list) > 0:
+            return self.list.pop(0)
+        else:
+            return False
 
 window_height = 800
 window_width = 1400
 
 class StateHandler(object):
     def __init__(self):
-        self.main_menu_state = MainMenu()
-        self.game_state = MainMenu()
+        self.main_menu_state = MainMenuState()
+        self.game_state = GameState()
 
 class StateObject(object):
     def __init__(self):
+        self.change = 0
         self.batches = OrderedDict([])
-        self.stop = 0
 
     def on_key_press(self, symbol, modkey):
         pass
@@ -58,17 +87,105 @@ class MainMenuState(StateObject):
             batch=self.batches['gfx']
         )
 
+    def on_key_press(self, symbol, modkey):
+        self.change = 1
+        self.change_state = GameState
+
 class GameState(StateObject):
     def __init__(self):
-        super(MainMenu, self).__init__()
-
+        super(GameState, self).__init__()
         self.batches = OrderedDict([
             ('gfx', pyglet.graphics.Batch())
         ])
+        ready_level(master, 5, 5)
+
+    def update(self):
+        mx = 0
+        my = 0
+        if key_handler[key.X]:
+            if collide(master.player.collision, master.ready.portal.collision):
+                reset_imp()
+                master.reset()
+                master.player.sprite.x = master.home.x
+                master.player.sprite.y = master.home.y
+
+        if key_handler[key.H]:
+            readjust_x = master.home.x - master.player.sprite.x
+            readjust_y = master.home.y - master.player.sprite.y
+            master.player.sprite.x = master.home.x
+            master.player.sprite.y = master.home.y
+            master.move_all(-readjust_x, -readjust_y)
+        if key_handler[key.TAB]:
+            pass
+            master.pr.disable()
+            s = StringIO.StringIO()
+            sortby = 'cumulative'
+            ps = pstats.Stats(master.pr, stream=s).sort_stats(sortby)
+            ps.print_stats()
+
+            f = open('output.txt', 'w')
+            f.write(s.getvalue())
+            # print s.getvalue()
+            # master.player_controller.target_closest_enemy()
+        if key_handler[key.D]:
+            mx += 1
+        if key_handler[key.A]:
+            mx -= 1
+        if key_handler[key.W]:
+            my += 1
+        if key_handler[key.S]:
+            my -= 1
+        master.player_controller.move(mx, my)
+
+        if key_handler[key._1]:
+            # Character(master, enemy_soldier_base())
+            master.player_controller.slot_one_fire()
+
+        if key_handler[key._2]:
+            master.player_controller.slot_two_fire()
+
+        # master.player.move(mx, my)
+
+        # if key_handler[key.Q]:
+        #     master.grenade.throw(
+        #         master.player.sprite.x,
+        #         master.player.sprite.y, mouse_position[0],
+        #         mouse_position[1]
+        # )
+
+        if key_handler[key.F] and master.player.energy >= 100:
+            # teleport(master, mouse_position)
+            teleport(master, mouse_position)
+        # Run Updates
+        master.update()
+
+        TerrainBatch.draw()
+        PortalBatch.draw()
+        BuildingBatch.draw()
+        BulletBatch.draw()
+        gfx_batch.draw()
+        EffectsBatch.draw()
+        BarBatch.draw()
+
+    def on_mouse_press(self, x, y, button, modifiers):
+        master.player_controller.update_target()
+        master.player.ability.auto_attack()
+
+    def on_mouse_motion(self, x, y, dx, dy):
+        master.player_controller.sprite.x = x
+        master.player_controller.sprite.y = y
+        master.player_controller.rotate(x, y)
+
+    def on_mouse_drag(self, x, y, dx, dy, buttons, modifiers):
+        master.player_controller.sprite.x = x
+        master.player_controller.sprite.y = y
+        master.player.ability.auto_attack()
+        master.update_button_image(x, y, dx, dy)
+
 
 class Game(pyglet.window.Window):
     def __init__(self, height, width):
-        super(Game, self).__init__(width, height, caption='Test')
+        super(Game, self).__init__(width, height, caption='Acceptable Loss')
         self.pr = cProfile.Profile()
         self.pr.enable()
 
@@ -85,6 +202,8 @@ class Game(pyglet.window.Window):
 
     def render(self, *args):
         self.clear()
+        if self.state.change:
+            self.load_new_state(self.state.change_state)
         self.state.update()
 
         for batch in self.batches.values():
@@ -130,8 +249,10 @@ class Game(pyglet.window.Window):
                 print(event)
             self.render()
 
+game = Game(window_height, window_width)
+key_handler = ProtoKeyStateHandler()
+game.push_handlers(key_handler)
 
 if __name__ == '__main__':
-    game = Game(window_height, window_width)
     pyglet.clock.set_fps_limit(60)
     game.run()
