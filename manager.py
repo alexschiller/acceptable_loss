@@ -8,8 +8,11 @@ import cProfile # noqa
 import pstats # noqa
 import StringIO # noqa
 from energy import * # noqa
-
+from time import time, sleep # noqa
 from importer import * # noqa
+import threading # noqa
+import thread # noqa
+
 
 class ProtoKeyStateHandler(key.KeyStateHandler):
 
@@ -98,8 +101,12 @@ class GameState(StateObject):
             ('gfx', pyglet.graphics.Batch())
         ])
         ready_level(master, 5, 5)
+        self.last_time = 0
 
     def update(self):
+        x = time()
+        print self.last_time - x
+        self.last_time = x
         mx = 0
         my = 0
         if key_handler[key.X]:
@@ -183,6 +190,16 @@ class GameState(StateObject):
         master.update_button_image(x, y, dx, dy)
 
 
+class morethreads(threading.Thread):
+    def __init__(self, target, *args):
+        self._target = target
+        self._args = args
+        threading.Thread.__init__(self)
+
+    def run(self):
+        self._target(*self._args)
+
+
 class Game(pyglet.window.Window):
     def __init__(self, height, width):
         super(Game, self).__init__(width, height, caption='Acceptable Loss')
@@ -248,11 +265,13 @@ class Game(pyglet.window.Window):
             if event:
                 print(event)
             self.render()
+            sleep(1/100)
 
 game = Game(window_height, window_width)
 key_handler = ProtoKeyStateHandler()
 game.push_handlers(key_handler)
 
 if __name__ == '__main__':
-    pyglet.clock.set_fps_limit(60)
+    pyglet.clock.set_fps_limit(10)
+
     game.run()
