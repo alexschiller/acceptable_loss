@@ -11,6 +11,7 @@ from placeable import * # noqa
 from menu import * # noqa
 from hotbar import * # noqa
 from inventory import * # noqa
+from time import time # noqa
 HotBar = None
 buildmanager = None
 Buildmenu = None
@@ -177,6 +178,7 @@ class MainState(object):
         self.Pause = 0
         self.Build = 0
         self.Menu = 0
+        self.last_time = 0
         # for i in range(10):
             # master.enemies.append(Soldier(master, base=gen_soldier_base() )) # noqa
 
@@ -228,7 +230,6 @@ class MainState(object):
     def on_mouse_drag(self, x, y, dx, dy, buttons, modifiers):
         master.player_controller.rotate(x, y)
 
-
     def on_key_press(self, ts):
         pass
 
@@ -236,6 +237,11 @@ class MainState(object):
         states.swap('build')
 
     def update(self, ts):
+        x = time()
+        print self.last_time - x
+        self.last_time = x
+        mx = 0
+        my = 0
         if key_handler[key.P]:
             self.Pause = 1
         else:
@@ -325,6 +331,7 @@ class BuildState(MainState):
         self.Build = 0
         self.Menu = 0
         self.manager = Manager()
+        self.last_time = 0
 
         # master.buildings.append(Placeable(load_image('brick.png', anchor=False), 400, 400, None, BuildingBatch)) # noqa
 
@@ -605,6 +612,6 @@ states = StateManager()
 
 HotBar, buildmanager, Buildmenu, inventorymenu = load_assets(HotBar, buildmanager, Buildmenu, inventorymenu, 10, 15)
 
-pyglet.clock.schedule_interval(update, 1 / 60.0)
+pyglet.clock.schedule_interval(update, 1 / 60)
 
 pyglet.app.run()
