@@ -142,11 +142,19 @@ class GameState(StateObject):
         master.player_controller.move(mx, my)
 
         if key_handler[key._1]:
-            # Character(master, enemy_soldier_base())
             master.player_controller.slot_one_fire()
 
         if key_handler[key._2]:
             master.player_controller.slot_two_fire()
+
+        if key_handler[key._3]:
+            master.player_controller.slot_three_fire()
+
+        if key_handler[key._4]:
+            master.player_controller.slot_four_fire()
+
+        if key_handler[key._5]:
+            master.player_controller.slot_five_fire()
 
         # master.player.move(mx, my)
 
@@ -172,8 +180,10 @@ class GameState(StateObject):
         BarBatch.draw()
 
     def on_mouse_press(self, x, y, button, modifiers):
-        master.player_controller.update_target()
-        master.player.ability.auto_attack()
+        if button == 1:
+            master.player_controller.slot_mouse_one_fire()
+        if button == 4:
+            master.player_controller.slot_mouse_two_fire()
 
     def on_mouse_motion(self, x, y, dx, dy):
         master.player_controller.sprite.x = x
@@ -183,9 +193,11 @@ class GameState(StateObject):
     def on_mouse_drag(self, x, y, dx, dy, buttons, modifiers):
         master.player_controller.sprite.x = x
         master.player_controller.sprite.y = y
-        master.player.ability.auto_attack()
+        if button == 1:
+            master.player_controller.slot_mouse_one_fire()
+        if button == 4:
+            master.player_controller.slot_mouse_two_fire()
         master.update_button_image(x, y, dx, dy)
-
 
 class morethreads(threading.Thread):
     def __init__(self, target, *args):

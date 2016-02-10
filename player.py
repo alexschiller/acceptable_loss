@@ -7,8 +7,6 @@ from gun import * # noqa
 from functools import partial # noqa
 from longbow import * # noqa
 from controller import Controller
-import itertools
-
 
 class Player(Character):
     def __init__(self, *args, **kwargs):
@@ -91,32 +89,19 @@ class PlayerController(Controller):
         self.sprite = pyglet.sprite.Sprite(self.black_dot, 0, 0, batch=gfx_batch)
 
         self.collision = SpriteCollision(self.sprite)
-        self.timer = itertools.cycle(range(3))
+        # self.timer = itertools.cycle(range(3))
         red_sprite = pyglet.image.SolidColorImagePattern(color=(255, 0, 0, 150))
         self.red_dot = pyglet.image.create(5, 5, red_sprite)
         self.marker = None
         self.timg = load_image('target.png')
 
-    def slot_one_fire(self):
-        self.puppet.ability.missile_launch()
-
-    def slot_two_fire(self):
-        # elf.puppet.ability.magnum_california_prayer_book()
-        pass
-
     def on_hit(self):
         pass
-
-    def update_target(self):
-        for e in self.puppet.enemies:
-            if collide(self.collision, e.collision):
-                self.build_target(e)
-                break
 
     def build_target(self, e):
         self.marker = pyglet.sprite.Sprite(self.timg, e.sprite.x - 10, e.sprite.y - 10, batch=gfx_batch)  # noqa 
 
-    def target_closest_enemy(self, distance=float("inf")):
+    def target_closest_enemy(self, distance=300):
         try:
             min_dist = distance
             x1 = self.sprite.x
@@ -128,8 +113,14 @@ class PlayerController(Controller):
                 if dist < min_dist:
                     min_dist = dist
                     self.puppet.target = e
+            if min_dist >= distance:
+                self.remove_target()
         except:
+            self.remove_target()
+
+    def remove_target(self):
             self.puppet.target = None
+            self.marker = None
 
     def move(self, mx, my):
         self.last_mx = mx
@@ -142,22 +133,19 @@ class PlayerController(Controller):
         self.puppet.sprite.y += (self.puppet.stats.speed * my)
 
     def check_target(self):
-        # self.marker = []
         if self.puppet.target:
             try:
-                # self.rotate(self.puppet.target.sprite.x, self.puppet.target.sprite.y)
                 self.build_target(self.puppet.target)
-                # self.puppet.ability.auto_attack()
             except:
-                self.puppet.target = None
+                self.remove_target
         else:
             # pass
             self.rotate(self.sprite.x, self.sprite.y)
 
     def update(self):
-        if self.timer.next() == 1:
-            self.puppet.update_bars()
-            self.target_closest_enemy()
+        # if self.timer.next() == 1:
+        self.puppet.update_bars()
+        self.target_closest_enemy()
         for p in self.master.loot.current_loot:
             if abs(self.puppet.sprite.x - p.sprite.x) < 10:
                 if abs(self.puppet.sprite.y - p.sprite.y) < 10:

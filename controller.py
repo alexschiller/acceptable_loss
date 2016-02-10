@@ -25,7 +25,7 @@ class Controller(object):
     def undo_move(self):
         self.move(-self.last_mx, -self.last_my)
 
-    ## Controls
+    # Controls
     def rotate(self, x, y):
         x_dist = x - float(self.puppet.sprite.x)
         y_dist = y - float(self.puppet.sprite.y)
@@ -38,6 +38,12 @@ class Controller(object):
         pass
 
     def switch_auto_attack(self):
+        pass
+
+    def slot_mouse_one_fire(self):
+        pass
+
+    def slot_mouse_two_fire(self):
         pass
 
     def slot_one_fire(self):
@@ -55,9 +61,6 @@ class Controller(object):
     def slot_five_fire(self):
         pass
 
-    def slot_six_fire(self):
-        pass
-
     def update(self):
         if self.puppet.target:
             self.rotate(self.puppet.target.sprite.x, self.puppet.target.sprite.y)
@@ -65,7 +68,7 @@ class Controller(object):
                 self.puppet.sprite.x - self.puppet.target.sprite.x,
                 self.puppet.sprite.y - self.puppet.target.sprite.y
             ):
-                self.puppet.ability.auto_attack()
+                self.slot_one_fire()
             else:
                 ret = calc_vel_xy(self.puppet.target.sprite.x,
                     self.puppet.target.sprite.y,
@@ -77,7 +80,7 @@ class Controller(object):
         else:
             self.target_closest_enemy()
 
-    ## AI Commands
+    # AI Commands
 
     def on_hit(self):
         self.target_enemy()
