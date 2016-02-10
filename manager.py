@@ -104,9 +104,6 @@ class GameState(StateObject):
         self.last_time = 0
 
     def update(self):
-        x = time()
-        print self.last_time - x
-        self.last_time = x
         mx = 0
         my = 0
         if key_handler[key.X]:

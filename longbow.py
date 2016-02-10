@@ -127,6 +127,8 @@ class LongbowAbility(Ability):
                 self.g1b -= 1
                 time = int(60.0 / bullet_base['rof'])
                 self.trigger_aa_cooldown(time)
+                if random.choice([0, 0, 0, 1]):
+                    self.mini_missile_launch()
 
     def update(self):
         self.update_delayed()
@@ -157,6 +159,25 @@ class LongbowAbility(Ability):
 
     def add_bullet(self, bullet_base):
         self.thrown.append(Thrown(master, self, bullet_base))
+
+    def mini_missile_launch(self):
+            enemy_range = self.can_ability_shoot(self.owner.stats.gun_one_data)
+            if enemy_range:
+                play_sound(self.sound_missile)
+                bullet_base = self.build_bullet(
+                    self.owner.stats.gun_one_data,
+                    self.owner.sprite.x,
+                    self.owner.sprite.y,
+                    self.owner.target.sprite.x,
+                    self.owner.target.sprite.y,
+                    enemy_range,
+                    self.owner.target,)
+                bullet_base['velocity'] = 15
+                bullet_base['image'] = load_image('small_missile.png')
+                # bullet_base['damage_min'] = bullet_base['damage_min'] / 2.0
+                # bullet_base['damage_max'] = bullet_base['damage_max'] / 2.0
+                bullet_base['enemy_range'] -= 50
+                self.thrown.append(AoeThrown(master, self, bullet_base))
 
     def missile_launch(self):
         if self.action_checks(0, 1):
