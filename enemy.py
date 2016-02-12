@@ -27,6 +27,28 @@ def gen_zombie_gun(level):
         'gem_slots': {},
         }
 
+def gen_tank_gun(level):
+    return {
+        'gun_class': 'Rifle',
+        'level': level,
+        'damage_min': 4 * level,
+        'damage_max': 9 * level,
+        'travel': 800,
+        'range_min': 200,
+        'range_max': 700,
+        'velocity': 100,
+        'accuracy': 70,
+        'rof': .25,
+        'crit': 2,
+        'crit_damage': 2,
+        'armor_pierce': 10,
+        'image': load_image('tank_gun.png'), # noqa
+        'gun_fire_sound': load_sound('laser.wav'), # noqa
+        'on_hit_sound': load_sound('on_hit.wav'), # noqa
+        'effects': [],
+        'gem_slots': {},
+        }
+
 def gen_soldier_gun(level):
     return {
         'gun_class': 'Rifle',
@@ -48,7 +70,6 @@ def gen_soldier_gun(level):
         'effects': [],
         'gem_slots': {},
         }
-
 
 def enemy_soldier_base(level, x, y):
     return {
@@ -88,6 +109,46 @@ def enemy_soldier_base(level, x, y):
             'speed': 2,
         },
     }
+
+def enemy_tank_base(level, x, y):
+    return {
+        'sprite': load_image('tank.png'), # noqa
+        'coord': [x, y],
+        'weapon_slot_one': gen_tank_gun(level),
+        'weapon_slot_two': gen_tank_gun(level),
+        'armor': {'gem_slots': {}},
+        'ability': Ability,
+        'ability_build': None,
+        'color': 'red',
+        'friends': 'red',
+        'enemies': 'blue',
+        'blood_color': (255, 10, 10, 255),
+        'controller': Controller,
+        'stats': {
+            'level': level,
+            'damage': 0,
+            'damage_min': 0,
+            'damage_max': 0,
+            'damage_perc': 0,
+            'attack_speed_perc': 0,
+            'crit': 5,
+            'crit_damage': 2,
+            'accuracy': 0,
+            'armor_pierce': 0,
+            'shield_max': 5,
+            'shield_max_perc': 0,
+            'shield_regen': 1,
+            'shield_on_hit': 0,
+            'health_max': 20 * level,
+            'health_max_perc': 0,
+            'health_regen': 1 * level / 2,
+            'health_on_hit': 0,
+            'armor': 2 * level,
+            'evade': 0,
+            'speed': 1,
+        },
+    }
+
 
 def enemy_zombie_base(level, x, y):
     return {
