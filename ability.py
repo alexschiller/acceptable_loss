@@ -93,27 +93,13 @@ class Thrown(object):
             self.delete_thrown()
 
 class Ability(object):
-    def __init__(self, master, owner, build, gun_one, gun_two):
+    def __init__(self, master, owner, gun_one, gun_two):
         self.master = master
         self.owner = owner
         # self.delayed = []
         # self.global_cooldown = False
         # self.aa_cooldown = False
-        # self.thrown = []
-
-        build = {
-            'tree_one': {
-                'tree': LBAutoloader,
-                'build': {
-                    '1': {
-                        'unlocked': True,
-                        'max_level': 1,
-                        'current_level': 1,
-                        'slot': None,
-                    },
-                }
-            }
-        , }
+        self.thrown = []
 
     def slot_mouse_one_fire(self):
         self.puppet.ability.slot_mouse_one_fire()
@@ -137,7 +123,7 @@ class Ability(object):
         self.puppet.ability.slot_q_fire()
 
     def slot_e_fire(self):
-        self.puppet.ability.slot_e_fire()        
+        self.puppet.ability.slot_e_fire()
 
     # def build_bullet(self, gun, start_x, start_y, target_x, target_y, enemy_range, enemy, image=None): # noqa
     #     calc_gun = gun
@@ -174,11 +160,11 @@ class Ability(object):
     #                 'failed delayed action'
     #             self.delayed.remove(p)
 
-    # def update(self):
-    #     for t in self.thrown:
-    #         t.update()
+    def update(self):
+        for t in self.thrown:
+            t.update()
 
-    #     self.update_delayed()
+        # self.update_delayed()
 
     # def can_aa_shoot(self):
     #     if not self.aa_cooldown:

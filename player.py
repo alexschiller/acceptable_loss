@@ -221,7 +221,7 @@ player_base = {
     'weapon_slot_one': lb_missile,
     'weapon_slot_two': lb_autocannon,
     'armor': player_armor,
-    'ability': LongbowAbility,
+    'ability': Ability,
     'ability_build': None,
     'color': 'blue',
     'friends': 'blue',
