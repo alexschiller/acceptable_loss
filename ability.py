@@ -1,4 +1,4 @@
-from functools import partial
+# from functools import partial
 import math # noqa
 import random
 from pyglet.gl import * # noqa
@@ -86,10 +86,7 @@ class Thrown(object):
         self.travelled += math.hypot(self.vel_x, self.vel_y)
         if self.travelled > self.enemy_range:
             if self.hit and not self.evade:
-                # try:
                 self.enemy.on_hit(self)
-                # except:
-                    # pass
             self.delete_thrown()
 
 class Ability(object):
@@ -101,29 +98,35 @@ class Ability(object):
         # self.aa_cooldown = False
         self.thrown = []
 
-    def slot_mouse_one_fire(self):
-        self.puppet.ability.slot_mouse_one_fire()
+        # self.slot_mouse_two = self.owner.build.slot_mouse_two
+        # self.slot_one = self.owner.build.slot_one
+        # self.slot_two = self.owner.build.slot_two
+        # self.slot_three = self.owner.build.slot_three
+        # self.slot_four = self.owner.build.slot_four
+        # self.slot_five = self.owner.build.slot_five
+        # self.slot_q = self.owner.build.slot_q
+        # self.slot_e = self.owner.build.slot_e
 
     def slot_mouse_two_fire(self):
-        self.puppet.ability.slot_mouse_two_fire()
+        self.slot_mouse_two.fire()
 
     def slot_one_fire(self):
-        self.puppet.ability.slot_one_fire()
+        self.slot_one.fire()
 
     def slot_two_fire(self):
-        self.puppet.ability.slot_two_fire()
+        self.slot_two.fire()
 
     def slot_three_fire(self):
-        self.puppet.ability.slot_three_fire()
+        self.slot_three.fire()
 
     def slot_four_fire(self):
-        self.puppet.ability.slot_four_fire()
+        self.slot_four.fire()
 
     def slot_q_fire(self):
-        self.puppet.ability.slot_q_fire()
+        self.slot_q.fire()
 
     def slot_e_fire(self):
-        self.puppet.ability.slot_e_fire()
+        self.slot_e.fire()
 
     # def build_bullet(self, gun, start_x, start_y, target_x, target_y, enemy_range, enemy, image=None): # noqa
     #     calc_gun = gun

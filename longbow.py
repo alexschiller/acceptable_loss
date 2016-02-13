@@ -1,199 +1,197 @@
-from pyglet.gl import *  # noqa
-from collide import *  # noqa
-from utility import *  # noqa
-from character import *  # noqa
+from build import Skill
 
-import pyglet
-from gun import *  # noqa
-from functools import partial # noqa
-from ability import *  # noqa
-# import random
+# Unfinished
+class LBALTimedBreathing(Skill):
+    def __init__(self, master, level):
+        super(LBALTimedBreathing, self).__init__(master, level)
 
+# Unfinished
+class LBALFlakJacket(Skill):
+    def __init__(self, master, level):
+        super(LBALFlakJacket, self).__init__(master, level)
 
-class AoeThrown(Thrown):
-    def __init__(self, *args, **kwargs):
-        super(AoeThrown, self).__init__(*args, **kwargs)
+# Unfinished
+class LBALTwentyMileMarch(Skill):
+    def __init__(self, master, level):
+        super(LBALTwentyMileMarch, self).__init__(master, level)
 
-    def aoe(self):
-        self.hit = True
-        b_x = self.sprite.x
-        b_y = self.sprite.y
-        self.master.spriteeffect.explosion(b_x, b_y)
-        for e in self.owner.owner.enemies:
-            if abs(math.hypot(b_x - e.sprite.x, b_y - e.sprite.y)) < 100:
-                e.on_hit(self)
-                self.display_outcome()
+# Unfinished
+class LBALLockAndLoad(Skill):
+    def __init__(self, master, level):
+        super(LBALLockAndLoad, self).__init__(master, level)
 
-    def delete_thrown(self):
-        self.display_outcome()
-        self.aoe()
-        play_sound(self.owner.sound_explosion)
-        self.sprite.delete()
-        self.owner.thrown.remove(self)
+# Unfinished
+class LBALFletcher(Skill):
+    def __init__(self, master, level):
+        super(LBALFletcher, self).__init__(master, level)
 
-class LongbowAbility(Ability):
-    def __init__(self, *args, **kwargs):
-        super(LongbowAbility, self).__init__(*args, **kwargs)
-        self.bul = 30
-        self.mis = 10
-        self.bul_max = 30
-        self.mis_max = 10
+# Unfinished
+class LBALSpotAndShot(Skill):
+    def __init__(self, master, level):
+        super(LBALSpotAndShot, self).__init__(master, level)
 
-        self.g1b = 10
-        self.g1b_max = 10
-        self.g1b_reload = 0
-        self.gun_one_bullets = []
-        self.g1b_len = self.g1b_max * 4
-        self.g1b_bar = pyglet.sprite.Sprite(
-            pyglet.image.create(self.g1b_len, 13, orange_sprite),
-            11, window_height - 139, batch=BarBatch)
-        for i in range(self.g1b):
-            self.gun_one_bullets.append(pyglet.sprite.Sprite(load_image('s_bullet.png', anchor=False), 11 + i * 4, window_height - 140, batch=gfx_batch))  # noqa)
+# Unfinished
+class LBALIronRations(Skill):
+    def __init__(self, master, level):
+        super(LBALIronRations, self).__init__(master, level)
 
-        self.g2b = 50
-        self.g2b_max = 50
-        self.g2b_reload = 0
-        self.gun_two_bullets = []
-        self.g2b_len = self.g2b_max * 4
-        self.g2b_bar = pyglet.sprite.Sprite(
-            pyglet.image.create(self.g2b_len, 13, orange_sprite),
-            11, window_height - 152, batch=BarBatch)
-        for i in range(self.g2b):
-            self.gun_two_bullets.append(pyglet.sprite.Sprite(load_image('s_bullet.png', anchor=False), 11 + i * 4, window_height - 153, batch=gfx_batch))  # noqa)
+# Unfinished
+class LBALStrafe(Skill):
+    def __init__(self, master, level):
+        super(LBALStrafe, self).__init__(master, level)
 
-        self.opp_bar = pyglet.sprite.Sprite(
-            pyglet.image.create(15, 90, orange_sprite),
-            window_width - 472, 5, batch=BarBatch)
+# Unfinished
+class LBALCannibalize(Skill):
+    def __init__(self, master, level):
+        super(LBALCannibalize, self).__init__(master, level)
 
-        self.vul_bar = pyglet.sprite.Sprite(
-            pyglet.image.create(20, 90, red_sprite),
-            window_width - 440, 5, batch=BarBatch)
+# Unfinished
+class LBALBarrage(Skill):
+    def __init__(self, master, level):
+        super(LBALBarrage, self).__init__(master, level)
 
-        self.sound_explosion = load_sound('explosion.wav')
-        self.sound_missile = load_sound('missile.wav')
+# Unfinished
+class LBACTrigger(Skill):
+    def __init__(self, master, level):
+        super(LBACTrigger, self).__init__(master, level)
 
-        self.vat = pyglet.sprite.Sprite(load_image('autoloader.png', anchor=False), window_width-472, 0, batch=gfx_batch),  # noqa
+# Unfinished
+class LBACSalted(Skill):
+    def __init__(self, master, level):
+        super(LBACSalted, self).__init__(master, level)
 
-    def update_ammo(self):
-        if self.bul < self.bul_max:
-            self.bul += .01
-        if self.mis < self.mis_max:
-            self.mis += .005
+# Unfinished
+class LBACMuzzleBrake(Skill):
+    def __init__(self, master, level):
+        super(LBACMuzzleBrake, self).__init__(master, level)
 
-        if not self.g1b:
-            self.g1b_reload = 1
-        if self.g1b_reload:
-            self.g1b += .1
-            if self.g1b >= self.g1b_max:
-                self.g1b = self.g1b_max
-                self.g1b_reload = 0
+# Unfinished
+class LBACPointBlank(Skill):
+    def __init__(self, master, level):
+        super(LBACPointBlank, self).__init__(master, level)
 
-        if not self.g2b:
-            self.g2b_reload = 1
-        if self.g2b_reload:
-            self.g2b += .1
-            if self.g2b >= self.g2b_max:
-                self.g2b = self.g2b_max
-                self.g2b_reload = 0
+# Unfinished
+class LBACIronDome(Skill):
+    def __init__(self, master, level):
+        super(LBACIronDome, self).__init__(master, level)
 
-    # def can_aa_shoot(self):
-    #     if not self.aa_cooldown:
-    #         x = self.owner.controller.target_closest_enemy()
-    #         print x
-    #         if x:
-    #             dist_x = self.owner.sprite.x - self.owner.target.sprite.x
-    #             dist_y = self.owner.sprite.y - self.owner.target.sprite.y
-    #             dist = math.hypot(dist_x, dist_y)
-    #             if dist < self.owner.stats.gun_two_data['travel']:
-    #                 return dist
-    #     return False
+# Unfinished
+class LBACHardCore(Skill):
+    def __init__(self, master, level):
+        super(LBACHardCore, self).__init__(master, level)
 
-    def auto_attack(self):
-        enemy_range = self.can_aa_shoot()
-        if enemy_range:
-            bullet_base = self.build_bullet(
-                self.owner.stats.generate_gun(self.owner.stats.gun_two),
-                self.owner.sprite.x,
-                self.owner.sprite.y,
-                self.owner.target.sprite.x,
-                self.owner.target.sprite.y,
-                enemy_range,
-                self.owner.target,
-            )
-            if not self.g1b_reload:
-                play_sound(self.owner.stats.gun_two_data['gun_fire_sound'])
-                bullet_base['accuracy'] *= self.owner.acc_mouse_mod
-                self.thrown.append(Thrown(master, self, bullet_base))
-                self.g1b -= 1
-                time = int(60.0 / bullet_base['rof'])
-                self.trigger_aa_cooldown(time)
-                if random.choice([0, 0, 0, 1]):
-                    self.mini_missile_launch()
+# Unfinished
+class LBACTotalSystemShock(Skill):
+    def __init__(self, master, level):
+        super(LBACTotalSystemShock, self).__init__(master, level)
 
-    def update(self):
-        self.update_delayed()
-        self.update_ammo()
+# Unfinished
+class LBACBurst(Skill):
+    def __init__(self, master, level):
+        super(LBACBurst, self).__init__(master, level)
 
-        for t in self.thrown:
-            t.update()
+# Unfinished
+class LBACTriggerDiscipline(Skill):
+    def __init__(self, master, level):
+        super(LBACTriggerDiscipline, self).__init__(master, level)
 
-        self.g1b_bar.x = 11 - (self.g1b_len - (self.g1b / float(self.g1b_max) * self.g1b_len)) # noqa
-        self.g2b_bar.x = 11 - (self.g2b_len - (self.g2b / float(self.g2b_max) * self.g2b_len)) # noqa
+# Unfinished
+class LBACSalvo(Skill):
+    def __init__(self, master, level):
+        super(LBACSalvo, self).__init__(master, level)
 
-        self.opp_bar.y = 5 - (90 - (self.bul / float(self.bul_max) * 90)) # noqa
-        self.vul_bar.y = 5 - (90 - (self.mis / float(self.mis_max) * 90)) # noqa
+# Unfinished
+class LBMSLaunch(Skill):
+    def __init__(self, master, level):
+        super(LBMSLaunch, self).__init__(master, level)
 
-    def action_checks(self, bul, mis):
-        if self.owner.target:
-            if not self.global_cooldown:
-                if self.bul >= bul and self.mis >= mis:
-                    return True
-        return False
+# Unfinished
+class LBMSNeedle(Skill):
+    def __init__(self, master, level):
+        super(LBMSNeedle, self).__init__(master, level)
 
-    def enemy_in_range(self, enemy, gun):
-            dist_x = self.owner.sprite.x - enemy.sprite.x
-            dist_y = self.owner.sprite.y - enemy.sprite.y
-            dist = math.hypot(dist_x, dist_y)
-            # if dist < gun['travel']:
-            return dist
+# Unfinished
+class LBMSBangForYourBuck(Skill):
+    def __init__(self, master, level):
+        super(LBMSBangForYourBuck, self).__init__(master, level)
 
-    def add_bullet(self, bullet_base):
-        self.thrown.append(Thrown(master, self, bullet_base))
+# Unfinished
+class LBMSHoming(Skill):
+    def __init__(self, master, level):
+        super(LBMSHoming, self).__init__(master, level)
 
-    def mini_missile_launch(self):
-            enemy_range = self.can_ability_shoot(self.owner.stats.gun_one_data)
-            if enemy_range:
-                play_sound(self.sound_missile)
-                bullet_base = self.build_bullet(
-                    self.owner.stats.gun_one_data,
-                    self.owner.sprite.x,
-                    self.owner.sprite.y,
-                    self.owner.target.sprite.x,
-                    self.owner.target.sprite.y,
-                    enemy_range,
-                    self.owner.target,)
-                bullet_base['velocity'] = 15
-                bullet_base['image'] = load_image('small_missile.png')
-                # bullet_base['damage_min'] = bullet_base['damage_min'] / 2.0
-                # bullet_base['damage_max'] = bullet_base['damage_max'] / 2.0
-                bullet_base['enemy_range'] -= 50
-                self.thrown.append(AoeThrown(master, self, bullet_base))
+# Unfinished
+class LBMSRocketPowered(Skill):
+    def __init__(self, master, level):
+        super(LBMSRocketPowered, self).__init__(master, level)
 
-    def missile_launch(self):
-        if self.action_checks(0, 1):
-            enemy_range = self.can_ability_shoot(self.owner.stats.gun_one_data)
-            if enemy_range:
-                play_sound(self.sound_missile)
-                bullet_base = self.build_bullet(
-                    self.owner.stats.gun_one_data,
-                    self.owner.sprite.x,
-                    self.owner.sprite.y,
-                    self.owner.target.sprite.x,
-                    self.owner.target.sprite.y,
-                    enemy_range,
-                    self.owner.target,)
-                bullet_base['velocity'] = 25
-                bullet_base['enemy_range'] -= 50
-                self.thrown.append(AoeThrown(master, self, bullet_base))
-                self.trigger_global_cooldown()
-                self.mis -= 1
+# Unfinished
+class LBMSSmokyEyeSurprise(Skill):
+    def __init__(self, master, level):
+        super(LBMSSmokyEyeSurprise, self).__init__(master, level)
+
+# Unfinished
+class LBMSTheRLL(Skill):
+    def __init__(self, master, level):
+        super(LBMSTheRLL, self).__init__(master, level)
+
+# Unfinished
+class LBMSBlotOutTheSun(Skill):
+    def __init__(self, master, level):
+        super(LBMSBlotOutTheSun, self).__init__(master, level)
+
+# Unfinished
+class LBMSConked(Skill):
+    def __init__(self, master, level):
+        super(LBMSConked, self).__init__(master, level)
+
+# Unfinished
+class LBMSSwarm(Skill):
+    def __init__(self, master, level):
+        super(LBMSSwarm, self).__init__(master, level)
+
+longbow_skillset = {
+    '1': LBALTimedBreathing,
+    '2': LBALFlakJacket,
+    '3': LBALTwentyMileMarch,
+    '4': LBALLockAndLoad,
+    '5': LBALFletcher,
+    '6': LBALSpotAndShot,
+    '7': LBALIronRations,
+    '8': LBALStrafe,
+    '9': LBALCannibalize,
+    '10': LBALBarrage,
+    '11': LBACTrigger,
+    '12': LBACSalted,
+    '13': LBACMuzzleBrake,
+    '14': LBACPointBlank,
+    '15': LBACIronDome,
+    '16': LBACHardCore,
+    '17': LBACTotalSystemShock,
+    '18': LBACBurst,
+    '19': LBACTriggerDiscipline,
+    '20': LBACSalvo,
+    '21': LBMSLaunch,
+    '22': LBMSNeedle,
+    '23': LBMSBangForYourBuck,
+    '24': LBMSHoming,
+    '25': LBMSRocketPowered,
+    '26': LBMSSmokyEyeSurprise,
+    '27': LBMSTheRLL,
+    '28': LBMSBlotOutTheSun,
+    '29': LBMSConked,
+    '30': LBMSSwarm,
+}
+
+sample_longbow_build = {
+    'slot_mouse_two': ['11', 1],
+    'slot_one': ['22', 1],
+    'slot_two': ['20', 1],
+    'slot_three': ['11', 2],
+    'slot_four': ['1', 3],
+    'slot_q': ['25', 1],
+    'slot_e': ['15', 1],
+    'passive_one': ['4', 1],
+    'passive_two': ['16', 1],
+    'passive_three': ['13', 1],
+}
