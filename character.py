@@ -3,7 +3,7 @@ from collide import * # noqa
 from utility import * # noqa
 import pyglet
 from gun import * # noqa
-from plasmaslinger import * # noqa
+# from plasmaslinger import * # noqa
 from spectre import * # noqa
 from longbow import * # noqa
 from enemy import * # noqa

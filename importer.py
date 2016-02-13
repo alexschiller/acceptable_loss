@@ -9,7 +9,7 @@ from player import * # noqa
 from utility import * # noqa
 from friend import * # noqa
 from loot import * # noqa
-from plasmaslinger import * # noqa
+# from plasmaslinger import * # noqa
 from button import * # noqa
 
 
