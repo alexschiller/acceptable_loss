@@ -34,9 +34,11 @@ class Character(object):
             base['weapon_slot_two'],
             base['armor']
         )
-        self.ability = base['ability'](
+        self.ability = Ability(
             self.master,
             self,
+            base['skillset'],
+            base['build'],
             base['weapon_slot_one'],
             base['weapon_slot_two'],
         )

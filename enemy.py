@@ -5,6 +5,28 @@ from character import * # noqa
 from controller import * # noqa
 import random
 
+
+enemy_skillset = {
+    '1': Skill,
+    '2': Skill,
+    '3': Skill,
+    '4': Skill,
+}
+
+enemy_build = {
+    'slot_mouse_two': ['1', 1],
+    'slot_one': ['1', 1],
+    'slot_two': ['2', 1],
+    'slot_three': ['3', 2],
+    'slot_four': ['4', 3],
+    'slot_q': ['1', 1],
+    'slot_e': ['1', 1],
+    'passive_one': ['1', 1],
+    'passive_two': ['1', 1],
+    'passive_three': ['1', 1],
+}
+
+
 def gen_zombie_gun(level):
     return {
         'gun_class': 'Melee',
@@ -78,8 +100,8 @@ def enemy_soldier_base(level, x, y):
         'weapon_slot_one': gen_soldier_gun(level),
         'weapon_slot_two': gen_soldier_gun(level),
         'armor': {'gem_slots': {}},
-        'ability': Ability,
-        'ability_build': None,
+        'skillset': enemy_skillset,
+        'build': enemy_build,
         'color': 'red',
         'friends': 'red',
         'enemies': 'blue',
@@ -117,8 +139,8 @@ def enemy_tank_base(level, x, y):
         'weapon_slot_one': gen_tank_gun(level),
         'weapon_slot_two': gen_tank_gun(level),
         'armor': {'gem_slots': {}},
-        'ability': Ability,
-        'ability_build': None,
+        'skillset': enemy_skillset,
+        'build': enemy_build,
         'color': 'red',
         'friends': 'red',
         'enemies': 'blue',
@@ -157,8 +179,8 @@ def enemy_zombie_base(level, x, y):
         'weapon_slot_one': gen_zombie_gun(level),
         'weapon_slot_two': gen_zombie_gun(level),
         'armor': {'gem_slots': {}},
-        'ability': Ability,
-        'ability_build': None,
+        'skillset': enemy_skillset,
+        'build': enemy_build,
         'color': 'red',
         'friends': 'red',
         'enemies': 'blue',

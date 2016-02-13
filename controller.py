@@ -34,32 +34,29 @@ class Controller(object):
     def attack(self):  # necessary?
         pass
 
-    def auto_attack(self):
-        pass
-
-    def switch_auto_attack(self):
-        pass
-
     def slot_mouse_one_fire(self):
         pass
 
     def slot_mouse_two_fire(self):
-        pass
+        self.puppet.ability.slot_mouse_two_fire()
 
     def slot_one_fire(self):
-        pass
+        self.puppet.ability.slot_one_fire()
 
     def slot_two_fire(self):
-        pass
+        self.puppet.ability.slot_two_fire()
 
     def slot_three_fire(self):
-        pass
+        self.puppet.ability.slot_three_fire()
 
     def slot_four_fire(self):
-        pass
+        self.puppet.ability.slot_four_fire()
 
-    def slot_five_fire(self):
-        pass
+    def slot_q_fire(self):
+        self.puppet.ability.slot_q_fire()
+
+    def slot_e_fire(self):
+        self.puppet.ability.slot_e_fire()
 
     def update(self):
         if self.puppet.target:

@@ -193,8 +193,7 @@ class GameState(StateObject):
     def on_mouse_drag(self, x, y, dx, dy, buttons, modifiers):
         master.player_controller.sprite.x = x
         master.player_controller.sprite.y = y
-        if button == 1:
-            master.player_controller.slot_mouse_one_fire()
+
         if button == 4:
             master.player_controller.slot_mouse_two_fire()
         master.update_button_image(x, y, dx, dy)

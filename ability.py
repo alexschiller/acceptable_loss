@@ -7,6 +7,7 @@ from utility import * # noqa
 import pyglet
 # import itertools
 from collide import * # noqa
+from build import Build
 
 class Thrown(object):
     def __init__(self, master, ability, base):  # noqa
@@ -90,22 +91,21 @@ class Thrown(object):
             self.delete_thrown()
 
 class Ability(object):
-    def __init__(self, master, owner, gun_one, gun_two):
+    def __init__(self, master, owner, skillset, build, gun_one, gun_two):
         self.master = master
         self.owner = owner
         # self.delayed = []
         # self.global_cooldown = False
         # self.aa_cooldown = False
         self.thrown = []
-
-        # self.slot_mouse_two = self.owner.build.slot_mouse_two
-        # self.slot_one = self.owner.build.slot_one
-        # self.slot_two = self.owner.build.slot_two
-        # self.slot_three = self.owner.build.slot_three
-        # self.slot_four = self.owner.build.slot_four
-        # self.slot_five = self.owner.build.slot_five
-        # self.slot_q = self.owner.build.slot_q
-        # self.slot_e = self.owner.build.slot_e
+        self.build = Build(self.master, skillset, build)
+        self.slot_mouse_two = self.build.slot_mouse_two
+        self.slot_one = self.build.slot_one
+        self.slot_two = self.build.slot_two
+        self.slot_three = self.build.slot_three
+        self.slot_four = self.build.slot_four
+        self.slot_q = self.build.slot_q
+        self.slot_e = self.build.slot_e
 
     def slot_mouse_two_fire(self):
         self.slot_mouse_two.fire()
