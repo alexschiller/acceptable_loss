@@ -42,11 +42,15 @@ class ProtoKeyStateHandler(key.KeyStateHandler):
 
 window_height = 800
 window_width = 1400
+global mouse_position
+mouse_position = [0, 0]
+
 
 class StateHandler(object):
     def __init__(self):
         self.main_menu_state = MainMenuState()
         self.game_state = GameState()
+
 
 class StateObject(object):
     def __init__(self):
@@ -74,6 +78,7 @@ class StateObject(object):
     def update(self):
         pass
 
+
 class MainMenuState(StateObject):
     def __init__(self):
         super(MainMenuState, self).__init__()
@@ -93,6 +98,7 @@ class MainMenuState(StateObject):
     def on_key_press(self, symbol, modkey):
         self.change = 1
         self.change_state = GameState
+
 
 class GameState(StateObject):
     def __init__(self):
@@ -198,15 +204,6 @@ class GameState(StateObject):
             master.player_controller.slot_mouse_two_fire()
         master.update_button_image(x, y, dx, dy)
 
-class morethreads(threading.Thread):
-    def __init__(self, target, *args):
-        self._target = target
-        self._args = args
-        threading.Thread.__init__(self)
-
-    def run(self):
-        self._target(*self._args)
-
 
 class Game(pyglet.window.Window):
     def __init__(self, height, width):
@@ -273,7 +270,6 @@ class Game(pyglet.window.Window):
             if event:
                 print(event)
             self.render()
-            sleep(1/100)
 
 game = Game(window_height, window_width)
 key_handler = ProtoKeyStateHandler()
