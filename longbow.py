@@ -91,7 +91,7 @@ class LBACTrigger(Skill):
 class LBACSalted(Skill):
     def __init__(self, master, level, handler):
         super(LBACSalted, self).__init__(master, level, handler)
-        self.armor_pierce_mod = 1 + level * .05
+        self.armor_pierce_mod = 1 + self.level * .05
         self.img = load_image('salted.png')
 
     def fire(self):
@@ -107,10 +107,7 @@ class LBACSalted(Skill):
                 self.handler.owner.target,
             )
 
-            bullet_base['damage_min'] = int(self.damage_mod * bullet_base['damage_min'])
-            bullet_base['damage_max'] = int(self.damage_mod * bullet_base['damage_max'])
-            bullet_base['damage_max'] = int(self.damage_mod * bullet_base['damage_max'])
-            bullet_base['armor_pierce'] = int(self.armor_pierce_mod * (bullet_base['armor_pierce'] + level))
+            bullet_base['armor_pierce'] = int(self.armor_pierce_mod * (bullet_base['armor_pierce'] + self.level))
             bullet_base['image'] = self.img
             # play_sound(self.owner.stats.gun_one_data['gun_fire_sound'])
             self.handler.thrown.append(Thrown(self.master, self.handler, bullet_base))

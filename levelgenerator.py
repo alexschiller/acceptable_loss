@@ -240,7 +240,11 @@ class RoomManager(object):
 
                     enemy_zombie_base(
                         difficulty, random.randint(room_x_min, room_x_max),
-                        random.randint(room_y_min, room_y_max))
+                        random.randint(room_y_min, room_y_max)),
+
+                    enemy_drone_base(
+                        difficulty, random.randint(room_x_min, room_x_max),
+                        random.randint(room_y_min, room_y_max)),
                 ]))
 
     def move_all(self, dx, dy):

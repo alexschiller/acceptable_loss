@@ -166,7 +166,7 @@ def enemy_tank_base(level, x, y):
             'shield_on_hit': 0,
             'health_max': 20 * level,
             'health_max_perc': 0,
-            'health_regen': 1 * level / 2,
+            'health_regen': 0 * level / 2,
             'health_on_hit': 0,
             'armor': 2 * level,
             'evade': 0,
@@ -211,5 +211,67 @@ def enemy_zombie_base(level, x, y):
             'armor': 0 * level,
             'evade': 10,
             'speed': 3,
+        },
+    }
+
+def gen_drone_gun(level):
+    return {
+        'gun_class': 'Rifle',
+        'level': level,
+        'damage_min': 1 * level,
+        'damage_max': 2 * level,
+        'travel': 200,
+        'range_min': 100,
+        'range_max': 400,
+        'velocity': 100,
+        'accuracy': 30,
+        'rof': .75,
+        'recoil': 10,
+        'crit': 2,
+        'crit_damage': 2,
+        'armor_pierce': 0,
+        'image': load_image('drone_bullet.png'), # noqa
+        'gun_fire_sound': load_sound('laser.wav'), # noqa
+        'on_hit_sound': load_sound('on_hit.wav'), # noqa
+        'effects': [],
+        'gem_slots': {},
+        }
+
+def enemy_drone_base(level, x, y):
+    return {
+        'sprite': load_image('drone.png'), # noqa
+        'coord': [x, y],
+        'weapon_slot_one': gen_drone_gun(level),
+        'weapon_slot_two': gen_drone_gun(level),
+        'armor': {'gem_slots': {}},
+        'skillset': enemy_skillset,
+        'build': enemy_build,
+        'color': 'red',
+        'friends': 'red',
+        'enemies': 'blue',
+        'blood_color': (140, 140, 140, 255),
+        'controller': Controller,
+        'stats': {
+            'level': level,
+            'damage': 0,
+            'damage_min': 0,
+            'damage_max': 0,
+            'damage_perc': 0,
+            'attack_speed_perc': 0,
+            'crit': 5,
+            'crit_damage': 2,
+            'accuracy': 0,
+            'armor_pierce': 0,
+            'shield_max': 5,
+            'shield_max_perc': 0,
+            'shield_regen': 1,
+            'shield_on_hit': 0,
+            'health_max': 3 * level,
+            'health_max_perc': 0,
+            'health_regen': 1 * level / 2,
+            'health_on_hit': 0,
+            'armor': 1 * level,
+            'evade': 20,
+            'speed': 4,
         },
     }
