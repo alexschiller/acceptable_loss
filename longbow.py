@@ -1,5 +1,6 @@
 from baseskills import * # noqa
 import math
+from functools import partial
 
 # Unfinished
 class LBALTimedBreathing(Skill):
@@ -59,7 +60,7 @@ class LBACTrigger(Skill):
 
     def fire(self):
         enemy_range = self.get_enemy_dist()
-        if enemy_range:
+        if enemy_range and not self.handler.global_cooldown:
             bullet_base = self.handler.build_bullet(
                 self.handler.owner.stats.gun_one_data,
                 self.handler.owner.sprite.x,
@@ -69,11 +70,12 @@ class LBACTrigger(Skill):
                 enemy_range,
                 self.handler.owner.target,
             )
-            self.handler.owner.stats.recoil += self.handler.owner.stats.gun_one_data['recoil']
+            self.handler.owner.stats.recoil += (self.handler.owner.stats.gun_one_data['recoil'] * 3)
             bullet_base['damage_min'] = int(self.damage_mod * bullet_base['damage_min'])
             bullet_base['damage_max'] = int(self.damage_mod * bullet_base['damage_max'])
             # play_sound(self.owner.stats.gun_one_data['gun_fire_sound'])
             self.handler.thrown.append(Thrown(self.master, self.handler, bullet_base))
+            self.handler.trigger_global_cooldown()
 
     def get_enemy_dist(self):
         if self.handler.owner.target:
@@ -117,6 +119,36 @@ class LBACTotalSystemShock(Skill):
 class LBACBurst(Skill):
     def __init__(self, master, level, handler):
         super(LBACBurst, self).__init__(master, level, handler)
+        self.damage_mod = .5 + self.level * .05
+
+    def fire(self):
+        enemy_range = self.get_enemy_dist()
+        if enemy_range and not self.handler.global_cooldown:
+            bullet_base = self.handler.build_bullet(
+                self.handler.owner.stats.gun_one_data,
+                self.handler.owner.sprite.x,
+                self.handler.owner.sprite.y,
+                self.handler.owner.target.sprite.x,
+                self.handler.owner.target.sprite.y,
+                enemy_range,
+                self.handler.owner.target,
+            )
+            self.handler.owner.stats.recoil += self.handler.owner.stats.gun_one_data['recoil']
+            bullet_base['damage_min'] = int(self.damage_mod * bullet_base['damage_min'])
+            bullet_base['damage_max'] = int(self.damage_mod * bullet_base['damage_max'])
+
+            # play_sound(self.owner.stats.gun_one_data['gun_fire_sound'])
+            self.handler.delayed.append([5, partial(self.handler.thrown.append, Thrown(self.master, self.handler, bullet_base))])
+            self.handler.delayed.append([10, partial(self.handler.thrown.append, Thrown(self.master, self.handler, bullet_base))])
+            self.handler.trigger_global_cooldown()
+
+    def get_enemy_dist(self):
+        if self.handler.owner.target:
+            dist_x = self.handler.owner.sprite.x - self.handler.owner.target.sprite.x
+            dist_y = self.handler.owner.sprite.y - self.handler.owner.target.sprite.y
+            dist = math.hypot(dist_x, dist_y)
+            return dist
+        return False
 
 # Unfinished
 class LBACTriggerDiscipline(Skill):
@@ -213,7 +245,7 @@ longbow_skillset = {
 
 sample_longbow_build = {
     'slot_mouse_two': ['11', 1],
-    'slot_one': ['22', 1],
+    'slot_one': ['18', 1],
     'slot_two': ['20', 1],
     'slot_three': ['11', 2],
     'slot_four': ['1', 3],

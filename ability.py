@@ -6,6 +6,8 @@ from collide import * # noqa
 from utility import * # noqa
 import pyglet # noqa
 # import itertools
+from functools import partial
+
 from collide import * # noqa
 from build import Build
 # from copy import copy
@@ -14,8 +16,8 @@ class Ability(object):
     def __init__(self, master, owner, skillset, build, gun_one, gun_two):
         self.master = master
         self.owner = owner
-        # self.delayed = []
-        # self.global_cooldown = False
+        self.delayed = []
+        self.global_cooldown = False
         # self.aa_cooldown = False
         self.thrown = []
         self.build = Build(self.master, self, skillset, build)
@@ -66,28 +68,28 @@ class Ability(object):
     #     self.aa_cooldown = True
     #     self.delayed.append([time, partial(self.aa_cooldown_reset)])
 
-    # def global_cooldown_reset(self):  # this is a super tacky way to do this for sure...
-    #     self.global_cooldown = False
+    def global_cooldown_reset(self):  # this is a super tacky way to do this for sure...
+        self.global_cooldown = False
 
-    # def trigger_global_cooldown(self):
-    #     self.global_cooldown = True
-    #     self.delayed.append([30, partial(self.global_cooldown_reset)])
+    def trigger_global_cooldown(self):
+        self.global_cooldown = True
+        self.delayed.append([30, partial(self.global_cooldown_reset)])
 
-    # def update_delayed(self):
-    #     for p in self.delayed:
-    #         p[0] -= 1
-    #         if p[0] == 0:
-    #             try:
-    #                 p[1]()
-    #             except:
-    #                 'failed delayed action'
-    #             self.delayed.remove(p)
+    def update_delayed(self):
+        for p in self.delayed:
+            p[0] -= 1
+            if p[0] == 0:
+                try:
+                    p[1]()
+                except:
+                    'failed delayed action'
+                self.delayed.remove(p)
 
     def update(self):
         for t in self.thrown:
             t.update()
 
-        # self.update_delayed()
+        self.update_delayed()
 
     # def can_aa_shoot(self):
     #     if not self.aa_cooldown:
