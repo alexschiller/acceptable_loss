@@ -11,9 +11,6 @@ from controller import Controller
 class Player(Character):
     def __init__(self, *args, **kwargs):
         super(Player, self).__init__(*args, **kwargs)
-        # self.hp_shield_bar = pyglet.sprite.Sprite(load_image('hp_shield.png', anchor=False), window_width - 1050, 0, batch=gfx_batch),  # noqa
-        # self.evade_acc_bar = pyglet.sprite.Sprite(load_image('evade_acc.png', anchor=False), window_width - 415, 0, batch=gfx_batch),  # noqa
-        # self.accuracy_bar = pyglet.sprite.Sprite(load_image('evade_acc.png', anchor=False), window_width - 415, 30, batch=gfx_batch),  # noqa
         self.visor = pyglet.sprite.Sprite(load_image('visor.png', anchor=False), -1, window_height-171, batch=gfx_batch),  # noqa
         self.energy = 100
         self.inventory = []
@@ -29,7 +26,6 @@ class Player(Character):
         self.acc_bar = pyglet.sprite.Sprite(
             pyglet.image.create(3, 13, red_sprite),
             150, window_height - 168, batch=BarBatch)
-        self.acc_mouse_mod = 0
 
         self.acc_mouse_bar_l = pyglet.sprite.Sprite(
             pyglet.image.create(20, 2, red_sprite),
@@ -47,15 +43,35 @@ class Player(Character):
             pyglet.image.create(2, 20, red_sprite),
             -50, -50, batch=BarBatch)
 
-    def target_distance(self):
+    def mouse_target_distance(self):
         if self.target:
             dist = min(math.hypot(self.controller.sprite.x - self.target.sprite.x, self.controller.sprite.y - self.target.sprite.y), 300) # noqa
-            self.acc_mouse_mod = 1 - (dist / 300.0)
-            return self.acc_mouse_mod
+            mouse_mod = 1 - (dist / 300.0)
+            return mouse_mod
         return 1
 
+    def player_target_distance(self):
+        if self.target:
+            dist = math.hypot(self.sprite.x - self.target.sprite.x, self.sprite.y - self.target.sprite.y) # noqa
+
+            gun_max = self.stats.gun_one_data['range_max']
+            if dist > gun_max:
+                return 1 - min(dist - gun_max, 300) / 300.0
+
+            gun_min = self.stats.gun_one_data['range_min']
+            if dist < gun_min:
+                return 1 - min(gun_min - dist, 300) / 300.0
+        return 1
+
+    def update_acc_mod(self):
+        self.acc_mouse_mod = self.mouse_target_distance() * self.player_target_distance()
+
     def calc_acc(self):
-        acc_val = 100 - min(int((self.stats.accuracy + self.stats.gun_two_data['accuracy']) * self.target_distance()), 100) # noqa
+        self.update_acc_mod()
+        try:
+            acc_val = 100 - min(int((self.stats.accuracy + self.stats.gun_one_data['accuracy']) * self.acc_mouse_mod), 100) # noqa
+        except:
+            return 0
         return acc_val
 
     def update_bars(self):
@@ -164,6 +180,7 @@ lb_missile = {
         'velocity': 100,
         'accuracy': 70,
         'rof': .5,
+        'recoil': 10,
         'crit': 10,
         'crit_damage': 2,
         'armor_pierce': 5,
@@ -180,7 +197,7 @@ lb_missile = {
     }
 
 lb_autocannon = {
-        'gun_class': 'Missile',
+        'gun_class': 'Gun',
         'level': 1,
         'damage_min': 2,
         'damage_max': 4,
@@ -190,6 +207,7 @@ lb_autocannon = {
         'velocity': 40,
         'accuracy': 85,
         'rof': 10,
+        'recoil': 20,
         'crit': 10,
         'crit_damage': 3,
         'armor_pierce': 8,
@@ -218,8 +236,8 @@ player_armor = {
 player_base = {
     'sprite': load_image('dreadnaught.png'),
     'coord': [window_width / 2, window_height / 2],
-    'weapon_slot_one': lb_missile,
-    'weapon_slot_two': lb_autocannon,
+    'weapon_slot_one': lb_autocannon,
+    'weapon_slot_two': lb_missile,
     'armor': player_armor,
     'skillset': longbow_skillset,
     'build': sample_longbow_build,

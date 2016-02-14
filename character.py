@@ -19,6 +19,7 @@ class Character(object):
         self.enemies = self.master.people[base['enemies']]
         self.blood_color = base['blood_color']
         self.base = base
+        self.acc_mouse_mod = 1
         # self.build = base['build']
         self.target = None
         self.bars = []

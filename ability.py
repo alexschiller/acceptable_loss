@@ -1,13 +1,14 @@
 # from functools import partial
 import math # noqa
-import random
+import random # noqa
 from pyglet.gl import * # noqa
 from collide import * # noqa
 from utility import * # noqa
-import pyglet
+import pyglet # noqa
 # import itertools
 from collide import * # noqa
 from build import Build
+# from copy import copy
 
 class Ability(object):
     def __init__(self, master, owner, skillset, build, gun_one, gun_two):
@@ -56,7 +57,7 @@ class Ability(object):
         calc_gun['enemy_range'] = enemy_range
         calc_gun['enemy'] = enemy
         calc_gun['image'] = image or gun['image']
-        return gun
+        return dict.copy(gun)
 
     # def aa_cooldown_reset(self):
     #     self.aa_cooldown = False

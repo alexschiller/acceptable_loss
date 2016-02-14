@@ -1,4 +1,5 @@
 from baseskills import * # noqa
+import math
 
 # Unfinished
 class LBALTimedBreathing(Skill):
@@ -54,22 +55,33 @@ class LBALBarrage(Skill):
 class LBACTrigger(Skill):
     def __init__(self, master, level, handler):
         super(LBACTrigger, self).__init__(master, level, handler)
+        self.damage_mod = .5 + self.level * .05
 
     def fire(self):
-        bullet_base = self.handler.build_bullet(
-            self.handler.owner.stats.gun_two_data,
-            self.handler.owner.sprite.x,
-            self.handler.owner.sprite.y,
-            self.handler.owner.target.sprite.x,
-            self.handler.owner.target.sprite.y,
-            500,
-            self.handler.owner.target,
-        )
-        # play_sound(self.owner.stats.gun_two_data['gun_fire_sound'])
-        self.handler.thrown.append(Thrown(self.master, self.handler, bullet_base))
+        enemy_range = self.get_enemy_dist()
+        if enemy_range:
+            bullet_base = self.handler.build_bullet(
+                self.handler.owner.stats.gun_one_data,
+                self.handler.owner.sprite.x,
+                self.handler.owner.sprite.y,
+                self.handler.owner.target.sprite.x,
+                self.handler.owner.target.sprite.y,
+                enemy_range,
+                self.handler.owner.target,
+            )
+            self.handler.owner.stats.recoil += self.handler.owner.stats.gun_one_data['recoil']
+            bullet_base['damage_min'] = int(self.damage_mod * bullet_base['damage_min'])
+            bullet_base['damage_max'] = int(self.damage_mod * bullet_base['damage_max'])
+            # play_sound(self.owner.stats.gun_one_data['gun_fire_sound'])
+            self.handler.thrown.append(Thrown(self.master, self.handler, bullet_base))
 
-        # time = int(60.0 / bullet_base['rof'])
-        # self.trigger_aa_cooldown(time)
+    def get_enemy_dist(self):
+        if self.handler.owner.target:
+            dist_x = self.handler.owner.sprite.x - self.handler.owner.target.sprite.x
+            dist_y = self.handler.owner.sprite.y - self.handler.owner.target.sprite.y
+            dist = math.hypot(dist_x, dist_y)
+            return dist
+        return False
 
 # Unfinished
 class LBACSalted(Skill):

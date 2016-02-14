@@ -1,3 +1,5 @@
+import math
+
 class StatsManager(object):
     def __init__(self, base, gun_one, gun_two, armor):
 
@@ -37,6 +39,8 @@ class StatsManager(object):
 
         self._accuracy_move = 0
         self._evade_move = 0
+
+        self.recoil = 0
 
         self.delayed = []
 
@@ -106,8 +110,13 @@ class StatsManager(object):
             self._health = int(self.health_max)
 
     def update(self):
+        self.update_recoil()
         self.update_stats()
         self.update_delayed()
+
+    def update_recoil(self):
+        if self.recoil > 0:
+            self.recoil -= math.ceil(self.recoil / 90.0)
 
     def update_health(self, damage):
         self._shield -= damage
@@ -174,7 +183,8 @@ class StatsManager(object):
 
     @property
     def accuracy(self):
-        return (self._accuracy + self._accuracy_move + self.mod['accuracy'])
+        x = (self._accuracy + self._accuracy_move + self.mod['accuracy'] - self.recoil)
+        return x
 
     @property
     def armor(self):
@@ -209,6 +219,7 @@ class StatsManager(object):
             'range_max': gun['range_max'],
             'range_min': gun['range_min'],
             'velocity': gun['velocity'],
+            'recoil': gun['recoil'],
             'accuracy': gun['accuracy'] + self.accuracy,
             'rof': gun['rof'] * ((100 + self.attack_speed_perc) / 100), # noqa
             'crit': gun['crit'] + self.crit,
