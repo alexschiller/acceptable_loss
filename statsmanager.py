@@ -117,6 +117,8 @@ class StatsManager(object):
             self.recoil -= math.ceil(self.recoil / 90.0)
 
     def update_health(self, damage):
+        print "start", self.health, self.shield
+
         self._shield -= damage
         if self._shield <= 0:
             damage = self._shield * -1
@@ -124,7 +126,9 @@ class StatsManager(object):
             damage -= self.armor
             x = max(1, damage)
             self._health -= x
+            print "end", self.health, self.shield
             return x
+        print "end", self.health, self.shield
         return 0
 
     @property

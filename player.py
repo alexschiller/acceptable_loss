@@ -212,7 +212,7 @@ lb_autocannon = {
         'crit': 10,
         'crit_damage': 3,
         'armor_pierce': 8,
-        'image': load_image('magnum.png'), # noqa
+        'image': load_image('autocannon.png'), # noqa
         'gun_fire_sound': load_sound('shot.wav'), # noqa
         'on_hit_sound': load_sound('on_hit.wav'), # noqa
         'effects': [],
@@ -235,7 +235,7 @@ player_armor = {
 
 
 player_base = {
-    'sprite': load_image('dreadnaught.png'),
+    'sprite': load_image('tiny.png'),
     'coord': [window_width / 2, window_height / 2],
     'weapon_slot_one': lb_autocannon,
     'weapon_slot_two': lb_missile,

@@ -208,7 +208,7 @@ def enemy_zombie_base(level, x, y):
             'health_max_perc': 0,
             'health_regen': 1 * level / 2,
             'health_on_hit': 0,
-            'armor': 2 * level,
+            'armor': 0 * level,
             'evade': 10,
             'speed': 3,
         },

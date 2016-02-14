@@ -1,6 +1,7 @@
 from baseskills import * # noqa
 import math
 from functools import partial
+from utility import load_image
 
 # Unfinished
 class LBALTimedBreathing(Skill):
@@ -70,11 +71,12 @@ class LBACTrigger(Skill):
                 enemy_range,
                 self.handler.owner.target,
             )
-            self.handler.owner.stats.recoil += (self.handler.owner.stats.gun_one_data['recoil'] * 3)
+
             bullet_base['damage_min'] = int(self.damage_mod * bullet_base['damage_min'])
             bullet_base['damage_max'] = int(self.damage_mod * bullet_base['damage_max'])
             # play_sound(self.owner.stats.gun_one_data['gun_fire_sound'])
             self.handler.thrown.append(Thrown(self.master, self.handler, bullet_base))
+            self.handler.owner.stats.recoil += self.handler.owner.stats.gun_one_data['recoil']
             self.handler.trigger_global_cooldown()
 
     def get_enemy_dist(self):
@@ -89,7 +91,39 @@ class LBACTrigger(Skill):
 class LBACSalted(Skill):
     def __init__(self, master, level, handler):
         super(LBACSalted, self).__init__(master, level, handler)
+        self.armor_pierce_mod = 1 + level * .05
+        self.img = load_image('salted.png')
 
+    def fire(self):
+        enemy_range = self.get_enemy_dist()
+        if enemy_range and not self.handler.global_cooldown:
+            bullet_base = self.handler.build_bullet(
+                self.handler.owner.stats.gun_one_data,
+                self.handler.owner.sprite.x,
+                self.handler.owner.sprite.y,
+                self.handler.owner.target.sprite.x,
+                self.handler.owner.target.sprite.y,
+                enemy_range,
+                self.handler.owner.target,
+            )
+
+            bullet_base['damage_min'] = int(self.damage_mod * bullet_base['damage_min'])
+            bullet_base['damage_max'] = int(self.damage_mod * bullet_base['damage_max'])
+            bullet_base['damage_max'] = int(self.damage_mod * bullet_base['damage_max'])
+            bullet_base['armor_pierce'] = int(self.armor_pierce_mod * (bullet_base['armor_pierce'] + level))
+            bullet_base['image'] = self.img
+            # play_sound(self.owner.stats.gun_one_data['gun_fire_sound'])
+            self.handler.thrown.append(Thrown(self.master, self.handler, bullet_base))
+            self.handler.owner.stats.recoil += self.handler.owner.stats.gun_one_data['recoil']
+            self.handler.trigger_global_cooldown()
+
+    def get_enemy_dist(self):
+        if self.handler.owner.target:
+            dist_x = self.handler.owner.sprite.x - self.handler.owner.target.sprite.x
+            dist_y = self.handler.owner.sprite.y - self.handler.owner.target.sprite.y
+            dist = math.hypot(dist_x, dist_y)
+            return dist
+        return False
 # Unfinished
 class LBACMuzzleBrake(Skill):
     def __init__(self, master, level, handler):
@@ -133,13 +167,13 @@ class LBACBurst(Skill):
                 enemy_range,
                 self.handler.owner.target,
             )
-            self.handler.owner.stats.recoil += self.handler.owner.stats.gun_one_data['recoil']
             bullet_base['damage_min'] = int(self.damage_mod * bullet_base['damage_min'])
             bullet_base['damage_max'] = int(self.damage_mod * bullet_base['damage_max'])
 
             # play_sound(self.owner.stats.gun_one_data['gun_fire_sound'])
             self.handler.delayed.append([5, partial(self.handler.thrown.append, Thrown(self.master, self.handler, bullet_base))])
             self.handler.delayed.append([10, partial(self.handler.thrown.append, Thrown(self.master, self.handler, bullet_base))])
+            self.handler.owner.stats.recoil += (self.handler.owner.stats.gun_one_data['recoil'] * 3)
             self.handler.trigger_global_cooldown()
 
     def get_enemy_dist(self):
@@ -246,7 +280,7 @@ longbow_skillset = {
 sample_longbow_build = {
     'slot_mouse_two': ['11', 1],
     'slot_one': ['18', 1],
-    'slot_two': ['20', 1],
+    'slot_two': ['12', 1],
     'slot_three': ['11', 2],
     'slot_four': ['1', 3],
     'slot_q': ['25', 1],

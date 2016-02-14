@@ -43,7 +43,6 @@ class Thrown(object):
         self.crit = False
         self.evade = False
 
-        print self.accuracy, self.owner.owner.stats.recoil
         self.hit = random.randint(0, 100) < self.accuracy
         if self.hit and random.randint(0, 100) < self.crit_chance:
             self.crit = True
