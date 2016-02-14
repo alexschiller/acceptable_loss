@@ -61,7 +61,8 @@ class Player(Character):
             gun_min = self.stats.gun_one_data['range_min']
             if dist < gun_min:
                 return 1 - min(gun_min - dist, 300) / 300.0
-        return 1
+            return 1
+        return 0
 
     def update_acc_mod(self):
         self.acc_mouse_mod = self.mouse_target_distance() * self.player_target_distance()

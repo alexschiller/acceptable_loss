@@ -71,8 +71,6 @@ class StatsManager(object):
         }
         self.gun_one = gun_one
         self.gun_two = gun_two
-        self.gun_one_data = self.generate_gun(gun_one)
-        self.gun_two_data = self.generate_gun(gun_two)
 
     def update_move(self, mx, my):
         if (abs(mx) + abs(my)) > 0:
@@ -183,8 +181,7 @@ class StatsManager(object):
 
     @property
     def accuracy(self):
-        x = (self._accuracy + self._accuracy_move + self.mod['accuracy'] - self.recoil)
-        return x
+        return self._accuracy + self._accuracy_move + self.mod['accuracy'] - self.recoil
 
     @property
     def armor(self):
@@ -201,6 +198,14 @@ class StatsManager(object):
     @property
     def speed(self):
         return self._speed + self.mod['speed']
+
+    @property
+    def gun_one_data(self):
+        return self.generate_gun(self.gun_one)
+
+    @property
+    def gun_two_data(self):
+        return self.generate_gun(self.gun_two)
 
     def extract_gems(self, slots):
         for slot in slots.keys():
