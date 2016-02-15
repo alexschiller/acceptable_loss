@@ -165,16 +165,16 @@ class PlayerController(Controller):
             self.puppet.target = None
             self.marker = None
 
-    def move(self, mx, my):
-        pass
-        # self.last_mx = mx
-        # self.last_my = my
-        # if mx and my:
-        #     mx = mx / 1.41
-        #     my = my / 1.41
-        # self.puppet.stats.update_move(mx, my)
-        # self.puppet.sprite.x += (self.puppet.stats.speed * mx)
-        # self.puppet.sprite.y += (self.puppet.stats.speed * my)
+    # def move(self, mx, my):
+    #     pass
+    #     # self.last_mx = mx
+    #     # self.last_my = my
+    #     # if mx and my:
+    #     #     mx = mx / 1.41
+    #     #     my = my / 1.41
+    #     # self.puppet.stats.update_move(mx, my)
+    #     # self.puppet.sprite.x += (self.puppet.stats.speed * mx)
+    #     # self.puppet.sprite.y += (self.puppet.stats.speed * my)
 
     def move_to(self, x, y):
         self.move_target = [x, y]
@@ -194,7 +194,8 @@ class PlayerController(Controller):
 
             ret = calc_vel_xy(self.move_target[0], self.move_target[1],
                 self.puppet.sprite.x, self.puppet.sprite.y, self.puppet.stats.speed)
-
+            self.last_mx = ret[0]
+            self.last_my = ret[1]
             self.puppet.sprite.x += ret[0]
             self.puppet.sprite.y += ret[1]
             if abs(dist_x) + abs(dist_y) <= self.puppet.stats.speed:
