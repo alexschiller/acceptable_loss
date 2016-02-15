@@ -241,6 +241,13 @@ class LBMSRocketPowered(Skill):
     def __init__(self, master, level, handler):
         super(LBMSRocketPowered, self).__init__(master, level, handler)
 
+    def fire(self):
+        if self.handler.owner.controller.move_target:
+            mt = self.handler.owner.controller.move_target
+            self.handler.owner.stats.temp_stat_change(60, 'speed', 2)
+            self.handler.owner.stats.temp_stat_change(60, 'evade', 10)
+            self.master.spriteeffect.rocket_shoes(self.handler.owner.sprite.x, self.handler.owner.sprite.y, mt[0], mt[1])
+
 # Unfinished
 class LBMSSmokyEyeSurprise(Skill):
     def __init__(self, master, level, handler):

@@ -131,6 +131,22 @@ class SpriteEffect(object):
                     esizex=random.randint(3, 6), esizey=random.randint(3, 6))
             )
 
+    def rocket_shoes(self, start_x, start_y, end_x, end_y):
+        vel = calc_vel_xy(start_x, start_y, end_x, end_y, 100)
+        vel_x = vel[0]
+        vel_y = vel[1]
+        for e in range(20):
+            e_vel_x = vel_x / 8 + random.randint(-3, 3)
+            e_vel_y = vel_y / 8 + random.randint(-3, 3)
+            self.effects.append(
+                Effect(start_x=start_x, start_y=start_y,
+                    vel_x=e_vel_x,
+                    vel_y=e_vel_y,
+                    travel=(abs(e_vel_x) + abs(e_vel_y)) * random.randint(5, 10),
+                    ecolor=[255, random.randint(0, 200), 25],
+                    esizex=random.randint(3, 6), esizey=random.randint(3, 6))
+            )
+
     def plasma_explosion(self, start_x, start_y):
         for e in range(50):
             self.effects.append(
