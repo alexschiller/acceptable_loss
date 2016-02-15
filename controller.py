@@ -21,6 +21,8 @@ class Controller(object):
         self.puppet.sprite.y += (self.puppet.stats.speed * my)
         self.last_my = mx
         self.last_mx = my
+        self.move_target = None
+        self.mouse_target_sprite = None
 
     def undo_move(self):
         self.move(-self.last_mx, -self.last_my)
