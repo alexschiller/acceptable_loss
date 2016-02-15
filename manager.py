@@ -136,15 +136,15 @@ class GameState(StateObject):
             f.write(s.getvalue())
             # print s.getvalue()
             # master.player_controller.target_closest_enemy()
-        if key_handler[key.D]:
-            mx += 1
-        if key_handler[key.A]:
-            mx -= 1
-        if key_handler[key.W]:
-            my += 1
-        if key_handler[key.S]:
-            my -= 1
-        master.player_controller.move(mx, my)
+        # if key_handler[key.D]:
+        #     mx += 1
+        # if key_handler[key.A]:
+        #     mx -= 1
+        # if key_handler[key.W]:
+        #     my += 1
+        # if key_handler[key.S]:
+        #     my -= 1
+        # master.player_controller.move(mx, my)
 
         if key_handler[key._1]:
             master.player_controller.slot_one_fire()
@@ -158,8 +158,14 @@ class GameState(StateObject):
         if key_handler[key._4]:
             master.player_controller.slot_four_fire()
 
-        if key_handler[key._5]:
-            master.player_controller.slot_five_fire()
+        if key_handler[key.Q]:
+            master.player_controller.slot_q_fire()
+
+        if key_handler[key.E]:
+            master.player_controller.slot_e_fire()            
+
+        if key_handler[key.SPACE]:
+            master.player.jump()
 
         # master.player.move(mx, my)
 
@@ -185,6 +191,8 @@ class GameState(StateObject):
         BarBatch.draw()
 
     def on_mouse_press(self, x, y, button, modifiers):
+        if button == 1:
+            master.player_controller.move_to(x, y)
         if button == 4:
             master.player_controller.slot_mouse_two_fire()
 
@@ -198,8 +206,8 @@ class GameState(StateObject):
         master.player_controller.sprite.y = y
 
         # if button == 4:
-        master.player_controller.slot_mouse_two_fire()
-        master.update_button_image(x, y, dx, dy)
+        # master.player_controller.slot_mouse_two_fire()
+        # master.update_button_image(x, y, dx, dy)
 
 
 class Game(pyglet.window.Window):

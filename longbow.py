@@ -196,6 +196,31 @@ class LBMSLaunch(Skill):
     def __init__(self, master, level, handler):
         super(LBMSLaunch, self).__init__(master, level, handler)
 
+    def fire(self):
+        enemy_range = self.get_enemy_dist()
+        if enemy_range and not self.handler.global_cooldown:
+            bullet_base = self.handler.build_bullet(
+                self.handler.owner.stats.gun_two_data,
+                self.handler.owner.sprite.x,
+                self.handler.owner.sprite.y,
+                self.handler.owner.target.sprite.x,
+                self.handler.owner.target.sprite.y,
+                enemy_range,
+                self.handler.owner.target,
+            )
+            # play_sound(self.owner.stats.gun_two_data['gun_fire_sound'])
+            self.handler.thrown.append(AoeThrown(self.master, self.handler, bullet_base))
+            self.handler.owner.stats.recoil += self.handler.owner.stats.gun_two_data['recoil']
+            self.handler.trigger_global_cooldown()
+
+    def get_enemy_dist(self):
+        if self.handler.owner.target:
+            dist_x = self.handler.owner.sprite.x - self.handler.owner.target.sprite.x
+            dist_y = self.handler.owner.sprite.y - self.handler.owner.target.sprite.y
+            dist = math.hypot(dist_x, dist_y)
+            return dist
+        return False
+
 # Unfinished
 class LBMSNeedle(Skill):
     def __init__(self, master, level, handler):
@@ -215,6 +240,13 @@ class LBMSHoming(Skill):
 class LBMSRocketPowered(Skill):
     def __init__(self, master, level, handler):
         super(LBMSRocketPowered, self).__init__(master, level, handler)
+
+    def fire(self):
+        if self.handler.owner.controller.move_target:
+            mt = self.handler.owner.controller.move_target
+            self.handler.owner.stats.temp_stat_change(60, 'speed', 2)
+            self.handler.owner.stats.temp_stat_change(60, 'evade', 10)
+            self.master.spriteeffect.rocket_shoes(self.handler.owner.sprite.x, self.handler.owner.sprite.y, mt[0], mt[1])
 
 # Unfinished
 class LBMSSmokyEyeSurprise(Skill):
@@ -276,7 +308,7 @@ longbow_skillset = {
 
 sample_longbow_build = {
     'slot_mouse_two': ['11', 1],
-    'slot_one': ['18', 1],
+    'slot_one': ['21', 1],
     'slot_two': ['12', 1],
     'slot_three': ['11', 2],
     'slot_four': ['1', 3],

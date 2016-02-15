@@ -85,15 +85,15 @@ class Master(object):
         mx = 0
         my = 0
 
-        # if abs(player_camera_x) > .8:
-        # mx = player_camera_x * 10
-        if abs(mouse_camera_x) > .5:
-            mx = mouse_camera_x * 10
+        if abs(player_camera_x) > .2:
+            mx = player_camera_x * 10
+        # if abs(mouse_camera_x) > .5:
+            # mx = mouse_camera_x * 10
 
-        # if abs(player_camera_y) > .8:
-        # my = player_camera_y * 10
-        if abs(mouse_camera_y) > .5:
-            my = mouse_camera_y * 10
+        if abs(player_camera_y) > .2:
+            my = player_camera_y * 10
+        # if abs(mouse_camera_y) > .5:
+            # my = mouse_camera_y * 10
         self.move_all(mx, my)
 
     def reset(self):
@@ -113,6 +113,11 @@ class Master(object):
 
         # self.player.sprite.x += mx
         # self.player.sprite.y += my
+        if self.player_controller.move_target:
+            self.player_controller.move_target[0] += mx
+            self.player_controller.move_target[1] += my
+            self.player_controller.mouse_target_sprite.x += mx
+            self.player_controller.mouse_target_sprite.y += my
         self.home.x += mx
         self.home.y += my
         try:
