@@ -1,4 +1,4 @@
-# from button import Manager, Button,TextBox, DraggableButton, foo # noqa
+from button import Manager, Button,TextBox, DraggableButton, foo # noqa
 import pyglet
 
 from pyglet.gl import * # noqa
@@ -6,7 +6,7 @@ from pyglet.window import key # noqa
 from pyglet.window import mouse # noqa
 
 
-batches = [pyglet.graphics.Batch(), ]
+batches = [pyglet.graphics.Batch(), pyglet.graphics.Batch(), ]
 
 
 class ProtoKeyStateHandler(key.KeyStateHandler):
@@ -46,11 +46,16 @@ def load_image(image, anchor=True):
             img.anchor_y = img.height // 2
         return img
 
-tank = load_image('tank.png', False)
-sprite = pyglet.sprite.Sprite(
-    tank,
-    0, 0, batch=batches[0]
-)
+# tank = load_image('tank.png', False)
+# sprite = pyglet.sprite.Sprite(
+#     tank,
+#     0, 0, batch=batches[0]
+# )
+
+
+button = load_image('button.png', False)
+buttonhover = load_image('buttonhover.png', False)
+buttondown = load_image('buttondown.png', False)
 
 
 class Game(pyglet.window.Window):
@@ -60,6 +65,27 @@ class Game(pyglet.window.Window):
         pyglet.gl.glClearColor(1, 1, 1, 1)
         self.alive = True
         self.batches = batches
+        self.buttons = []
+        self.manager = Manager()
+        self.module_manager = Manager()
+        self.setup()
+
+    def create_button(self):
+        print "HELLO"
+        self.module_manager.add_button(
+            DraggableButton(
+                button, buttonhover, buttondown, 600,
+                600, None, self.batches[1]
+            )
+        )
+
+    def setup(self):
+        self.manager.add_button(
+            Button(
+                button, buttonhover, buttondown, 100,
+                100, self.create_button, self.batches[0],
+            )
+        )
 
     def render(self, *args):
         self.clear()
@@ -68,6 +94,12 @@ class Game(pyglet.window.Window):
             batch.draw()
 
         self.flip()
+
+    def make_dict(self):
+        blist = []  
+        for button in self.module_manager.buttons:
+            bdict = {}
+            
 
     def update(self):
 
@@ -93,16 +125,20 @@ class Game(pyglet.window.Window):
     #     self.state_manager.current.on_key_release(symbol, modkey)
 
     def on_mouse_release(self, x, y, button, modifiers):
-        pass
+        self.manager.update(x, y, 1)
+        self.module_manager.update(x, y, 1)
 
     def on_mouse_press(self, x, y, button, modifiers):
-        pass
+        self.manager.update(x, y, 0)
+        self.module_manager.update(x, y, 0)
 
     def on_mouse_motion(self, x, y, dx, dy):
-        pass
+        self.manager.update_image(x, y, dx, dy)
+        self.module_manager.update_image(x, y, dx, dy)
 
     def on_mouse_drag(self, x, y, dx, dy, buttons, modifiers):
-        pass
+        self.manager.update_image(x, y, dx, dy)
+        self.module_manager.update_image(x, y, dx, dy)
 
     def run(self):
         while self.alive:
