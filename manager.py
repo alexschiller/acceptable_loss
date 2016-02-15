@@ -161,6 +161,9 @@ class GameState(StateObject):
         if key_handler[key._5]:
             master.player_controller.slot_five_fire()
 
+        if key_handler[key.SPACE]:
+            master.player.jump()
+
         # master.player.move(mx, my)
 
         # if key_handler[key.Q]:

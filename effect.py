@@ -109,6 +109,17 @@ class SpriteEffect(object):
                     esizex=random.randint(1, 10), esizey=random.randint(1, 10))
             )
 
+    def jump(self, start_x, start_y, size_min=10, size_max=10):
+        # play_sound(load_sound('teleport.wav'))
+        for e in range(random.randint(size_min, size_max)):
+            self.effects.append(
+                Effect(start_x=start_x, start_y=start_y,
+                    vel_x=random.randint(-20, 20), vel_y=random.randint(-20, 20),
+                    travel=random.randint(30, 50),
+                    ecolor=[50, 50, 50],
+                    esizex=random.randint(1, 10), esizey=random.randint(1, 10))
+            )
+
     def explosion(self, start_x, start_y):
         for e in range(30):
             self.effects.append(

@@ -14,6 +14,11 @@ class Player(Character):
         self.visor = pyglet.sprite.Sprite(load_image('visor.png', anchor=False), -1, window_height-171, batch=gfx_batch),  # noqa
         self.energy = 100
         self.inventory = []
+
+        self.jump_cycle = 0
+        self.jump_cycle_direction = -1
+        self.jumping = 0
+
         self.shield_bar = pyglet.sprite.Sprite(pyglet.image.create(271, 13, blue_sprite),
             10, window_height - 25, batch=BarBatch) # noqa
         self.health_bar = pyglet.sprite.Sprite(pyglet.image.create(271, 13, red_sprite),
@@ -64,6 +69,23 @@ class Player(Character):
             return 1
         return 0
 
+    def update_jump(self):
+        if self.jumping:
+            self.jump_cycle += self.jump_cycle_direction
+            self.sprite.scale += .05 * self.jump_cycle_direction
+        if self.jump_cycle >= 30:
+            self.jump_cycle_direction = -2
+        if self.jump_cycle < 0:
+            self.sprite.scale = 1
+            self.jump_cycle_direction = 1
+            self.jump_cycle = 0
+            self.jumping = 0
+            self.master.spriteeffect.jump(self.sprite.x, self.sprite.y)
+
+    def jump(self):
+        if not self.jumping:
+            self.jumping = 1
+
     def update_acc_mod(self):
         self.acc_mouse_mod = self.mouse_target_distance() * self.player_target_distance()
 
@@ -76,6 +98,7 @@ class Player(Character):
         return acc_val
 
     def update_bars(self):
+        self.update_jump()
         if self.energy < 100:
             self.energy = 100
         self.shield_bar.x = 10 - (271 - (self.stats.shield / float(self.stats.shield_max) * 271)) # noqa

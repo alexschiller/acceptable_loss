@@ -85,15 +85,15 @@ class Master(object):
         mx = 0
         my = 0
 
-        # if abs(player_camera_x) > .8:
-        # mx = player_camera_x * 10
-        if abs(mouse_camera_x) > .5:
-            mx = mouse_camera_x * 10
+        if abs(player_camera_x) > .2:
+            mx = player_camera_x * 10
+        # if abs(mouse_camera_x) > .5:
+            # mx = mouse_camera_x * 10
 
-        # if abs(player_camera_y) > .8:
-        # my = player_camera_y * 10
-        if abs(mouse_camera_y) > .5:
-            my = mouse_camera_y * 10
+        if abs(player_camera_y) > .2:
+            my = player_camera_y * 10
+        # if abs(mouse_camera_y) > .5:
+            # my = mouse_camera_y * 10
         self.move_all(mx, my)
 
     def reset(self):
