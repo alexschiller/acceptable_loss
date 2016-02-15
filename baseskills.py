@@ -98,3 +98,25 @@ class Thrown(object):
             if self.hit and not self.evade:
                 self.enemy.on_hit(self)
             self.delete_thrown()
+
+
+class AoeThrown(Thrown):
+    def __init__(self, *args, **kwargs):
+        super(AoeThrown, self).__init__(*args, **kwargs)
+
+    def aoe(self):
+        self.hit = True
+        b_x = self.sprite.x
+        b_y = self.sprite.y
+        self.master.spriteeffect.explosion(b_x, b_y)
+        for e in self.owner.owner.enemies:
+            if abs(math.hypot(b_x - e.sprite.x, b_y - e.sprite.y)) < 100:
+                e.on_hit(self)
+                self.display_outcome()
+
+    def delete_thrown(self):
+        self.display_outcome()
+        self.aoe()
+        # play_sound(self.owner.sound_explosion)
+        self.sprite.delete()
+        self.owner.thrown.remove(self)

@@ -197,15 +197,16 @@ class LBMSLaunch(Skill):
         super(LBMSLaunch, self).__init__(master, level, handler)
 
     def fire(self):
-        if not self.handler.global_cooldown:
+        enemy_range = self.get_enemy_dist()
+        if enemy_range and not self.handler.global_cooldown:
             bullet_base = self.handler.build_bullet(
                 self.handler.owner.stats.gun_two_data,
                 self.handler.owner.sprite.x,
                 self.handler.owner.sprite.y,
                 self.handler.owner.target.sprite.x,
                 self.handler.owner.target.sprite.y,
-                None,
-                None,
+                enemy_range,
+                self.handler.owner.target,
             )
             # play_sound(self.owner.stats.gun_two_data['gun_fire_sound'])
             self.handler.thrown.append(AoeThrown(self.master, self.handler, bullet_base))

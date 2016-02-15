@@ -57,6 +57,7 @@ class Player(Character):
 
     def player_target_distance(self):
         if self.target:
+
             dist = math.hypot(self.sprite.x - self.target.sprite.x, self.sprite.y - self.target.sprite.y) # noqa
 
             gun_max = self.stats.gun_one_data['range_max']
@@ -134,6 +135,8 @@ class PlayerController(Controller):
         self.red_dot = pyglet.image.create(5, 5, red_sprite)
         self.marker = None
         self.timg = load_image('target.png')
+        self.move_target = None
+        self.move_img = load_image('ex.png')
 
     def on_hit(self):
         pass
@@ -163,14 +166,40 @@ class PlayerController(Controller):
             self.marker = None
 
     def move(self, mx, my):
-        self.last_mx = mx
-        self.last_my = my
-        if mx and my:
-            mx = mx / 1.41
-            my = my / 1.41
-        self.puppet.stats.update_move(mx, my)
-        self.puppet.sprite.x += (self.puppet.stats.speed * mx)
-        self.puppet.sprite.y += (self.puppet.stats.speed * my)
+        pass
+        # self.last_mx = mx
+        # self.last_my = my
+        # if mx and my:
+        #     mx = mx / 1.41
+        #     my = my / 1.41
+        # self.puppet.stats.update_move(mx, my)
+        # self.puppet.sprite.x += (self.puppet.stats.speed * mx)
+        # self.puppet.sprite.y += (self.puppet.stats.speed * my)
+
+    def move_to(self, x, y):
+        self.move_target = [x, y]
+        self.mouse_target_sprite = pyglet.sprite.Sprite(self.move_img,
+            x, y, batch=BarBatch) # noqa
+        self.mouse_target_sprite.scale = .05
+
+    def update_movement(self):
+        if self.move_target:
+            if self.mouse_target_sprite.scale < 1:
+                self.mouse_target_sprite.scale += .05
+            dist_x = float(self.move_target[0]) - self.puppet.sprite.x
+            dist_y = float(self.move_target[1]) - self.puppet.sprite.y
+
+            self.sprite.rotation = (math.degrees(math.atan2(dist_y, dist_x)) * -1) + 90
+            self.sprite.scale = 1
+
+            ret = calc_vel_xy(self.move_target[0], self.move_target[1],
+                self.puppet.sprite.x, self.puppet.sprite.y, self.puppet.stats.speed)
+
+            self.puppet.sprite.x += ret[0]
+            self.puppet.sprite.y += ret[1]
+            if abs(dist_x) + abs(dist_y) <= self.puppet.stats.speed:
+                self.move_target = None
+                self.mouse_target_sprite = None
 
     def check_target(self):
         if self.puppet.target:
@@ -184,6 +213,7 @@ class PlayerController(Controller):
 
     def update(self):
         # if self.timer.next() == 1:
+        self.update_movement()
         self.puppet.update_bars()
         self.target_closest_enemy()
         for p in self.master.loot.current_loot:

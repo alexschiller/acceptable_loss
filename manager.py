@@ -188,6 +188,8 @@ class GameState(StateObject):
         BarBatch.draw()
 
     def on_mouse_press(self, x, y, button, modifiers):
+        if button == 1:
+            master.player_controller.move_to(x, y)
         if button == 4:
             master.player_controller.slot_mouse_two_fire()
 
@@ -201,8 +203,8 @@ class GameState(StateObject):
         master.player_controller.sprite.y = y
 
         # if button == 4:
-        master.player_controller.slot_mouse_two_fire()
-        master.update_button_image(x, y, dx, dy)
+        # master.player_controller.slot_mouse_two_fire()
+        # master.update_button_image(x, y, dx, dy)
 
 
 class Game(pyglet.window.Window):

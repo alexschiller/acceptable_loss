@@ -113,6 +113,11 @@ class Master(object):
 
         # self.player.sprite.x += mx
         # self.player.sprite.y += my
+        if self.player_controller.move_target:
+            self.player_controller.move_target[0] += mx
+            self.player_controller.move_target[1] += my
+            self.player_controller.mouse_target_sprite.x += mx
+            self.player_controller.mouse_target_sprite.y += my
         self.home.x += mx
         self.home.y += my
         try:
