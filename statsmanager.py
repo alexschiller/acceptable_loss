@@ -1,3 +1,5 @@
+import math
+
 class StatsManager(object):
     def __init__(self, base, gun_one, gun_two, armor):
 
@@ -38,6 +40,8 @@ class StatsManager(object):
         self._accuracy_move = 0
         self._evade_move = 0
 
+        self.recoil = 0
+
         self.delayed = []
 
         self._shield = self._shield_max
@@ -67,8 +71,6 @@ class StatsManager(object):
         }
         self.gun_one = gun_one
         self.gun_two = gun_two
-        self.gun_one_data = self.generate_gun(gun_one)
-        self.gun_two_data = self.generate_gun(gun_two)
 
     def update_move(self, mx, my):
         if (abs(mx) + abs(my)) > 0:
@@ -106,10 +108,17 @@ class StatsManager(object):
             self._health = int(self.health_max)
 
     def update(self):
+        self.update_recoil()
         self.update_stats()
         self.update_delayed()
 
+    def update_recoil(self):
+        if self.recoil > 0:
+            self.recoil -= math.ceil(self.recoil / 90.0)
+
     def update_health(self, damage):
+        print "start", self.health, self.shield
+
         self._shield -= damage
         if self._shield <= 0:
             damage = self._shield * -1
@@ -117,7 +126,9 @@ class StatsManager(object):
             damage -= self.armor
             x = max(1, damage)
             self._health -= x
+            print "end", self.health, self.shield
             return x
+        print "end", self.health, self.shield
         return 0
 
     @property
@@ -174,7 +185,7 @@ class StatsManager(object):
 
     @property
     def accuracy(self):
-        return (self._accuracy + self._accuracy_move + self.mod['accuracy'])
+        return self._accuracy + self._accuracy_move + self.mod['accuracy'] - self.recoil
 
     @property
     def armor(self):
@@ -191,6 +202,14 @@ class StatsManager(object):
     @property
     def speed(self):
         return self._speed + self.mod['speed']
+
+    @property
+    def gun_one_data(self):
+        return self.generate_gun(self.gun_one)
+
+    @property
+    def gun_two_data(self):
+        return self.generate_gun(self.gun_two)
 
     def extract_gems(self, slots):
         for slot in slots.keys():
@@ -209,6 +228,7 @@ class StatsManager(object):
             'range_max': gun['range_max'],
             'range_min': gun['range_min'],
             'velocity': gun['velocity'],
+            'recoil': gun['recoil'],
             'accuracy': gun['accuracy'] + self.accuracy,
             'rof': gun['rof'] * ((100 + self.attack_speed_perc) / 100), # noqa
             'crit': gun['crit'] + self.crit,

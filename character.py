@@ -3,7 +3,7 @@ from collide import * # noqa
 from utility import * # noqa
 import pyglet
 from gun import * # noqa
-from plasmaslinger import * # noqa
+# from plasmaslinger import * # noqa
 from spectre import * # noqa
 from longbow import * # noqa
 from enemy import * # noqa
@@ -19,6 +19,7 @@ class Character(object):
         self.enemies = self.master.people[base['enemies']]
         self.blood_color = base['blood_color']
         self.base = base
+        self.acc_mouse_mod = 1
         # self.build = base['build']
         self.target = None
         self.bars = []

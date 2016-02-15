@@ -126,7 +126,6 @@ class GameState(StateObject):
             master.player.sprite.y = master.home.y
             master.move_all(-readjust_x, -readjust_y)
         if key_handler[key.TAB]:
-            pass
             master.pr.disable()
             s = StringIO.StringIO()
             sortby = 'cumulative'
@@ -186,8 +185,6 @@ class GameState(StateObject):
         BarBatch.draw()
 
     def on_mouse_press(self, x, y, button, modifiers):
-        if button == 1:
-            master.player_controller.slot_mouse_one_fire()
         if button == 4:
             master.player_controller.slot_mouse_two_fire()
 
@@ -200,8 +197,8 @@ class GameState(StateObject):
         master.player_controller.sprite.x = x
         master.player_controller.sprite.y = y
 
-        if button == 4:
-            master.player_controller.slot_mouse_two_fire()
+        # if button == 4:
+        master.player_controller.slot_mouse_two_fire()
         master.update_button_image(x, y, dx, dy)
 
 
