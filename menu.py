@@ -181,14 +181,15 @@ class MenuManager(object):
             self.create_buildbuttons()
 
     def on_mouse_press(self, x, y, mode):
-        for button in self.resource_buttons:
-            button.on_mouse_press(x, y, mode)
+        if self.flag:
+            for button in self.resource_buttons:
+                button.on_mouse_press(x, y, mode)
 
-        for button in self.tier_buttons:
-            button.on_mouse_press(x, y, mode)
+            for button in self.tier_buttons:
+                button.on_mouse_press(x, y, mode)
 
-        for button in self.build_buttons:
-            button.on_mouse_press(x, y, mode)
+            for button in self.build_buttons:
+                button.on_mouse_press(x, y, mode)
 
     def update(self):
         if self.flag:
@@ -208,8 +209,8 @@ class MenuManager(object):
 
 
 class BuildingManager(object):
-    def __init__(self, library):
-        self.library = library
+    def __init__(self):
+        self.library = building_menu
         self.convert = ['fo', 'po', 'en', 'sc', 'mo']
 
     def lookup(self, key):

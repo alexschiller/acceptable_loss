@@ -1,8 +1,31 @@
-import pyglet  # noqa
-from pyglet.gl import *  # noqa
+import pyglet
+
+from pyglet.gl import * # noqa
 from pyglet.window import key # noqa
-from utility import * # noqa
-from importer import * # noqa
+from pyglet.window import mouse # noqa
+
+from importer import * # noqa # Put random file imports here for now
+
+from button import Manager, Button,TextBox, DraggableButton, foo # noqa
+from placeable import * # noqa
+from menu import * # noqa
+from hotbar import * # noqa
+from inventory import * # noqa
+from time import time # noqa
+HotBar = None
+buildmanager = None
+Buildmenu = None
+inventorymenu = None
+
+
+def load_assets(hb, bm, bum, im, difficulty, amount):
+    hb = HotBarManager(hotbar_sprite, master) # noqa
+    hb.setup()
+    bm = BuildingManager(building_menu) # noqa
+    bum = MenuManager(1200, 0, menu_back) # noqa
+    bum.set_build_manager(buildmanager)
+    im = Inventory(master) # noqa
+    return hb, bm, bum, im
 
 
 class ProtoKeyStateHandler(key.KeyStateHandler):
@@ -32,43 +55,72 @@ class ProtoKeyStateHandler(key.KeyStateHandler):
             return False
 
 key_handler = ProtoKeyStateHandler()
+states = None
+window = pyglet.window.Window(window_width, window_height)
+
+glEnable(GL_BLEND)
+glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA)
+
+window.push_handlers(key_handler)
+
+#  Align sprite to mouse
+
+global mouse_position
+mouse_position = [0, 0]
 
 
-class StateObject(object):
-    def __init__(self, manager):
-        self.manager = manager
-        self.change = 0
-        self.batches = []
+@window.event
+def on_mouse_motion(x, y, dx, dy):
+    states.current.on_mouse_motion(x, y, dx, dy)
+    global mouse_position
+    mouse_position = [x, y]
 
-    def register_batch(self, batch):
-        self.batches.append(batch)
 
-    def on_key_press(self, symbol, modkey):
-        pass
+@window.event
+def on_mouse_drag(x, y, dx, dy, buttons, modifiers):
+    states.current.on_mouse_drag(x, y, dx, dy, buttons, modifiers)
+    global mouse_position
+    mouse_position = [x, y]
 
-    def on_key_release(self, symbol, modkey):
-        pass
 
-    def on_mouse_release(self, x, y, button, modifiers):
-        pass
+@window.event
+def on_mouse_release(x, y, button, modifiers):
+    states.current.on_mouse_release(x, y, button, modifiers)
 
-    def on_mouse_press(self, x, y, button, modifiers):
-        pass
 
-    def on_mouse_motion(self, x, y, dx, dy):
-        pass
+@window.event
+def on_mouse_press(x, y, button, modifiers):
+    states.current.on_mouse_press(x, y, button, modifiers)
 
-    def on_mouse_drag(self, x, y, dx, dy, buttons, modifiers):
-        pass
+
+class TextState(object):
+    def __init__(self, button):
+        self.button = button
+
+    def test(self):
+        ButtonBatch.draw()
+        LabelBatch.draw()
 
     def update(self, ts):
-        pass
+        symbol = key_handler.get_next_item()
+        while (symbol != False): # noqa
+            print symbol
+            if int(symbol) == 65288:
+                self.button.delete()
+
+            elif int(symbol) == 65293:
+                key_handler.deactivate()
+                key_handler.clear_state()
+                states.pop(0)
+
+            elif int(symbol) < 127 and int(symbol) > 31:
+                self.button.add_text(symbol)
+            symbol = key_handler.get_next_item()
+        window.invalid = False
 
 
-class PauseState(StateObject):
-    def __init__(self, manager):
-        super(PauseState, self).__init__(self)
-
+class PauseState():
+    def __init__(self):
         self.Pause = 0
         self.manager = Manager()
         buttons = ['hi', 'button', 'chain', 'is', 'a', 'go']
@@ -98,51 +150,96 @@ class PauseState(StateObject):
         else:
             if self.Pause == 1:
                 self.Pause = 0
-                self.manager.swapback()
+                states.swapback()
+        window.invalid = False
 
-    def batch_setup(self):
-        self.batches = [
-            TerrainBatch, PortalBatch, BuildingBatch, BulletBatch,
-            gfx_batch, EffectsBatch, BarBatch, ButtonBatch, LabelBatch,
-        ]
+    def test(self):
+        ButtonBatch.draw()
+        LabelBatch.draw()
+
+    def on_draw(self):
+        window.clear()
+        pyglet.gl.glClearColor(0.75, 0.75, 0.75, 1)  # gray back
+        TerrainBatch.draw()
+        PortalBatch.draw()
+        BuildingBatch.draw()
+        BulletBatch.draw()
+        gfx_batch.draw()
+        EffectsBatch.draw()
+        BarBatch.draw()
+        states.current.test()
+        # MenuBatch.draw()
+
+        window.invalid = False
 
 
-class GameState(StateObject):
-    def __init__(self, manager):
-        super(GameState, self).__init__(manager)
-
+class MainState(object):
+    def __init__(self):
         self.Pause = 0
         self.Build = 0
         self.Menu = 0
         self.last_time = 0
-        self.batch_setup()
+        # for i in range(10):
+            # master.enemies.append(Soldier(master, base=gen_soldier_base() )) # noqa
 
-    def batch_setup(self):
-        self.batches = [
-            TerrainBatch, PortalBatch, master.player.sprite, BulletBatch, EffectsBatch, BarBatch,
-            gfx_batch, BuildingBatch, HotbarBatch, HotbarButtonBatch,
-        ]
+        # for i in range(1):
+            # master.enemies.append(Portal(master, base=gen_portal_base() )) # noqa            
 
-    def on_mouse_release(self, x, y, button, modifiers):
+        # for i in range(0):
+            # master.enemies.append(Slime(master, base=gen_slime_base() )) # noqa
+
+    def on_draw(self):
+        window.clear()
+        pyglet.gl.glClearColor(0.75, 0.75, 0.75, 1)  # gray back
+        TerrainBatch.draw()
+        PortalBatch.draw()
+        master.player.sprite.draw()
+        BulletBatch.draw()
+        EffectsBatch.draw()
+        BarBatch.draw()
+        gfx_batch.draw()
+        BuildingBatch.draw()
+        HotbarBatch.draw()
+        HotbarButtonBatch.draw()
+        states.current.test()
+        Buildmenu.update()
+        inventorymenu.update()
+        window.invalid = False
+
+    def test(self):
         pass
 
+    def on_mouse_release(self, x, y, button, modifiers):
+        Buildmenu.on_mouse_press(x, y, 1)
+        HotBar.update(x, y, 1)
+
     def on_mouse_press(self, x, y, button, modifiers):
-        if button == 1:
-            master.player_controller.move_to(x, y)
-        if button == 4:
-            master.player_controller.slot_mouse_two_fire()
+        # if master.player.shoot(mouse_position[0], mouse_position[1]): # noqa
+        #     ret = calc_vel_xy(
+        #         master.player.sprite.x, master.player.sprite.y,
+        #         mouse_position[0], mouse_position[1], master.player.gun.base['recoil']
+        #     ) # noqa
+        #     master.player.sprite.x += ret[0]
+        # master.player.sprite.y += ret[1]
+        Buildmenu.on_mouse_press(x, y, 0)
+        HotBar.update(x, y, 0)
 
     def on_mouse_motion(self, x, y, dx, dy):
-        master.player_controller.sprite.x = x
-        master.player_controller.sprite.y = y
-        master.player_controller.rotate(x, y)
+        pass
 
     def on_mouse_drag(self, x, y, dx, dy, buttons, modifiers):
-        master.player_controller.sprite.x = x
-        master.player_controller.sprite.y = y
-        # master.update_button_image(x, y, dx, dy)
+        master.player_controller.rotate(x, y)
+
+    def on_key_press(self, ts):
+        pass
+
+    def swap(self):
+        states.swap('build')
 
     def update(self, ts):
+        x = time()
+        print self.last_time - x
+        self.last_time = x
         mx = 0
         my = 0
         if key_handler[key.P]:
@@ -150,21 +247,21 @@ class GameState(StateObject):
         else:
             if self.Pause == 1:
                 self.Pause = 0
-                self.manager.swap('pause')
+                states.swap('pause')
 
         if key_handler[key.N]:
             self.Menu = 1
         else:
             if self.Menu == 1:
                 self.Menu = 0
-                self.manager.assets.bum.change_flag()
+                Buildmenu.change_flag()
 
         if key_handler[key.B]:
             self.Build = 1
         else:
             if self.Build == 1:
                 self.Build = 0
-                self.manager.assets.im.change_flag()
+                inventorymenu.change_flag()
                 # self.swap()
         mx = 0
         my = 0
@@ -193,36 +290,22 @@ class GameState(StateObject):
             f.write(s.getvalue())
             # print s.getvalue()
             # master.player_controller.target_closest_enemy()
-        # if key_handler[key.D]:
-        #     mx += 1
-        # if key_handler[key.A]:
-        #     mx -= 1
-        # if key_handler[key.W]:
-        #     my += 1
-        # if key_handler[key.S]:
-        #     my -= 1
-        # master.player_controller.move(mx, my)
+        if key_handler[key.D]:
+            mx += 1
+        if key_handler[key.A]:
+            mx -= 1
+        if key_handler[key.W]:
+            my += 1
+        if key_handler[key.S]:
+            my -= 1
+        master.player_controller.move(mx, my)
 
         if key_handler[key._1]:
+            # Character(master, enemy_soldier_base())
             master.player_controller.slot_one_fire()
 
         if key_handler[key._2]:
             master.player_controller.slot_two_fire()
-
-        if key_handler[key._3]:
-            master.player_controller.slot_three_fire()
-
-        if key_handler[key._4]:
-            master.player_controller.slot_four_fire()
-
-        if key_handler[key.Q]:
-            master.player_controller.slot_q_fire()
-
-        if key_handler[key.E]:
-            master.player_controller.slot_e_fire()
-
-        if key_handler[key.SPACE]:
-            master.player.jump()
 
         # master.player.move(mx, my)
 
@@ -235,46 +318,138 @@ class GameState(StateObject):
 
         if key_handler[key.F] and master.player.energy >= 100:
             # teleport(master, mouse_position)
-            print "SDFSDFDSFSDFSDF"
-            teleport(master, self.manager.assets.mouse_position)
+            teleport(master, mouse_position)
         # Run Updates
         master.update()
 
 
-class MainMenuState(StateObject):
-    def __init__(self, manager):
-        super(MainMenuState, self).__init__(manager)
+class BuildState(MainState):
+    def __init__(self):
+        # for i in range(len(master.enemies)):
+            # master.enemies.pop(0)
+        self.Pause = 0
+        self.Build = 0
+        self.Menu = 0
+        self.manager = Manager()
+        self.last_time = 0
 
-        self.batches = [pyglet.graphics.Batch()]  # this should order them properly?
+        # master.buildings.append(Placeable(load_image('brick.png', anchor=False), 400, 400, None, BuildingBatch)) # noqa
+
+    def on_mouse_release(self, x, y, button, modifiers):
+        Buildmenu.on_mouse_press(x, y, 1)
+        HotBar.update(x, y, 1)
+        if modifiers == 1:
+            inventorymenu.on_mouse_press(x, y, 1)
+
+    def on_mouse_press(self, x, y, button, modifiers):
+        master.player_controller.update_target()
+        Buildmenu.on_mouse_press(x, y, 0)
+        HotBar.update(x, y, 0)
+        master.player.ability.auto_attack()
+        if modifiers == 1:
+            inventorymenu.on_mouse_press(x, y, 0)
+
+    def on_mouse_motion(self, x, y, dx, dy):
+        master.player_controller.sprite.x = x
+        master.player_controller.sprite.y = y
+        master.player_controller.rotate(x, y)
+
+    def on_mouse_drag(self, x, y, dx, dy, buttons, modifiers):
+        master.player_controller.sprite.x = x
+        master.player_controller.sprite.y = y
+        master.player.ability.auto_attack()
+        # x_dist = x - float(master.player.sprite.x)
+        # y_dist = y - float(master.player.sprite.y)
+        master.update_button_image(x, y, dx, dy)
+        # deg = (math.degrees(math.atan2(y_dist, x_dist)) * -1) + 90
+        # if master.player.shoot(mouse_position[0], mouse_position[1]): # noqa
+        #     ret = calc_vel_xy(
+        #         master.player.sprite.x, master.player.sprite.y,
+        #         mouse_position[0], mouse_position[1],
+        #         master.player.gun.base['recoil']
+        #     )
+        #     master.player.sprite.x += ret[0]
+        #     master.player.sprite.y += ret[1]
+
+    def swap(self):
+        states.swap('main')
+
+    def test(self):
+        pass
+
+
+def update(ts):
+    states.current.update(ts)
+
+
+@window.event
+def on_draw():
+    states.current.on_draw()
+    states.current.test()
+    window.invalid = False
+
+
+class StartState(object):
+
+    def __init__(self):
+        self.batch = pyglet.graphics.Batch()
+        self.shrinking = False
         img = pyglet.image.load('images/title_2.png')
         img.anchor_x = 0
         img.anchor_y = img.height
 
-        self.background = pyglet.sprite.Sprite(
+        self.sprite = pyglet.sprite.Sprite(
             img, 0, window_height,
-            batch=self.batches[0]
+            batch=self.batch
         )
+        self.flag = False
 
-    def on_key_press(self, symbol, modkey):
-        self.manager.swap('select')
+    def on_mouse_drag(self, x, y, dx, dy, buttons, modifiers):
+        pass
+
+    def on_mouse_motion(self, x, y, dx, dy):
+        pass
+
+    def on_mouse_release(self, x, y, button, modifiers):
+        pass
+
+    def on_mouse_press(self, x, y, button, modifiers):
+        pass
+
+    def shrink(self):
+        if self.sprite.scale < .01:
+            self.flag = True
+        self.sprite.scale -= .1
 
     def update(self, ts):
         if key_handler[key.ENTER] or key_handler[key.RETURN]:
-            self.manager.swap('select')
+            self.shrinking = True
+        else:
+            if self.flag:
+                states.swap('select')
+        if self.shrinking:
+            self.shrink()
+        window.invalid = False
+
+    def test(self):
+        pass
+
+    def on_draw(self):
+        window.clear()
+        pyglet.gl.glClearColor(1, 1, 1, 1)  # gray back
+        self.batch.draw()
+        window.invalid = False
 
 
-class SelectState(StateObject):
-    def __init__(self, manager):
-        super(SelectState, self).__init__(manager)
+class SelectState(object):
+    def __init__(self):
         self.batch = pyglet.graphics.Batch()
-        self.state_manager = manager
         self.manager = Manager()
         self.buttons = []
         self.locked_buttons = []
         self.disp_buttons = []
         self.difficulty = 0
         self.label_batch = pyglet.graphics.Batch()
-        self.batches = [self.batch, self.label_batch]
         self.max_dif = 50
         self.dict = [
             "blank.png", "down_all_down.png",
@@ -383,9 +558,10 @@ class SelectState(StateObject):
         print self.difficulty
 
     def enter_game(self):
+        print 'stuff'
         ready_level(master, self.difficulty, 5)
 
-        self.state_manager.swap("game")
+        states.swap("build")
 
     def setup(self):
         func = {
@@ -401,29 +577,41 @@ class SelectState(StateObject):
         for button in self.locked_buttons:
             self.manager.add_button(button)
 
+    def on_draw(self):
+        window.clear()
+        pyglet.gl.glClearColor(1, 1, 1, 1)  # gray back
+        self.batch.draw()
+        self.label_batch.draw()
+        window.invalid = False
+
 
 class StateManager(object):
 
-    def __init__(self, assets):
-        self.assets = assets
-        self.current = MainMenuState(self)
+    def __init__(self):
+        self.current = StartState()
         self.past = None
-        self.pause = PauseState(self)
+        self.pause = PauseState()
 
     def swap(self, string):
         self.past = self.current
-        print string
-        if string == 'game':
-            print "yo"
-            self.current = GameState(self)
+        if string == 'main':
+            self.current = MainState()
         if string == 'pause':
             self.current = self.pause
-        # if string == 'build':
-        #     self.current = BuildState()
+        if string == 'build':
+            self.current = BuildState()
         if string == 'select':
-            self.current = SelectState(self)
+            self.current = SelectState()
 
     def swapback(self):
         temp = self.past
         self.past = self.current
         self.current = temp
+
+states = StateManager()
+
+HotBar, buildmanager, Buildmenu, inventorymenu = load_assets(HotBar, buildmanager, Buildmenu, inventorymenu, 10, 15)
+
+pyglet.clock.schedule_interval(update, 1 / 60)
+
+pyglet.app.run()

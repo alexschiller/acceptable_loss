@@ -43,7 +43,7 @@ def ready_level(master, difficulty, num_rooms):
 
     master.room_manager = RoomManager(master)
     master.room_manager.setup(num_rooms)
-    master.room_manager.parent.create_sprites(0, 0, TerrainBatch, master.player)
+    master.room_manager.parent.create_sprites(100, 100, TerrainBatch, master.player)
     master.room_manager.add_enemies(difficulty)
     master.room_manager.create_portal()
 

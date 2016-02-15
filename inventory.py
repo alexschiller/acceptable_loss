@@ -94,7 +94,7 @@ class Inventory(object):
             self.borders.append(border)
             i += 1
 
-    def draw(self):
+    def update(self):
         if self.flag:
             self.update_inventory()
             InventoryBatch.draw()
