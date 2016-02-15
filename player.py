@@ -201,7 +201,7 @@ lb_missile = {
         'travel': 700,
         'range_min': 300,
         'range_max': 600,
-        'velocity': 100,
+        'velocity': 30,
         'accuracy': 70,
         'rof': .5,
         'recoil': 10,
