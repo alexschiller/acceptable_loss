@@ -69,6 +69,7 @@ class Button(object):
                 self.sprite.y < y and
                 y < self.sprite.y + self.sprite.height):
             if mode == 1 and self.trigger == 1:
+                print "HE123LLO"
                 self.trigger = 0
                 self.sprite.image = self.hoversprite
                 try:
