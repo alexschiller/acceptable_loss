@@ -1,15 +1,59 @@
-from makerbuttons import Manager, Button,TextBox, DraggableButton, foo # noqa
-import pyglet
 
+
+try:
+    # for Python2
+    from Tkinter import *   ## notice capitalized T in Tkinter  # noqa
+    from tkFileDialog import askdirectory
+
+except ImportError:
+    # for Python3
+    from tkinter import *   ## notice here too # noqa
+
+
+root = Tk()
+root.withdraw()
+file_path = askdirectory()
+print file_path
+
+
+from makerbuttons import Manager, Button,TextBox, DraggableButton, foo # noqa
+import pyglet # noqa
+import glob # noqa
+import os # noqa
 from pyglet.gl import * # noqa
 from pyglet.window import key # noqa
 from pyglet.window import mouse # noqa
 
-import os
-import signal
+savedpath = os.path.dirname(os.path.realpath(__file__))
 
+imglist = []
 
+os.chdir(file_path)
+for file in glob.glob("*.png"):
+    try:
+        imglist.append(pyglet.image.load(file))
+    except:
+        pass
+
+os.chdir(savedpath)
 batches = [pyglet.graphics.Batch(), pyglet.graphics.Batch(), pyglet.graphics.Batch(), ]
+
+
+class ImageMenu(object):
+    def __init__(self, images):
+        self.images = images
+        self.backing = menu_back = pyglet.image.create(600, window_height, pyglet.image.SolidColorImagePattern(color=(1, 1, 20, 255))) # noqa
+        self.sprite = pyglet.sprite.Sprite(
+            self.backing,
+            800, 0, batch=batches[1]
+        )
+        self.image_sprites = []
+        for i in range(10):
+            sprite = pyglet.sprite.Sprite(
+                self.images[i],
+                900, 100 + 100 * i, batch=batches[2]
+            )
+            self.image_sprites.append(sprite)
 
 
 class ClickMenu(object):
@@ -24,8 +68,7 @@ class ClickMenu(object):
         self.setup()
 
     def load_image(self):
-        print "LS:KFDJLS:KDFJSL:DKFJSDL:FKJSDL:KFSDKFJS:LKFJSDFKL:DJSFL:KDJSFKL:"
-        os.system("python guitest.py " + str(os.getpid()))
+        print 'sup bitches'
 
     def change_image(self, string):
         try:
@@ -120,6 +163,7 @@ class Game(pyglet.window.Window):
         self.module_manager = Manager()
         self.setup()
         self.option_menu = None
+        self.imagemenu = ImageMenu(imglist)
 
     def create_button(self):
         print "HELLO"
@@ -159,19 +203,6 @@ class Game(pyglet.window.Window):
         #     sprite.y += 1
         # if key_handler[key.S]:
         #     sprite.y -= 1
-
-    def receive_signal(self, int2):
-        print "signal receieved"
-        # try:
-        #     file = open('buffer.txt', 'r')
-        #     st = file.readline()
-        #     if st != '':
-        #         self.option_menu.change_image(st)
-        #     os.system('rm buffer.txt')
-        # except:
-        #     os.system('rm buffer.txt')
-        #     print "error file open"
-        #     pass
 
     def on_draw(self):
         self.render()
@@ -232,7 +263,6 @@ key_handler = ProtoKeyStateHandler()
 glEnable(GL_BLEND)
 glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA)
 window.push_handlers(key_handler)
-signal.signal(signal.SIGUSR1, window.receive_signal)
 
 if __name__ == '__main__':
     pyglet.clock.set_fps_limit(10)

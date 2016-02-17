@@ -60,6 +60,11 @@ class Button(object):
                 batch=labelbatch
             )
 
+    def swapimage(self, image):
+        self.upsprite = image
+        self.downsprite = image
+        self.hoversprite = image
+
     def in_range(self, x, y):
         if (
             self.sprite.x < x and
