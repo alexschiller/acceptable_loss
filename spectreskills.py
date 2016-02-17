@@ -231,9 +231,45 @@ class SPBLSlash(Skill):
         return False
 
 # Unfinished
-class SPBLNeedle(Skill):
+class SPBLTrips(Skill):
     def __init__(self, master, level, handler):
-        super(SPBLNeedle, self).__init__(master, level, handler)
+        super(SPBLTrips, self).__init__(master, level, handler)
+
+    def fire(self):
+        enemy_range = self.get_enemy_dist()
+        try:
+            if enemy_range <= 50:
+                if not self.handler.global_cooldown:
+                    bullet_base = self.handler.build_bullet(
+                        self.handler.owner.stats.gun_two_data,
+                        self.handler.owner.sprite.x,
+                        self.handler.owner.sprite.y,
+                        self.handler.owner.target.sprite.x,
+                        self.handler.owner.target.sprite.y,
+                        enemy_range,
+                        self.handler.owner.target,
+                    )
+                    # play_sound(self.owner.stats.gun_two_data['gun_fire_sound'])
+                    self.handler.thrown.append(Melee(self.master, self.handler, bullet_base))
+                    self.handler.owner.stats.recoil += self.handler.owner.stats.gun_two_data['recoil']
+                    self.handler.trigger_global_cooldown()
+            else:
+                self.master.spriteeffect.teleport(self.handler.owner.sprite.x, self.handler.owner.sprite.y)
+                self.handler.owner.stats.temp_stat_change(2, 'speed', 300)
+                ret = calc_vel_xy(self.handler.owner.sprite.x, self.handler.owner.sprite.y,
+                    self.handler.owner.target.sprite.x, self.handler.owner.target.sprite.y, 45)
+                self.handler.owner.controller.move_to(self.handler.owner.target.sprite.x + ret[0],
+                    self.handler.owner.target.sprite.y + ret[1], 1)
+        except:
+            pass
+
+    def get_enemy_dist(self):
+        if self.handler.owner.target:
+            dist_x = self.handler.owner.sprite.x - self.handler.owner.target.sprite.x
+            dist_y = self.handler.owner.sprite.y - self.handler.owner.target.sprite.y
+            dist = math.hypot(dist_x, dist_y)
+            return dist
+        return False
 
 # Unfinished
 class SPBLBangForYourBuck(Skill):
@@ -304,7 +340,7 @@ spectre_skillset = {
     '19': SPSNTriggerDiscipline,
     '20': SPSNSalvo,
     '21': SPBLSlash,
-    '22': SPBLNeedle,
+    '22': SPBLTrips,
     '23': SPBLBangForYourBuck,
     '24': SPBLHoming,
     '25': SPBLRocketPowered,
@@ -316,7 +352,7 @@ spectre_skillset = {
 }
 
 sample_spectre_build = {
-    'slot_mouse_two': ['21', 1],
+    'slot_mouse_two': ['22', 1],
     'slot_one': ['11', 1],
     'slot_two': ['12', 1],
     'slot_three': ['11', 2],

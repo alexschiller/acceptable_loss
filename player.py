@@ -193,9 +193,12 @@ class PlayerController(Controller):
 
             self.sprite.rotation = (math.degrees(math.atan2(dist_y, dist_x)) * -1) + 90
             self.sprite.scale = 1
-
-            ret = calc_vel_xy(self.move_target[0], self.move_target[1],
-                self.puppet.sprite.x, self.puppet.sprite.y, self.puppet.stats.speed)
+            if abs(dist_x) + abs(dist_y) <= self.puppet.stats.speed:
+                ret = calc_vel_xy(self.move_target[0], self.move_target[1],
+                    self.puppet.sprite.x, self.puppet.sprite.y, abs(dist_x) + abs(dist_y))
+            else:
+                ret = calc_vel_xy(self.move_target[0], self.move_target[1],
+                    self.puppet.sprite.x, self.puppet.sprite.y, self.puppet.stats.speed)
 
             self.last_mx = ret[0]
             self.last_my = ret[1]
