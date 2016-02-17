@@ -255,7 +255,7 @@ class SPBLTrips(Skill):
                     self.handler.trigger_global_cooldown()
             else:
                 self.master.spriteeffect.teleport(self.handler.owner.sprite.x, self.handler.owner.sprite.y)
-                self.handler.owner.stats.temp_stat_change(2, 'speed', 300)
+                self.handler.owner.stats.temp_stat_change(2, 'speed', 30)
                 ret = calc_vel_xy(self.handler.owner.sprite.x, self.handler.owner.sprite.y,
                     self.handler.owner.target.sprite.x, self.handler.owner.target.sprite.y, 45)
                 self.handler.owner.controller.move_to(self.handler.owner.target.sprite.x + ret[0],
