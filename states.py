@@ -116,6 +116,7 @@ class GameState(StateObject):
         self.Menu = 0
         self.last_time = 0
         self.batch_setup()
+        self.mouse_two_down = False
 
     def batch_setup(self):
         self.batches = [
@@ -124,13 +125,14 @@ class GameState(StateObject):
         ]
 
     def on_mouse_release(self, x, y, button, modifiers):
-        pass
+        if button == 4:
+            self.mouse_two_down = False
 
     def on_mouse_press(self, x, y, button, modifiers):
         if button == 1:
-            master.player_controller.move_to(x, y)
+            master.player_controller.move_to(x, y, .05)
         if button == 4:
-            master.player_controller.slot_mouse_two_fire()
+            self.mouse_two_down = True
 
     def on_mouse_motion(self, x, y, dx, dy):
         master.player_controller.sprite.x = x
@@ -145,6 +147,8 @@ class GameState(StateObject):
     def update(self, ts):
         mx = 0
         my = 0
+        if self.mouse_two_down:
+            master.player_controller.slot_mouse_two_fire()
         if key_handler[key.P]:
             self.Pause = 1
         else:

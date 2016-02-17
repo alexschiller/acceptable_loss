@@ -198,20 +198,29 @@ class SPBLSlash(Skill):
 
     def fire(self):
         enemy_range = self.get_enemy_dist()
-        if enemy_range and not self.handler.global_cooldown:
-            bullet_base = self.handler.build_bullet(
-                self.handler.owner.stats.gun_two_data,
-                self.handler.owner.sprite.x,
-                self.handler.owner.sprite.y,
-                self.handler.owner.target.sprite.x,
-                self.handler.owner.target.sprite.y,
-                enemy_range,
-                self.handler.owner.target,
-            )
-            # play_sound(self.owner.stats.gun_two_data['gun_fire_sound'])
-            self.handler.thrown.append(Melee(self.master, self.handler, bullet_base))
-            self.handler.owner.stats.recoil += self.handler.owner.stats.gun_two_data['recoil']
-            # self.handler.trigger_global_cooldown()
+        try:
+            if enemy_range <= 50:
+                if not self.handler.global_cooldown:
+                    bullet_base = self.handler.build_bullet(
+                        self.handler.owner.stats.gun_two_data,
+                        self.handler.owner.sprite.x,
+                        self.handler.owner.sprite.y,
+                        self.handler.owner.target.sprite.x,
+                        self.handler.owner.target.sprite.y,
+                        enemy_range,
+                        self.handler.owner.target,
+                    )
+                    # play_sound(self.owner.stats.gun_two_data['gun_fire_sound'])
+                    self.handler.thrown.append(Melee(self.master, self.handler, bullet_base))
+                    self.handler.owner.stats.recoil += self.handler.owner.stats.gun_two_data['recoil']
+                    self.handler.trigger_global_cooldown()
+            else:
+                ret = calc_vel_xy(self.handler.owner.sprite.x, self.handler.owner.sprite.y,
+                    self.handler.owner.target.sprite.x, self.handler.owner.target.sprite.y, 45)
+                self.handler.owner.controller.move_to(self.handler.owner.target.sprite.x + ret[0],
+                    self.handler.owner.target.sprite.y + ret[1], 1)
+        except:
+            pass
 
     def get_enemy_dist(self):
         if self.handler.owner.target:

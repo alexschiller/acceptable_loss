@@ -258,3 +258,9 @@ resource_base = {
     'dblue': 0,
     'purple': 0
 }
+
+def sign(number):
+    try:
+        return number / abs(number)
+    except ZeroDivisionError:
+        return 0

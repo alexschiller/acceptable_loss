@@ -178,11 +178,11 @@ class PlayerController(Controller):
     #     # self.puppet.sprite.x += (self.puppet.stats.speed * mx)
     #     # self.puppet.sprite.y += (self.puppet.stats.speed * my)
 
-    def move_to(self, x, y):
+    def move_to(self, x, y, scale):
         self.move_target = [x, y]
         self.mouse_target_sprite = pyglet.sprite.Sprite(self.move_img,
             x, y, batch=BarBatch) # noqa
-        self.mouse_target_sprite.scale = .05
+        self.mouse_target_sprite.scale = scale
 
     def update_movement(self):
         if self.move_target:
