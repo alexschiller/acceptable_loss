@@ -99,7 +99,7 @@ class Master(object):
     def reset(self):
 
         self.room_manager.setup(3)
-        self.room_manager.parent.create_sprites(0, 0, TerrainBatch, self.player)
+        self.room_manager.parent.create_sprites(100, 100, TerrainBatch, self.player)
         self.room_manager.add_enemies(self.difficulty)
         print self.difficulty
         self.room_manager.create_portal()
