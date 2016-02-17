@@ -67,7 +67,7 @@ class Controller(object):
                 self.puppet.sprite.x - self.puppet.target.sprite.x,
                 self.puppet.sprite.y - self.puppet.target.sprite.y
             ):
-                self.slot_one_fire()
+                self.slot_mouse_two_fire()
             else:
                 ret = calc_vel_xy(self.puppet.target.sprite.x,
                     self.puppet.target.sprite.y,
