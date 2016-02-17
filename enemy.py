@@ -4,10 +4,11 @@ from utility import * # noqa
 from character import * # noqa
 from controller import * # noqa
 import random
+from baseskills import * # noqa
 
 
 enemy_skillset = {
-    '1': Skill,
+    '1': BasicTrigger,
     '2': Skill,
     '3': Skill,
     '4': Skill,

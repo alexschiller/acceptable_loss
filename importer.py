@@ -38,7 +38,7 @@ def ready_level(master, difficulty, num_rooms):
     # end of block, block party that is
     # master.player = load_save(save_1)
 
-    master.player = Player(master, base=player_base)
+    master.player = Player(master, base=player_base_spectre)
     master.player_controller = master.player.controller
 
     master.room_manager = RoomManager(master)
