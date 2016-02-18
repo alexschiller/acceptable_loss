@@ -10,6 +10,29 @@ def foo():
     print "hello"
 
 
+class MenuButton(object):
+    def __init__(self, sprite, manager, identity):
+        self.manager = manager
+        self.identity = identity
+        self.trigger = 0
+        self.sprite = sprite
+
+    def on_mouse_press(self, x, y, mode):
+        if (self.sprite.x < x and
+                x < self.sprite.x + self.sprite.width and
+                self.sprite.y < y and
+                y < self.sprite.y + self.sprite.height):
+            if mode == 1:
+                self.trigger = 0
+                self.press_action()
+            if mode == 0:
+                self.trigger = 1
+
+    def press_action(self):
+        print self.identity
+        self.manager.alert(self.identity)
+
+
 class Manager(object):
     def __init__(self):
         self.buttons = []
@@ -97,7 +120,6 @@ class Button(object):
                 self.sprite.y < y and
                 y < self.sprite.y + self.sprite.height):
             if val:
-                print "OKDKJSDFL:KDSLK"
                 if mode == 1:
                     self.do_action()
             else:
@@ -161,8 +183,8 @@ class DraggableButton(Button):
                 y < self.sprite.y + self.sprite.height):
             self.sprite.x += dx
             self.sprite.y += dy
-            self.label.x += dx
-            self.label.y += dy
+            # self.label.x += dx
+            # self.label.y += dy
             # for buttons in DragButtons:
             #     if collide(self.collision, buttons.collision) and buttons is not self:
             #         print "OK"
