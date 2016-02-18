@@ -174,10 +174,7 @@ class GameState(StateObject):
         my = 0
         if key_handler[key.X]:
             if collide(master.player.collision, master.room_manager.portal.collision):
-                reset_imp()
-                master.reset()
-                master.player.sprite.x = master.home.x
-                master.player.sprite.y = master.home.y
+                self.manager.swap_special('select')
 
         if key_handler[key.H]:
             readjust_x = master.home.x - master.player.sprite.x
@@ -268,8 +265,9 @@ class MainMenuState(StateObject):
 
 
 class SelectState(StateObject):
-    def __init__(self, manager):
+    def __init__(self, manager, flag=False):
         super(SelectState, self).__init__(manager)
+        self.val = flag
         self.batch = pyglet.graphics.Batch()
         self.state_manager = manager
         self.manager = Manager()
@@ -387,8 +385,15 @@ class SelectState(StateObject):
         print self.difficulty
 
     def enter_game(self):
-        ready_level(master, self.difficulty, 5)
-
+        if self.val:
+                print "test"
+                reset_imp()
+                master.reset()
+                master.player.sprite.x = master.home.x
+                master.player.sprite.y = master.home.y
+        else:
+            print "more test"
+            ready_level(master, self.difficulty, 5)
         self.state_manager.swap("game")
 
     def setup(self):
@@ -426,6 +431,10 @@ class StateManager(object):
         #     self.current = BuildState()
         if string == 'select':
             self.current = SelectState(self)
+
+    def swap_special(self, string):
+        if string == 'select':
+            self.current = SelectState(self, flag=True)
 
     def swapback(self):
         temp = self.past
