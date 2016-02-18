@@ -356,7 +356,7 @@ sp_sniper = {
         'gem_slots': {
             '1': {
                 'color': 'topaz',
-                'current_gem': {'color': 'diamond', 'level': 4, 'stats': {'damage': 3, 'accuracy': 6, 'shield_regen': 2, 'shield_on_hit': 1, 'health_max_perc': 8}, 'rarity': 3} # noqa
+                'current_gem': {'color': 'diamond', 'level': 4, 'stats': {'accuracy': 6, 'shield_regen': 2, 'shield_on_hit': 1, 'health_max_perc': 8}, 'rarity': 3} # noqa
             },
         },
     }
@@ -365,7 +365,7 @@ sp_blade = {
         'gun_class': 'Blade',
         'level': 1,
         'damage_min': 1,
-        'damage_max': 3,
+        'damage_max': 2,
         'travel': 700,
         'range_min': 0,
         'range_max': 60,
@@ -373,8 +373,8 @@ sp_blade = {
         'accuracy': 85,
         'rof': 5,
         'recoil': 5,
-        'crit': 5,
-        'crit_damage': 4,
+        'crit': 20,
+        'crit_damage': 2,
         'armor_pierce': 2,
         'image': load_image('sp_blade.png'), # noqa
         'gun_fire_sound': load_sound('shot.wav'), # noqa
@@ -383,7 +383,7 @@ sp_blade = {
         'gem_slots': {
             '1': {
                 'color': 'topaz',
-                'current_gem': {'color': 'diamond', 'level': 4, 'stats': {'damage': 3, 'accuracy': 6, 'shield_regen': 2, 'shield_on_hit': 1, 'health_max_perc': 8}, 'rarity': 3} # noqa
+                'current_gem': {'color': 'diamond', 'level': 4, 'stats': {'accuracy': 6, 'shield_regen': 2, 'shield_on_hit': 1, 'health_max_perc': 8}, 'rarity': 3} # noqa
             },
         },
     }

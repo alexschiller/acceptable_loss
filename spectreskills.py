@@ -352,8 +352,8 @@ spectre_skillset = {
 }
 
 sample_spectre_build = {
-    'slot_mouse_two': ['22', 1],
-    'slot_one': ['11', 1],
+    'slot_mouse_two': ['21', 1],
+    'slot_one': ['22', 1],
     'slot_two': ['12', 1],
     'slot_three': ['11', 2],
     'slot_four': ['1', 3],
