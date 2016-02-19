@@ -36,6 +36,7 @@ class Chaos(object):
         self.target = None
 
     def delete_self(self):
+        self.master.spriteeffect.teleport(self.sprite.x, self.sprite.y)
         self.sprite.delete()
         self.handler.ability.core.chaos_in_action.remove(self)
 
@@ -53,7 +54,6 @@ class Chaos(object):
             self.sprite.x += self.ret[0]
             self.sprite.y += self.ret[1]
             if math.hypot(self.target.sprite.x - self.sprite.x, self.target.sprite.y - self.sprite.y) < 10:
-                self.master.spriteeffect.teleport(self.sprite.x, self.sprite.y)
                 try:
                     self.controller.activate(self)
                 except Exception, e:
@@ -383,9 +383,11 @@ class SPBLAnarchy(Skill):
             c.target = self.closest_enemy(c)
             if not c.target:
                 try:
+                    self.handler.core.add_chaos()
                     c.delete_self()
                 except:
-                    pass
+                    return True
+                return True
             self.handler.core.chaos_in_action.append(c)
             return True
         else:
