@@ -165,14 +165,14 @@ class Melee(object):
         self.crit_chance = self.base['crit']
         self.crit_damage = self.base['crit_damage']
         self.enemy_range = self.base['enemy_range']
-        self.target_x = self.base['target_x']
-        self.target_y = self.base['target_y']
+        self.target_x = self.base['target_x'] - 50
+        self.target_y = self.base['target_y'] - 50
         self.enemy = self.base['enemy']
         img = self.base['image']
         self.travelled = 0
         self.vel_x = 100
         self.vel_y = 100
-        self.draw_time = 3
+        self.draw_time = 4
         # Calculate shit here
         self.crit = False
         self.evade = False
@@ -191,7 +191,7 @@ class Melee(object):
         self.sprite = pyglet.sprite.Sprite(img,
             self.target_x, self.target_y, batch=BulletBatch)
 
-        self.sprite.rotation = random.randint(0, 365)
+        # self.sprite.rotation = random.randint(0, 365)
         self.sprite.scale = 1
 
     def delete_thrown(self):
@@ -213,6 +213,10 @@ class Melee(object):
 
     def update(self):
         self.draw_time -= 1
+        self.sprite.x += 20
+        self.sprite.y += 20
+        self.sprite.rotation += 5
+        # self.sprite.scale += .2
         if not self.draw_time:
             if self.hit and not self.evade:
                 self.enemy.on_hit(self)

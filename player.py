@@ -376,7 +376,7 @@ sp_blade = {
         'crit': 20,
         'crit_damage': 2,
         'armor_pierce': 2,
-        'image': load_image('sp_blade.png'), # noqa
+        'image': load_image('cutter.png'), # noqa
         'gun_fire_sound': load_sound('shot.wav'), # noqa
         'on_hit_sound': load_sound('on_hit.wav'), # noqa
         'effects': [],
