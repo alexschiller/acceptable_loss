@@ -7,7 +7,6 @@ from utility import * # noqa
 import pyglet # noqa
 # import itertools
 from functools import partial
-
 from collide import * # noqa
 from build import Build
 # from copy import copy
@@ -18,7 +17,6 @@ class Ability(object):
         self.owner = owner
         self.delayed = []
         self.global_cooldown = False
-        # self.aa_cooldown = False
         self.thrown = []
         self.build = Build(self.master, self, skillset, build)
         self.slot_mouse_two = self.build.slot_mouse_two
@@ -28,6 +26,7 @@ class Ability(object):
         self.slot_four = self.build.slot_four
         self.slot_q = self.build.slot_q
         self.slot_e = self.build.slot_e
+        # self.core = self.skillset['core']()
 
     def slot_mouse_two_fire(self):
         self.slot_mouse_two.fire()
@@ -61,13 +60,6 @@ class Ability(object):
         calc_gun['image'] = image or gun['image']
         return dict.copy(gun)
 
-    # def aa_cooldown_reset(self):
-    #     self.aa_cooldown = False
-
-    # def trigger_aa_cooldown(self, time):
-    #     self.aa_cooldown = True
-    #     self.delayed.append([time, partial(self.aa_cooldown_reset)])
-
     def global_cooldown_reset(self):  # this is a super tacky way to do this for sure...
         self.global_cooldown = False
 
@@ -90,40 +82,3 @@ class Ability(object):
             t.update()
 
         self.update_delayed()
-
-    # def can_aa_shoot(self):
-    #     if not self.aa_cooldown:
-    #         if self.owner.target:
-    #             dist_x = self.owner.sprite.x - self.owner.target.sprite.x
-    #             dist_y = self.owner.sprite.y - self.owner.target.sprite.y
-    #             dist = math.hypot(dist_x, dist_y)
-    #             # if dist < self.owner.stats.gun_two_data['travel']:
-    #             return dist
-    #     return False
-
-    # def can_ability_shoot(self, gun):
-    #     if not self.global_cooldown:
-    #         if self.owner.target:
-    #             dist_x = self.owner.sprite.x - self.owner.target.sprite.x
-    #             dist_y = self.owner.sprite.y - self.owner.target.sprite.y
-    #             dist = math.hypot(dist_x, dist_y)
-    #             # if dist < gun['travel']:
-    #             return dist
-    #     return False
-
-    # def auto_attack(self):
-    #     enemy_range = self.can_aa_shoot()
-    #     if enemy_range:
-    #         bullet_base = self.build_bullet(
-    #             self.owner.stats.gun_two_data,
-    #             self.owner.sprite.x,
-    #             self.owner.sprite.y,
-    #             self.owner.target.sprite.x,
-    #             self.owner.target.sprite.y,
-    #             enemy_range,
-    #             self.owner.target,
-    #         )
-    #         play_sound(self.owner.stats.gun_two_data['gun_fire_sound'])
-    #         self.thrown.append(Thrown(master, self, bullet_base))
-    #         time = int(60.0 / bullet_base['rof'])
-    #         self.trigger_aa_cooldown(time)
