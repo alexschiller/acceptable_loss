@@ -23,7 +23,11 @@ class Ability(object):
         self.slot_four = self.build.slot_four
         self.slot_q = self.build.slot_q
         self.slot_e = self.build.slot_e
-        # self.core = self.skillset['core']()
+        try:
+            self.core = skillset['core'](self.master, self)
+            print "YAY"
+        except:
+            print 'GRAB'
 
     def slot_mouse_two_fire(self):
         if not self.global_cooldown and not self.slot_mouse_two.cooldown:
@@ -85,6 +89,10 @@ class Ability(object):
                 self.delayed.remove(p)
 
     def update(self):
+        try:
+            self.core.update()
+        except:
+            pass
         if self.global_cooldown:
             self.global_cooldown -= 1
         self.slot_mouse_two.update()

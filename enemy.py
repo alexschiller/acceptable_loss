@@ -8,6 +8,7 @@ from baseskills import * # noqa
 
 
 enemy_skillset = {
+    'core': Core,
     '1': BasicTrigger,
     '2': Skill,
     '3': Skill,
