@@ -137,7 +137,6 @@ class Button(object):
                     self.trigger = 1
 
     def do_action(self):
-        print "OK12312asd  "
         try:
             self.func()
         except:
