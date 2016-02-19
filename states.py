@@ -188,7 +188,6 @@ class GameState(StateObject):
             s = StringIO.StringIO()
             sortby = 'cumulative'
             ps = pstats.Stats(master.pr, stream=s).sort_stats(sortby)
-            ps.print_stats()
 
             f = open('output.txt', 'w')
             f.write(s.getvalue())
@@ -236,7 +235,6 @@ class GameState(StateObject):
 
         if key_handler[key.F] and master.player.energy >= 100:
             # teleport(master, mouse_position)
-            print "SDFSDFDSFSDFSDF"
             teleport(master, self.manager.assets.mouse_position)
         # Run Updates
         master.update()
@@ -386,13 +384,11 @@ class SelectState(StateObject):
 
     def enter_game(self):
         if self.val:
-                print "test"
                 reset_imp()
                 master.reset()
                 master.player.sprite.x = master.home.x
                 master.player.sprite.y = master.home.y
         else:
-            print "more test"
             ready_level(master, self.difficulty, 5)
         self.state_manager.swap("game")
 
@@ -421,9 +417,7 @@ class StateManager(object):
 
     def swap(self, string):
         self.past = self.current
-        print string
         if string == 'game':
-            print "yo"
             self.current = GameState(self)
         if string == 'pause':
             self.current = self.pause
