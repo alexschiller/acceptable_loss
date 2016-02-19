@@ -3,6 +3,14 @@ import math
 from functools import partial
 from utility import load_image
 
+class SpectreCore(object):
+    def __init__(self, master, level, handler):
+        self.chaos = []
+        self.order = []
+
+    def update(self):
+        pass
+
 # Unfinished
 class SPOVTimedBreathing(Skill):
     def __init__(self, master, level, handler):
@@ -77,7 +85,8 @@ class SPSNTrigger(Skill):
             # play_sound(self.owner.stats.gun_one_data['gun_fire_sound'])
             self.handler.thrown.append(Thrown(self.master, self.handler, bullet_base))
             self.handler.owner.stats.recoil += self.handler.owner.stats.gun_one_data['recoil']
-            self.handler.trigger_global_cooldown()
+            return True
+        return False
 
     def get_enemy_dist(self):
         if self.handler.owner.target:
@@ -112,7 +121,8 @@ class SPSNSalted(Skill):
             # play_sound(self.owner.stats.gun_one_data['gun_fire_sound'])
             self.handler.thrown.append(Thrown(self.master, self.handler, bullet_base))
             self.handler.owner.stats.recoil += self.handler.owner.stats.gun_one_data['recoil']
-            self.handler.trigger_global_cooldown()
+            return True
+        return False
 
     def get_enemy_dist(self):
         if self.handler.owner.target:
@@ -171,7 +181,8 @@ class SPSNBurst(Skill):
             self.handler.delayed.append([5, partial(self.handler.thrown.append, Thrown(self.master, self.handler, bullet_base))])
             self.handler.delayed.append([10, partial(self.handler.thrown.append, Thrown(self.master, self.handler, bullet_base))])
             self.handler.owner.stats.recoil += (self.handler.owner.stats.gun_one_data['recoil'] * 3)
-            self.handler.trigger_global_cooldown()
+            return True
+        return False
 
     def get_enemy_dist(self):
         if self.handler.owner.target:
@@ -213,14 +224,15 @@ class SPBLSlash(Skill):
                     # play_sound(self.owner.stats.gun_two_data['gun_fire_sound'])
                     self.handler.thrown.append(Melee(self.master, self.handler, bullet_base))
                     self.handler.owner.stats.recoil += self.handler.owner.stats.gun_two_data['recoil']
-                    self.handler.trigger_global_cooldown()
+                    return True
             else:
                 ret = calc_vel_xy(self.handler.owner.sprite.x, self.handler.owner.sprite.y,
                     self.handler.owner.target.sprite.x, self.handler.owner.target.sprite.y, 45)
                 self.handler.owner.controller.move_to(self.handler.owner.target.sprite.x + ret[0],
                     self.handler.owner.target.sprite.y + ret[1], 1)
+                return False
         except:
-            pass
+            return False
 
     def get_enemy_dist(self):
         if self.handler.owner.target:
@@ -252,7 +264,7 @@ class SPBLTrips(Skill):
                     # play_sound(self.owner.stats.gun_two_data['gun_fire_sound'])
                     self.handler.thrown.append(Melee(self.master, self.handler, bullet_base))
                     self.handler.owner.stats.recoil += self.handler.owner.stats.gun_two_data['recoil']
-                    self.handler.trigger_global_cooldown()
+                    return True
             else:
                 self.master.spriteeffect.teleport(self.handler.owner.sprite.x, self.handler.owner.sprite.y)
                 self.handler.owner.stats.temp_stat_change(2, 'speed', 30)
@@ -260,8 +272,9 @@ class SPBLTrips(Skill):
                     self.handler.owner.target.sprite.x, self.handler.owner.target.sprite.y, 45)
                 self.handler.owner.controller.move_to(self.handler.owner.target.sprite.x + ret[0],
                     self.handler.owner.target.sprite.y + ret[1], 1)
+                return False
         except:
-            pass
+            return False
 
     def get_enemy_dist(self):
         if self.handler.owner.target:
@@ -319,6 +332,7 @@ class SPBLSwarm(Skill):
         super(SPBLSwarm, self).__init__(master, level, handler)
 
 spectre_skillset = {
+    'core': SpectreCore,
     '1': SPOVTimedBreathing,
     '2': SPOVFlakJacket,
     '3': SPOVTwentyMileMarch,

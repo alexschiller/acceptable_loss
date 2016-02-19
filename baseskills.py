@@ -7,15 +7,31 @@ import pyglet
 # import itertools
 from collide import * # noqa
 
+class Core(object):
+    def __init__(self, master, handler):
+        self.master = master
+        self.handler = handler
+
+    def update(self):
+        pass
 
 class Skill(object):
     def __init__(self, master, level, handler):
         self.master = master
         self.handler = handler
         self.level = level
+        self._cooldown = 30
 
     def fire(self):
         pass
+
+    @property
+    def cooldown(self):
+        return self._cooldown
+
+    def update(self):
+        if self._cooldown:
+            self._cooldown -= 1
 
 class BasicTrigger(Skill):
     def __init__(self, master, level, handler):
@@ -37,7 +53,9 @@ class BasicTrigger(Skill):
             # play_sound(self.owner.stats.gun_one_data['gun_fire_sound'])
             self.handler.thrown.append(Thrown(self.master, self.handler, bullet_base))
             self.handler.owner.stats.recoil += self.handler.owner.stats.gun_one_data['recoil']
-            self.handler.trigger_global_cooldown()
+            self._cooldown = 120
+            return True
+        return False
 
     def get_enemy_dist(self):
         if self.handler.owner.target:
