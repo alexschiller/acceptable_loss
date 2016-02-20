@@ -83,7 +83,10 @@ class Character(object):
         self.master.loot.pack_package(self.generate_loot(), self.sprite.x, self.sprite.y)
         try:
             self.sprite.delete()
-            self.ability.thrown = []
+            for p in self.ability.packages:
+                p.cleanup()
+            for t in self.ability.transmissions:
+                t.cleanup()
             self.master.people[self.base['color']].remove(self)
         except:
             pass

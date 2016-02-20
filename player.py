@@ -337,8 +337,8 @@ player_base = {
 sp_sniper = {
         'gun_class': 'Sniper',
         'level': 1,
-        'damage_min': 6,
-        'damage_max': 10,
+        'damage_min': 3,
+        'damage_max': 5,
         'travel': 700,
         'range_min': 300,
         'range_max': 1000,
@@ -347,8 +347,8 @@ sp_sniper = {
         'rof': .1,
         'recoil': 50,
         'crit': 15,
-        'crit_damage': 2,
-        'armor_pierce': 7,
+        'crit_damage': 1.5,
+        'armor_pierce': 2,
         'image': load_image('sp_snipe.png'), # noqa
         'gun_fire_sound': load_sound('shot.wav'), # noqa
         'on_hit_sound': load_sound('on_hit.wav'), # noqa
@@ -409,7 +409,7 @@ player_base_spectre = {
         'damage_perc': 0,
         'attack_speed_perc': 0,
         'crit': 5,
-        'crit_damage': 2,
+        'crit_damage': .1,
         'accuracy': 0,
         'armor_pierce': 0,
         'shield_max': 10,
