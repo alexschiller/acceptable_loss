@@ -31,8 +31,7 @@ class Character(object):
 
         self.controller = base['controller'](self)
         self.stats = StatsManager(base['stats'],
-            base['weapon_slot_one'],
-            base['weapon_slot_two'],
+            base['gun'],
             base['armor']
         )
         self.ability = Ability(
@@ -40,8 +39,6 @@ class Character(object):
             self,
             base['skillset'],
             base['build'],
-            base['weapon_slot_one'],
-            base['weapon_slot_two'],
         )
 
     def update_bars(self):

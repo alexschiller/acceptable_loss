@@ -102,8 +102,7 @@ def enemy_soldier_base(level, x, y):
     return {
         'sprite': load_image(random.choice(['soldier.png', 'green_soldier.png'])), # noqa
         'coord': [x, y],
-        'weapon_slot_one': gen_soldier_gun(level),
-        'weapon_slot_two': gen_soldier_gun(level),
+        'gun': gen_soldier_gun(level),
         'armor': {'gem_slots': {}},
         'skillset': enemy_skillset,
         'build': enemy_build,
@@ -141,8 +140,7 @@ def enemy_tank_base(level, x, y):
     return {
         'sprite': load_image('tank.png'), # noqa
         'coord': [x, y],
-        'weapon_slot_one': gen_tank_gun(level),
-        'weapon_slot_two': gen_tank_gun(level),
+        'gun': gen_tank_gun(level),
         'armor': {'gem_slots': {}},
         'skillset': enemy_skillset,
         'build': enemy_build,
@@ -181,8 +179,7 @@ def enemy_zombie_base(level, x, y):
     return {
         'sprite': load_image('zombie.png'),
         'coord': [x, y],
-        'weapon_slot_one': gen_zombie_gun(level),
-        'weapon_slot_two': gen_zombie_gun(level),
+        'gun': gen_zombie_gun(level),
         'armor': {'gem_slots': {}},
         'skillset': enemy_skillset,
         'build': enemy_build,
@@ -243,8 +240,7 @@ def enemy_drone_base(level, x, y):
     return {
         'sprite': load_image('drone.png'), # noqa
         'coord': [x, y],
-        'weapon_slot_one': gen_drone_gun(level),
-        'weapon_slot_two': gen_drone_gun(level),
+        'gun': gen_drone_gun(level),
         'armor': {'gem_slots': {}},
         'skillset': enemy_skillset,
         'build': enemy_build,

@@ -146,33 +146,11 @@ class SPSNTrigger(Skill):
         super(SPSNTrigger, self).__init__(master, level, handler)
 
     def fire(self):
-        print self.handler.global_cooldown
         if not self.handler.global_cooldown:
             PlayerGunshot(self.master, self.handler, self, self.handler.copy_gun(), self.handler.owner.sprite.x, self.handler.owner.sprite.y)
+            self.handler.owner.stats.recoil += self.handler.owner.stats.gun_one_data['recoil']
             return True
         return False
-    #     self.damage_mod = .5 + self.level * .05
-
-    # def fire(self):
-    #     enemy_range = self.get_enemy_dist()
-    #     if enemy_range and not self.handler.global_cooldown:
-    #         bullet_base = self.handler.build_bullet(
-    #             self.handler.owner.stats.gun_one_data,
-    #             self.handler.owner.sprite.x,
-    #             self.handler.owner.sprite.y,
-    #             self.handler.owner.target.sprite.x,
-    #             self.handler.owner.target.sprite.y,
-    #             enemy_range,
-    #             self.handler.owner.target,
-    #         )
-
-    #         bullet_base['damage_min'] = int(self.damage_mod * bullet_base['damage_min'])
-    #         bullet_base['damage_max'] = int(self.damage_mod * bullet_base['damage_max'])
-    #         # play_sound(self.owner.stats.gun_one_data['gun_fire_sound'])
-    #         self.handler.thrown.append(Thrown(self.master, self.handler, bullet_base))
-    #         self.handler.owner.stats.recoil += self.handler.owner.stats.gun_one_data['recoil']
-    #         return True
-    #     return False
 
     def get_enemy_dist(self):
         if self.handler.owner.target:
@@ -186,37 +164,34 @@ class SPSNTrigger(Skill):
 class SPSNSalted(Skill):
     def __init__(self, master, level, handler):
         super(SPSNSalted, self).__init__(master, level, handler)
-    #     self.armor_pierce_mod = 1 + self.level * .05
-    #     self.img = load_image('salted.png')
 
-    # def fire(self):
-    #     enemy_range = self.get_enemy_dist()
-    #     if enemy_range and not self.handler.global_cooldown:
-    #         bullet_base = self.handler.build_bullet(
-    #             self.handler.owner.stats.gun_one_data,
-    #             self.handler.owner.sprite.x,
-    #             self.handler.owner.sprite.y,
-    #             self.handler.owner.target.sprite.x,
-    #             self.handler.owner.target.sprite.y,
-    #             enemy_range,
-    #             self.handler.owner.target,
-    #         )
+    def fire(self):
+        enemy_range = self.get_enemy_dist()
+        try:
+            if enemy_range <= 50 and enemy_range and not self.handler.global_cooldown:
+                Melee(self.master, self.handler, self, self.handler.copy_gun(), self.handler.owner.sprite.x, self.handler.owner.sprite.y)
+                self.handler.owner.stats.recoil += self.handler.owner.stats.gun_data['recoil']
+                return True
+            else:
+                self.dash()
+                return False
+        except:
+            return False
 
-    #         bullet_base['armor_pierce'] = int(self.armor_pierce_mod * (bullet_base['armor_pierce'] + self.level))
-    #         bullet_base['image'] = self.img
-    #         # play_sound(self.owner.stats.gun_one_data['gun_fire_sound'])
-    #         self.handler.thrown.append(Thrown(self.master, self.handler, bullet_base))
-    #         self.handler.owner.stats.recoil += self.handler.owner.stats.gun_one_data['recoil']
-    #         return True
-    #     return False
+    def dash(self):
+        ret = calc_vel_xy(self.handler.owner.sprite.x, self.handler.owner.sprite.y,
+        self.handler.owner.target.sprite.x, self.handler.owner.target.sprite.y, 45)
+        self.handler.owner.controller.move_to(self.handler.owner.target.sprite.x + ret[0],
+            self.handler.owner.target.sprite.y + ret[1], 1)
 
-    # def get_enemy_dist(self):
-    #     if self.handler.owner.target:
-    #         dist_x = self.handler.owner.sprite.x - self.handler.owner.target.sprite.x
-    #         dist_y = self.handler.owner.sprite.y - self.handler.owner.target.sprite.y
-    #         dist = math.hypot(dist_x, dist_y)
-    #         return dist
-    #     return False
+    def get_enemy_dist(self):
+        if self.handler.owner.target:
+            dist_x = self.handler.owner.sprite.x - self.handler.owner.target.sprite.x
+            dist_y = self.handler.owner.sprite.y - self.handler.owner.target.sprite.y
+            dist = math.hypot(dist_x, dist_y)
+            return dist
+        return False
+
 # Unfinished
 class SPSNMuzzleBrake(Skill):
     def __init__(self, master, level, handler):
@@ -501,8 +476,8 @@ spectre_skillset = {
 }
 
 sample_spectre_build = {
-    'slot_mouse_two': ['11', 1],
-    'slot_one': ['1', 1],
+    'slot_mouse_two': ['12', 1],
+    'slot_one': ['12', 1],
     'slot_two': ['1', 1],
     'slot_three': ['1', 2],
     'slot_four': ['1', 3],

@@ -61,11 +61,11 @@ class Player(Character):
 
             dist = math.hypot(self.sprite.x - self.target.sprite.x, self.sprite.y - self.target.sprite.y) # noqa
 
-            gun_max = self.stats.gun_one_data['range_max']
+            gun_max = self.stats.gun_data['range_max']
             if dist > gun_max:
                 return 1 - min(dist - gun_max, 300) / 300.0
 
-            gun_min = self.stats.gun_one_data['range_min']
+            gun_min = self.stats.gun_data['range_min']
             if dist < gun_min:
                 return 1 - min(gun_min - dist, 300) / 300.0
             return 1
@@ -94,7 +94,7 @@ class Player(Character):
     def calc_acc(self):
         self.update_acc_mod()
         try:
-            acc_val = 100 - min(int((self.stats.accuracy + self.stats.gun_one_data['accuracy']) * self.acc_mouse_mod), 100) # noqa
+            acc_val = 100 - min(int((self.stats.accuracy + self.stats.gun_data['accuracy']) * self.acc_mouse_mod), 100) # noqa
         except:
             return 0
         return acc_val
@@ -105,7 +105,7 @@ class Player(Character):
             self.energy = 100
         self.shield_bar.x = 10 - (271 - (self.stats.shield / float(self.stats.shield_max) * 271)) # noqa
         self.health_bar.x = 10 - (271 - (self.stats.health / float(self.stats.health_max) * 271)) # noqa
-        # self.acc_bar.x = 150 + min(int((self.stats.accuracy + self.stats.gun_two_data['accuracy']) * self.target_distance()), 100) # noqa
+
         acc_val = self.calc_acc()
         x = self.controller.sprite.x
         y = self.controller.sprite.y
@@ -299,8 +299,7 @@ player_armor = {
 player_base = {
     'sprite': load_image('tiny.png'),
     'coord': [window_width / 2, window_height / 2],
-    'weapon_slot_one': lb_autocannon,
-    'weapon_slot_two': lb_missile,
+    'gun': lb_autocannon,
     'armor': player_armor,
     'skillset': longbow_skillset,
     'build': sample_longbow_build,
@@ -369,14 +368,14 @@ sp_blade = {
         'travel': 700,
         'range_min': 0,
         'range_max': 60,
-        'velocity': 200,
+        'velocity': 10,
         'accuracy': 85,
         'rof': 5,
         'recoil': 5,
         'crit': 20,
         'crit_damage': 2,
         'armor_pierce': 2,
-        'image': load_image('cutter.png'), # noqa
+        'image': load_image('stabber.png'), # noqa
         'gun_fire_sound': load_sound('shot.wav'), # noqa
         'on_hit_sound': load_sound('on_hit.wav'), # noqa
         'effects': [],
@@ -391,8 +390,7 @@ sp_blade = {
 player_base_spectre = {
     'sprite': load_image('spectre.png'),
     'coord': [window_width / 2, window_height / 2],
-    'weapon_slot_one': sp_sniper,
-    'weapon_slot_two': sp_blade,
+    'gun': sp_blade,
     'armor': player_armor,
     'skillset': spectre_skillset,
     'build': sample_spectre_build,

@@ -8,7 +8,7 @@ from collide import * # noqa
 from build import Build
 
 class Ability(object):
-    def __init__(self, master, owner, skillset, build, gun_one, gun_two):
+    def __init__(self, master, owner, skillset, build):
         self.master = master
         self.owner = owner
 
@@ -73,7 +73,7 @@ class Ability(object):
                 self.trigger_global_cooldown()
 
     def copy_gun(self): # noqa
-        return dict.copy(self.owner.stats.gun_one_data)
+        return dict.copy(self.owner.stats.gun_data)
 
     def trigger_global_cooldown(self):
         self.global_cooldown += self.global_cooldown_time

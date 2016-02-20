@@ -1,14 +1,13 @@
 import math
 
 class StatsManager(object):
-    def __init__(self, base, gun_one, gun_two, armor):
+    def __init__(self, base, gun, armor):
 
         self.base = base
         self.level = base['level']
 
         self.extract_gems(armor['gem_slots'])
-        self.extract_gems(gun_one['gem_slots'])
-        self.extract_gems(gun_two['gem_slots'])
+        self.extract_gems(gun['gem_slots'])
 
         self._damage = base.get('damage', 0)
         self._damage_min = base.get('damage_min', 0)
@@ -69,8 +68,7 @@ class StatsManager(object):
             'evade': 0,
             'speed': 0,
         }
-        self.gun_one = gun_one
-        self.gun_two = gun_two
+        self.gun = gun
 
     def update_move(self, mx, my):
         if (abs(mx) + abs(my)) > 0:
@@ -117,8 +115,6 @@ class StatsManager(object):
             self.recoil -= math.ceil(self.recoil / 90.0)
 
     def update_health(self, damage):
-        print "start", self.health, self.shield
-
         self._shield -= damage
         if self._shield <= 0:
             damage = self._shield * -1
@@ -126,9 +122,7 @@ class StatsManager(object):
             damage -= self.armor
             x = max(1, damage)
             self._health -= x
-            print "end", self.health, self.shield
             return x
-        print "end", self.health, self.shield
         return 0
 
     @property
@@ -204,12 +198,8 @@ class StatsManager(object):
         return self._speed + self.mod['speed']
 
     @property
-    def gun_one_data(self):
-        return self.generate_gun(self.gun_one)
-
-    @property
-    def gun_two_data(self):
-        return self.generate_gun(self.gun_two)
+    def gun_data(self):
+        return self.generate_gun(self.gun)
 
     def extract_gems(self, slots):
         for slot in slots.keys():

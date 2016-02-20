@@ -86,12 +86,37 @@ class Transmission(object):
         self.ability.transmissions.remove(self)
 
     def check_package_accuracy(self):
-        self.evade = 0
-        self.hit = 1
-        self.crit = 0
+        self.target = self.ability.owner.target
+        if self.target:
+            self.hit = random.randint(0, 100) < self.package['accuracy']
+            if self.hit and random.randint(0, 100) < self.package['crit']:
+                self.crit = True
+                self.package['damage_min'] = int(self.package['damage_min'] * self.package['crit_damage'])
+                self.package['damage_max'] = int(self.package['damage_max'] * self.package['crit_damage'])
+
+            if self.hit and random.randint(0, 100) < self.target.stats.evade:
+                self.evade = True
+
+            if self.hit:
+                self.range = math.hypot(self.sprite.x - self.target.sprite.x, self.sprite.y - self.target.sprite.y)
+            else:
+                self.range = math.hypot(self.sprite.x - self.target.sprite.x + random.randint(-5, 5), self.sprite.y - self.target.sprite.y + random.randint(-5, 5))
+        else:
+            self.range = math.hypot(self.sprite.x - self.sprite.x + random.randint(-20, 20), self.sprite.y - self.sprite.y + random.randint(-20, 20))
 
     def unpack(self):
-        pass
+        if self.target and self.hit:
+            if self.package['damage_min'] < self.package['damage_max']:
+                self.damage = random.randint(self.package['damage_min'], self.package['damage_max'])
+            else:
+                self.damage = random.randint(self.package['damage_min'], self.package['damage_min'] + 1)
+            self.target.on_hit(self)
+        self.display_outcome()
+        self.backtransmit(not(self.hit), self.evade, self.hit, self.crit, self.kill)
+        try:
+            self.cleanup()
+        except Exception, e:
+            print e
 
     def display_outcome(self):
         x = self.sprite.x
@@ -152,7 +177,7 @@ class Transmission(object):
 class Gunshot(Transmission):
     def __init__(self, master, ability, skill, package, start_x, start_y):
         super(Gunshot, self).__init__(master, ability, skill, package, start_x, start_y)
-        self.travelled = 0
+        self.travelled = 1
 
     def transmitting(self):
         if self.hit:
@@ -164,6 +189,36 @@ class Gunshot(Transmission):
         self.sprite.x += self.ret[0]
         self.sprite.y += self.ret[1]
         self.travelled += math.hypot(self.ret[0], self.ret[1])
+        if self.travelled >= self.range:
+            self.end_transmission = True
+
+class Melee(Transmission):
+    def __init__(self, master, ability, skill, package, start_x, start_y):
+        super(Melee, self).__init__(master, ability, skill, package, start_x, start_y)
+        self.travelled = 0
+        self.stab = 1
+
+    def transmitting(self):
+
+        if self.hit:
+            self.ret = calc_vel_xy(self.target.sprite.x, self.target.sprite.y, self.sprite.x, self.sprite.y, self.package['velocity'])
+        else:
+            self.ret = calc_vel_xy(self.mouse_x, self.mouse_y, self.sprite.x, self.sprite.y, self.package['velocity'])
+
+        if self.stab:
+            self.sprite.x += self.ret[0]
+            self.sprite.y += self.ret[1]
+            self.package['velocity'] -= 1
+        else:
+            self.package['velocity'] += 1
+            self.sprite.x -= self.ret[0]
+            self.sprite.y -= self.ret[1]
+
+        self.travelled += math.hypot(self.ret[0], self.ret[1])
+
+        if self.travelled >= self.range / 2.0:
+            self.stab = 0
+
         if self.travelled >= self.range:
             self.end_transmission = True
 
@@ -180,25 +235,13 @@ class Gunshot(Transmission):
                 self.evade = True
 
             if self.hit:
-                self.range = math.hypot(self.sprite.x - self.target.sprite.x, self.sprite.y - self.target.sprite.y)
+                    self.sprite.rotation = (math.degrees(math.atan2(self.target.sprite.y - self.sprite.y, self.target.sprite.x - self.sprite.x)) * -1) + 90
+                    self.range = 100
             else:
-                self.range = math.hypot(self.sprite.x - self.target.sprite.x + random.randint(-5, 5), self.sprite.y - self.target.sprite.y + random.randint(-5, 5))
+                self.sprite.rotation = (math.degrees(math.atan2(self.mouse_y - self.sprite.y, self.mouse_x - self.sprite.x)) * -1) + 90
+                self.range = 100
         else:
-            self.range = math.hypot(self.sprite.x - self.sprite.x + random.randint(-20, 20), self.sprite.y - self.sprite.y + random.randint(-20, 20))
-
-    def unpack(self):
-        if self.target and self.hit:
-            if self.package['damage_min'] < self.package['damage_max']:
-                self.damage = random.randint(self.package['damage_min'], self.package['damage_max'])
-            else:
-                self.damage = random.randint(self.package['damage_min'], self.package['damage_min'] + 1)
-            self.target.on_hit(self)
-        self.display_outcome()
-        self.backtransmit(not(self.hit), self.evade, self.hit, self.crit, self.kill)
-        try:
-            self.cleanup()
-        except Exception, e:
-            print e
+            self.range = 100
 
 class PlayerGunshot(Gunshot):
     def __init__(self, master, ability, skill, package, start_x, start_y):
@@ -230,7 +273,6 @@ class BasicTrigger(Skill):
         super(BasicTrigger, self).__init__(master, level, handler)
 
     def fire(self):
-        print self.handler.global_cooldown
         if not self.handler.global_cooldown:
             Gunshot(self.master, self.handler, self, self.handler.copy_gun(), self.handler.owner.sprite.x, self.handler.owner.sprite.y)
             return True
