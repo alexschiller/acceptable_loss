@@ -268,6 +268,47 @@ class PlayerGunshot(Gunshot):
         else:
             self.range = math.hypot(self.sprite.x - self.mouse_x, self.sprite.y - self.mouse_y)
 
+class NoTargetGunshot(Gunshot):
+    def __init__(self, master, ability, skill, package, start_x, start_y):
+        super(NoTargetGunshot, self).__init__(master, ability, skill, package, start_x, start_y)
+
+    def check_package_accuracy(self):
+        self.target = self.closest_enemy(self.start_x, self.start_y)
+        if not self.target:
+            self.cleanup()
+            return False
+
+        self.hit = random.randint(0, 100) < self.package['accuracy']
+        if self.hit and random.randint(0, 100) < self.package['crit']:
+            self.crit = True
+            self.package['damage_min'] = int(self.package['damage_min'] * self.package['crit_damage'])
+            self.package['damage_max'] = int(self.package['damage_max'] * self.package['crit_damage'])
+
+        if self.hit and random.randint(0, 100) < self.target.stats.evade:
+            self.evade = True
+        
+        if self.hit:
+            self.range = math.hypot(self.sprite.x - self.target.sprite.x, self.sprite.y - self.target.sprite.y)
+        else:
+            self.range = math.hypot(self.sprite.x - self.target.sprite.x + random.randint(-5, 5), self.sprite.y - self.target.sprite.y + random.randint(-5, 5))
+
+    def closest_enemy(self, x, y):
+        target = None
+        try:
+            min_dist = 1000
+            x1 = x
+            y1 = y
+            if len(self.ability.owner.enemies) == 0:
+                return False
+            for e in self.ability.owner.enemies:
+                dist = abs(math.hypot(x1 - e.sprite.x, y1 - e.sprite.y))
+                if dist < min_dist:
+                    min_dist = dist
+                    target = e
+            return target
+        except:
+            return False
+
 class BasicTrigger(Skill):
     def __init__(self, master, level, handler):
         super(BasicTrigger, self).__init__(master, level, handler)

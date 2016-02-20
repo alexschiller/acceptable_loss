@@ -167,7 +167,9 @@ class Chaos(object):
         img = load_image('chaos.png')
         self.sprite = pyglet.sprite.Sprite(img,
         start_x, start_y, batch=EffectsBatch)
-        self.timer = 30
+        self.timer = 1
+        self.shoot_timer = 60
+        self.shoot = 0
         self.ret = [0, 0]
         self.ret_x = 0
         self.ret_y = 0
@@ -198,6 +200,35 @@ class Chaos(object):
                 except Exception, e:
                     print e
                 self.delete_self()
+
+    def tracer_update(self):
+        try:
+            self.timer -= 1
+            self.shoot_timer -= 1
+            if self.target.dead:
+                self.target = self.controller.closest_enemy(self)
+            if not self.controller:
+                if not self.timer:
+                    self.ret = calc_vel_xy(self.handler.sprite.x, self.handler.sprite.y, self.sprite.x, self.sprite.y, 5)
+                    self.update_ret()
+                    self.timer = random.randint(3, 5)
+                self.sprite.x += self.ret_x
+                self.sprite.y += self.ret_y
+            else:
+                if not self.timer:
+                    self.ret = calc_vel_xy(self.target.sprite.x, self.target.sprite.y, self.sprite.x, self.sprite.y, 5)
+                    self.update_ret()
+                    self.timer = random.randint(3, 5)
+                self.sprite.x += self.ret_x
+                self.sprite.y += self.ret_y
+            if not self.shoot_timer:
+                self.shoot_timer = 60
+                self.shoot += 1
+                self.controller.activate(self)
+                if self.shoot > 10:
+                    self.delete_self()
+        except:
+            self.delete_self()
 
     def update_ret(self):
         self.ret_x += self.ret[0]
@@ -555,9 +586,53 @@ class SPBLSmokyEyeSurprise(Skill):
         super(SPBLSmokyEyeSurprise, self).__init__(master, level, handler)
 
 # Unfinished
-class SPBLTheRLL(Skill):
+class SPBLTracer(Skill):
     def __init__(self, master, level, handler):
-        super(SPBLTheRLL, self).__init__(master, level, handler)
+        super(SPBLTracer, self).__init__(master, level, handler)
+        self.image = load_image('red_laser.png')
+
+    def fire(self):
+        if len(self.handler.core.chaos):
+            c = self.handler.core.chaos.pop()
+            c.controller = self
+            c.target = self.closest_enemy(c)
+            if not c.target:
+                try:
+                    self.handler.core.add_chaos()
+                    c.delete_self()
+                except:
+                    return True
+                return True
+            c.update = c.tracer_update
+            self.handler.core.chaos_in_action.append(c)
+            return True
+        else:
+            return False
+
+    def activate(self, chaos):
+        gun = self.handler.copy_gun()
+        gun['image'] = self.image
+        gun['damage_min'] = int(max(gun['damage_min'] * .1, 1))
+        gun['damage_max'] = int(max(gun['damage_max'] * .1, 2))
+        gun['velocity'] = 20
+        NoTargetGunshot(self.master, self.handler, self, dict.copy(gun), chaos.sprite.x, chaos.sprite.y)
+
+    def closest_enemy(self, chaos):
+        target = None
+        try:
+            min_dist = float("inf")
+            x1 = chaos.sprite.x
+            y1 = chaos.sprite.y
+            if len(self.handler.owner.enemies) == 0:
+                return False
+            for e in self.handler.owner.enemies:
+                dist = abs(math.hypot(x1 - e.sprite.x, y1 - e.sprite.y))
+                if dist < min_dist:
+                    min_dist = dist
+                    target = e
+            return target
+        except:
+            return False
 
 # Unfinished
 class SPBLBlotOutTheSun(Skill):
@@ -622,7 +697,7 @@ spectre_skillset = {
     '24': SPBLAnarchy,
     '25': SPBLRocketPowered,
     '26': SPBLSmokyEyeSurprise,
-    '27': SPBLTheRLL,
+    '27': SPBLTracer,
     '28': SPBLBlotOutTheSun,
     '29': SPBLConked,
     '30': SPBLMayhem,
@@ -632,7 +707,7 @@ sample_spectre_build = {
     'slot_mouse_two': ['12', 1],
     'slot_one': ['24', 1],
     'slot_two': ['30', 1],
-    'slot_three': ['1', 2],
+    'slot_three': ['27', 2],
     'slot_four': ['1', 3],
     'slot_q': ['1', 1],
     'slot_e': ['1', 1],

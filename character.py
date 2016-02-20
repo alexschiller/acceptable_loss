@@ -23,6 +23,7 @@ class Character(object):
         # self.build = base['build']
         self.target = None
         self.bars = []
+        self.dead = False
 
         self.sprite = pyglet.sprite.Sprite(base['sprite'], base['coord'][0], base['coord'][1], batch=gfx_batch) # noqa
         self.collision = SpriteCollision(self.sprite)
@@ -77,6 +78,7 @@ class Character(object):
         return {'resources': {'mon': random.randint(1, 5), 'sci': random.randint(1, 5)}, 'items': []} # noqa
 
     def on_death(self):
+        self.dead = True
         self.master.loot.pack_package(self.generate_loot(), self.sprite.x, self.sprite.y)
         try:
             self.sprite.delete()
