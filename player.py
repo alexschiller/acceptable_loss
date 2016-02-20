@@ -61,11 +61,11 @@ class Player(Character):
 
             dist = math.hypot(self.sprite.x - self.target.sprite.x, self.sprite.y - self.target.sprite.y) # noqa
 
-            gun_max = self.stats.gun_two_data['range_max']
+            gun_max = self.stats.gun_one_data['range_max']
             if dist > gun_max:
                 return 1 - min(dist - gun_max, 300) / 300.0
 
-            gun_min = self.stats.gun_two_data['range_min']
+            gun_min = self.stats.gun_one_data['range_min']
             if dist < gun_min:
                 return 1 - min(gun_min - dist, 300) / 300.0
             return 1
@@ -340,9 +340,9 @@ sp_sniper = {
         'damage_min': 6,
         'damage_max': 10,
         'travel': 700,
-        'range_min': 600,
+        'range_min': 300,
         'range_max': 1000,
-        'velocity': 150,
+        'velocity': 10,
         'accuracy': 70,
         'rof': .1,
         'recoil': 50,

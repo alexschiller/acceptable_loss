@@ -1,25 +1,25 @@
 from baseskills import * # noqa
 import math
-from functools import partial
+# from functools import partial
 from utility import * # noqa
 
-class SpectreMelee(Melee):
-    def __init__(self, master, ability, base):  # noqa
-        super(SpectreMelee, self).__init__(master, ability, base)
+# class SpectreMelee(Melee):
+#     def __init__(self, master, ability, base):  # noqa
+#         super(SpectreMelee, self).__init__(master, ability, base)
 
-    def display_outcome(self):
-        x = self.sprite.x
-        y = self.sprite.y
-        if self.evade:
-            self.master.spriteeffect.bullet_evade(x, y, 'evade') # noqa
-        elif self.crit:
-            self.master.spriteeffect.bullet_crit(x, y, self.damage) # noqa
-            self.owner.core.add_chaos()
-        elif self.hit:
-            self.master.spriteeffect.bullet_hit(x, y, self.damage) # noqa
-            self.owner.core.add_chaos()
-        else:
-            self.master.spriteeffect.bullet_miss(x, y, 'miss') # noqa
+#     def display_outcome(self):
+#         x = self.sprite.x
+#         y = self.sprite.y
+#         if self.evade:
+#             self.master.spriteeffect.bullet_evade(x, y, 'evade') # noqa
+#         elif self.crit:
+#             self.master.spriteeffect.bullet_crit(x, y, self.damage) # noqa
+#             self.owner.core.add_chaos()
+#         elif self.hit:
+#             self.master.spriteeffect.bullet_hit(x, y, self.damage) # noqa
+#             self.owner.core.add_chaos()
+#         else:
+#             self.master.spriteeffect.bullet_miss(x, y, 'miss') # noqa
 
 class Chaos(object):
     def __init__(self, master, handler, start_x, start_y): # noqa
@@ -144,28 +144,35 @@ class SPOVBarrage(Skill):
 class SPSNTrigger(Skill):
     def __init__(self, master, level, handler):
         super(SPSNTrigger, self).__init__(master, level, handler)
-        self.damage_mod = .5 + self.level * .05
 
     def fire(self):
-        enemy_range = self.get_enemy_dist()
-        if enemy_range and not self.handler.global_cooldown:
-            bullet_base = self.handler.build_bullet(
-                self.handler.owner.stats.gun_one_data,
-                self.handler.owner.sprite.x,
-                self.handler.owner.sprite.y,
-                self.handler.owner.target.sprite.x,
-                self.handler.owner.target.sprite.y,
-                enemy_range,
-                self.handler.owner.target,
-            )
-
-            bullet_base['damage_min'] = int(self.damage_mod * bullet_base['damage_min'])
-            bullet_base['damage_max'] = int(self.damage_mod * bullet_base['damage_max'])
-            # play_sound(self.owner.stats.gun_one_data['gun_fire_sound'])
-            self.handler.thrown.append(Thrown(self.master, self.handler, bullet_base))
-            self.handler.owner.stats.recoil += self.handler.owner.stats.gun_one_data['recoil']
+        print self.handler.global_cooldown
+        if not self.handler.global_cooldown:
+            PlayerGunshot(self.master, self.handler, self, self.handler.copy_gun(), self.handler.owner.sprite.x, self.handler.owner.sprite.y)
             return True
         return False
+    #     self.damage_mod = .5 + self.level * .05
+
+    # def fire(self):
+    #     enemy_range = self.get_enemy_dist()
+    #     if enemy_range and not self.handler.global_cooldown:
+    #         bullet_base = self.handler.build_bullet(
+    #             self.handler.owner.stats.gun_one_data,
+    #             self.handler.owner.sprite.x,
+    #             self.handler.owner.sprite.y,
+    #             self.handler.owner.target.sprite.x,
+    #             self.handler.owner.target.sprite.y,
+    #             enemy_range,
+    #             self.handler.owner.target,
+    #         )
+
+    #         bullet_base['damage_min'] = int(self.damage_mod * bullet_base['damage_min'])
+    #         bullet_base['damage_max'] = int(self.damage_mod * bullet_base['damage_max'])
+    #         # play_sound(self.owner.stats.gun_one_data['gun_fire_sound'])
+    #         self.handler.thrown.append(Thrown(self.master, self.handler, bullet_base))
+    #         self.handler.owner.stats.recoil += self.handler.owner.stats.gun_one_data['recoil']
+    #         return True
+    #     return False
 
     def get_enemy_dist(self):
         if self.handler.owner.target:
@@ -179,37 +186,37 @@ class SPSNTrigger(Skill):
 class SPSNSalted(Skill):
     def __init__(self, master, level, handler):
         super(SPSNSalted, self).__init__(master, level, handler)
-        self.armor_pierce_mod = 1 + self.level * .05
-        self.img = load_image('salted.png')
+    #     self.armor_pierce_mod = 1 + self.level * .05
+    #     self.img = load_image('salted.png')
 
-    def fire(self):
-        enemy_range = self.get_enemy_dist()
-        if enemy_range and not self.handler.global_cooldown:
-            bullet_base = self.handler.build_bullet(
-                self.handler.owner.stats.gun_one_data,
-                self.handler.owner.sprite.x,
-                self.handler.owner.sprite.y,
-                self.handler.owner.target.sprite.x,
-                self.handler.owner.target.sprite.y,
-                enemy_range,
-                self.handler.owner.target,
-            )
+    # def fire(self):
+    #     enemy_range = self.get_enemy_dist()
+    #     if enemy_range and not self.handler.global_cooldown:
+    #         bullet_base = self.handler.build_bullet(
+    #             self.handler.owner.stats.gun_one_data,
+    #             self.handler.owner.sprite.x,
+    #             self.handler.owner.sprite.y,
+    #             self.handler.owner.target.sprite.x,
+    #             self.handler.owner.target.sprite.y,
+    #             enemy_range,
+    #             self.handler.owner.target,
+    #         )
 
-            bullet_base['armor_pierce'] = int(self.armor_pierce_mod * (bullet_base['armor_pierce'] + self.level))
-            bullet_base['image'] = self.img
-            # play_sound(self.owner.stats.gun_one_data['gun_fire_sound'])
-            self.handler.thrown.append(Thrown(self.master, self.handler, bullet_base))
-            self.handler.owner.stats.recoil += self.handler.owner.stats.gun_one_data['recoil']
-            return True
-        return False
+    #         bullet_base['armor_pierce'] = int(self.armor_pierce_mod * (bullet_base['armor_pierce'] + self.level))
+    #         bullet_base['image'] = self.img
+    #         # play_sound(self.owner.stats.gun_one_data['gun_fire_sound'])
+    #         self.handler.thrown.append(Thrown(self.master, self.handler, bullet_base))
+    #         self.handler.owner.stats.recoil += self.handler.owner.stats.gun_one_data['recoil']
+    #         return True
+    #     return False
 
-    def get_enemy_dist(self):
-        if self.handler.owner.target:
-            dist_x = self.handler.owner.sprite.x - self.handler.owner.target.sprite.x
-            dist_y = self.handler.owner.sprite.y - self.handler.owner.target.sprite.y
-            dist = math.hypot(dist_x, dist_y)
-            return dist
-        return False
+    # def get_enemy_dist(self):
+    #     if self.handler.owner.target:
+    #         dist_x = self.handler.owner.sprite.x - self.handler.owner.target.sprite.x
+    #         dist_y = self.handler.owner.sprite.y - self.handler.owner.target.sprite.y
+    #         dist = math.hypot(dist_x, dist_y)
+    #         return dist
+    #     return False
 # Unfinished
 class SPSNMuzzleBrake(Skill):
     def __init__(self, master, level, handler):
@@ -239,37 +246,37 @@ class SPSNTotalSystemShock(Skill):
 class SPSNBurst(Skill):
     def __init__(self, master, level, handler):
         super(SPSNBurst, self).__init__(master, level, handler)
-        self.damage_mod = .5 + self.level * .05
+    #     self.damage_mod = .5 + self.level * .05
 
-    def fire(self):
-        enemy_range = self.get_enemy_dist()
-        if enemy_range and not self.handler.global_cooldown:
-            bullet_base = self.handler.build_bullet(
-                self.handler.owner.stats.gun_one_data,
-                self.handler.owner.sprite.x,
-                self.handler.owner.sprite.y,
-                self.handler.owner.target.sprite.x,
-                self.handler.owner.target.sprite.y,
-                enemy_range,
-                self.handler.owner.target,
-            )
-            bullet_base['damage_min'] = int(self.damage_mod * bullet_base['damage_min'])
-            bullet_base['damage_max'] = int(self.damage_mod * bullet_base['damage_max'])
+    # def fire(self):
+    #     enemy_range = self.get_enemy_dist()
+    #     if enemy_range and not self.handler.global_cooldown:
+    #         bullet_base = self.handler.build_bullet(
+    #             self.handler.owner.stats.gun_one_data,
+    #             self.handler.owner.sprite.x,
+    #             self.handler.owner.sprite.y,
+    #             self.handler.owner.target.sprite.x,
+    #             self.handler.owner.target.sprite.y,
+    #             enemy_range,
+    #             self.handler.owner.target,
+    #         )
+    #         bullet_base['damage_min'] = int(self.damage_mod * bullet_base['damage_min'])
+    #         bullet_base['damage_max'] = int(self.damage_mod * bullet_base['damage_max'])
 
-            # play_sound(self.owner.stats.gun_one_data['gun_fire_sound'])
-            self.handler.delayed.append([5, partial(self.handler.thrown.append, Thrown(self.master, self.handler, bullet_base))])
-            self.handler.delayed.append([10, partial(self.handler.thrown.append, Thrown(self.master, self.handler, bullet_base))])
-            self.handler.owner.stats.recoil += (self.handler.owner.stats.gun_one_data['recoil'] * 3)
-            return True
-        return False
+    #         # play_sound(self.owner.stats.gun_one_data['gun_fire_sound'])
+    #         self.handler.delayed.append([5, partial(self.handler.thrown.append, Thrown(self.master, self.handler, bullet_base))])
+    #         self.handler.delayed.append([10, partial(self.handler.thrown.append, Thrown(self.master, self.handler, bullet_base))])
+    #         self.handler.owner.stats.recoil += (self.handler.owner.stats.gun_one_data['recoil'] * 3)
+    #         return True
+    #     return False
 
-    def get_enemy_dist(self):
-        if self.handler.owner.target:
-            dist_x = self.handler.owner.sprite.x - self.handler.owner.target.sprite.x
-            dist_y = self.handler.owner.sprite.y - self.handler.owner.target.sprite.y
-            dist = math.hypot(dist_x, dist_y)
-            return dist
-        return False
+    # def get_enemy_dist(self):
+    #     if self.handler.owner.target:
+    #         dist_x = self.handler.owner.sprite.x - self.handler.owner.target.sprite.x
+    #         dist_y = self.handler.owner.sprite.y - self.handler.owner.target.sprite.y
+    #         dist = math.hypot(dist_x, dist_y)
+    #         return dist
+    #     return False
 
 # Unfinished
 class SPSNTriggerDiscipline(Skill):
@@ -286,85 +293,85 @@ class SPBLSlash(Skill):
     def __init__(self, master, level, handler):
         super(SPBLSlash, self).__init__(master, level, handler)
 
-    def fire(self):
-        enemy_range = self.get_enemy_dist()
-        try:
-            if enemy_range <= 50:
-                if not self.handler.global_cooldown:
-                    bullet_base = self.handler.build_bullet(
-                        self.handler.owner.stats.gun_two_data,
-                        self.handler.owner.sprite.x,
-                        self.handler.owner.sprite.y,
-                        self.handler.owner.target.sprite.x,
-                        self.handler.owner.target.sprite.y,
-                        enemy_range,
-                        self.handler.owner.target,
-                    )
-                    # play_sound(self.owner.stats.gun_two_data['gun_fire_sound']
-                    self.handler.thrown.append(SpectreMelee(self.master, self.handler, bullet_base))
-                    self.handler.owner.stats.recoil += self.handler.owner.stats.gun_two_data['recoil']
-                    return True
-            else:
-                self.dash()
-                return False
-        except:
-            return False
+    # def fire(self):
+    #     enemy_range = self.get_enemy_dist()
+    #     try:
+    #         if enemy_range <= 50:
+    #             if not self.handler.global_cooldown:
+    #                 bullet_base = self.handler.build_bullet(
+    #                     self.handler.owner.stats.gun_two_data,
+    #                     self.handler.owner.sprite.x,
+    #                     self.handler.owner.sprite.y,
+    #                     self.handler.owner.target.sprite.x,
+    #                     self.handler.owner.target.sprite.y,
+    #                     enemy_range,
+    #                     self.handler.owner.target,
+    #                 )
+    #                 # play_sound(self.owner.stats.gun_two_data['gun_fire_sound']
+    #                 self.handler.thrown.append(SpectreMelee(self.master, self.handler, bullet_base))
+    #                 self.handler.owner.stats.recoil += self.handler.owner.stats.gun_two_data['recoil']
+    #                 return True
+    #         else:
+    #             self.dash()
+    #             return False
+    #     except:
+    #         return False
 
-    def dash(self):
-        ret = calc_vel_xy(self.handler.owner.sprite.x, self.handler.owner.sprite.y,
-        self.handler.owner.target.sprite.x, self.handler.owner.target.sprite.y, 45)
-        self.handler.owner.controller.move_to(self.handler.owner.target.sprite.x + ret[0],
-            self.handler.owner.target.sprite.y + ret[1], 1)
+    # def dash(self):
+    #     ret = calc_vel_xy(self.handler.owner.sprite.x, self.handler.owner.sprite.y,
+    #     self.handler.owner.target.sprite.x, self.handler.owner.target.sprite.y, 45)
+    #     self.handler.owner.controller.move_to(self.handler.owner.target.sprite.x + ret[0],
+    #         self.handler.owner.target.sprite.y + ret[1], 1)
 
-    def get_enemy_dist(self):
-        if self.handler.owner.target:
-            dist_x = self.handler.owner.sprite.x - self.handler.owner.target.sprite.x
-            dist_y = self.handler.owner.sprite.y - self.handler.owner.target.sprite.y
-            dist = math.hypot(dist_x, dist_y)
-            return dist
-        return False
+    # def get_enemy_dist(self):
+    #     if self.handler.owner.target:
+    #         dist_x = self.handler.owner.sprite.x - self.handler.owner.target.sprite.x
+    #         dist_y = self.handler.owner.sprite.y - self.handler.owner.target.sprite.y
+    #         dist = math.hypot(dist_x, dist_y)
+    #         return dist
+    #     return False
 
 # Unfinished
 class SPBLTrips(Skill):
     def __init__(self, master, level, handler):
         super(SPBLTrips, self).__init__(master, level, handler)
 
-    def fire(self):
-        enemy_range = self.get_enemy_dist()
-        try:
-            if enemy_range <= 50:
-                if not self.handler.global_cooldown:
-                    bullet_base = self.handler.build_bullet(
-                        self.handler.owner.stats.gun_two_data,
-                        self.handler.owner.sprite.x,
-                        self.handler.owner.sprite.y,
-                        self.handler.owner.target.sprite.x,
-                        self.handler.owner.target.sprite.y,
-                        enemy_range,
-                        self.handler.owner.target,
-                    )
-                    # play_sound(self.owner.stats.gun_two_data['gun_fire_sound'])
-                    self.handler.thrown.append(Melee(self.master, self.handler, bullet_base))
-                    self.handler.owner.stats.recoil += self.handler.owner.stats.gun_two_data['recoil']
-                    return True
-            else:
-                self.master.spriteeffect.teleport(self.handler.owner.sprite.x, self.handler.owner.sprite.y)
-                self.handler.owner.stats.temp_stat_change(2, 'speed', 30)
-                ret = calc_vel_xy(self.handler.owner.sprite.x, self.handler.owner.sprite.y,
-                    self.handler.owner.target.sprite.x, self.handler.owner.target.sprite.y, 45)
-                self.handler.owner.controller.move_to(self.handler.owner.target.sprite.x + ret[0],
-                    self.handler.owner.target.sprite.y + ret[1], 1)
-                return False
-        except:
-            return False
+    # def fire(self):
+    #     enemy_range = self.get_enemy_dist()
+    #     try:
+    #         if enemy_range <= 50:
+    #             if not self.handler.global_cooldown:
+    #                 bullet_base = self.handler.build_bullet(
+    #                     self.handler.owner.stats.gun_two_data,
+    #                     self.handler.owner.sprite.x,
+    #                     self.handler.owner.sprite.y,
+    #                     self.handler.owner.target.sprite.x,
+    #                     self.handler.owner.target.sprite.y,
+    #                     enemy_range,
+    #                     self.handler.owner.target,
+    #                 )
+    #                 # play_sound(self.owner.stats.gun_two_data['gun_fire_sound'])
+    #                 self.handler.thrown.append(Melee(self.master, self.handler, bullet_base))
+    #                 self.handler.owner.stats.recoil += self.handler.owner.stats.gun_two_data['recoil']
+    #                 return True
+    #         else:
+    #             self.master.spriteeffect.teleport(self.handler.owner.sprite.x, self.handler.owner.sprite.y)
+    #             self.handler.owner.stats.temp_stat_change(2, 'speed', 30)
+    #             ret = calc_vel_xy(self.handler.owner.sprite.x, self.handler.owner.sprite.y,
+    #                 self.handler.owner.target.sprite.x, self.handler.owner.target.sprite.y, 45)
+    #             self.handler.owner.controller.move_to(self.handler.owner.target.sprite.x + ret[0],
+    #                 self.handler.owner.target.sprite.y + ret[1], 1)
+    #             return False
+    #     except:
+    #         return False
 
-    def get_enemy_dist(self):
-        if self.handler.owner.target:
-            dist_x = self.handler.owner.sprite.x - self.handler.owner.target.sprite.x
-            dist_y = self.handler.owner.sprite.y - self.handler.owner.target.sprite.y
-            dist = math.hypot(dist_x, dist_y)
-            return dist
-        return False
+    # def get_enemy_dist(self):
+    #     if self.handler.owner.target:
+    #         dist_x = self.handler.owner.sprite.x - self.handler.owner.target.sprite.x
+    #         dist_y = self.handler.owner.sprite.y - self.handler.owner.target.sprite.y
+    #         dist = math.hypot(dist_x, dist_y)
+    #         return dist
+    #     return False
 
 # Unfinished
 class SPBLBangForYourBuck(Skill):
@@ -376,63 +383,63 @@ class SPBLAnarchy(Skill):
     def __init__(self, master, level, handler):
         super(SPBLAnarchy, self).__init__(master, level, handler)
 
-    def fire(self):
-        if len(self.handler.core.chaos):
-            c = self.handler.core.chaos.pop()
-            c.controller = self
-            c.target = self.closest_enemy(c)
-            if not c.target:
-                try:
-                    self.handler.core.add_chaos()
-                    c.delete_self()
-                except:
-                    return True
-                return True
-            self.handler.core.chaos_in_action.append(c)
-            return True
-        else:
-            return False
+    # def fire(self):
+    #     if len(self.handler.core.chaos):
+    #         c = self.handler.core.chaos.pop()
+    #         c.controller = self
+    #         c.target = self.closest_enemy(c)
+    #         if not c.target:
+    #             try:
+    #                 self.handler.core.add_chaos()
+    #                 c.delete_self()
+    #             except:
+    #                 return True
+    #             return True
+    #         self.handler.core.chaos_in_action.append(c)
+    #         return True
+    #     else:
+    #         return False
 
-    def activate(self, chaos):
-        bullet_base = self.handler.build_bullet(
-            self.handler.owner.stats.gun_two_data,
-            chaos.sprite.x,
-            chaos.sprite.y,
-            self.handler.owner.target.sprite.x,
-            self.handler.owner.target.sprite.y,
-            0,
-            self.handler.owner.target,)
-        bullet_base['damage_min'] *= 2
-        bullet_base['damage_max'] *= 2
-        self.handler.thrown.append(NoAccMelee(self.master, self.handler, bullet_base))
+    # def activate(self, chaos):
+    #     bullet_base = self.handler.build_bullet(
+    #         self.handler.owner.stats.gun_two_data,
+    #         chaos.sprite.x,
+    #         chaos.sprite.y,
+    #         self.handler.owner.target.sprite.x,
+    #         self.handler.owner.target.sprite.y,
+    #         0,
+    #         self.handler.owner.target,)
+    #     bullet_base['damage_min'] *= 2
+    #     bullet_base['damage_max'] *= 2
+    #     self.handler.thrown.append(NoAccMelee(self.master, self.handler, bullet_base))
 
-    def closest_enemy(self, chaos):
-        target = None
-        try:
-            min_dist = 1000
-            x1 = chaos.sprite.x
-            y1 = chaos.sprite.y
-            if len(self.handler.owner.enemies) == 0:
-                return False
-            for e in self.handler.owner.enemies:
-                dist = abs(math.hypot(x1 - e.sprite.x, y1 - e.sprite.y))
-                if dist < min_dist:
-                    min_dist = dist
-                    target = e
-            return target
-        except:
-            return False
+    # def closest_enemy(self, chaos):
+    #     target = None
+    #     try:
+    #         min_dist = 1000
+    #         x1 = chaos.sprite.x
+    #         y1 = chaos.sprite.y
+    #         if len(self.handler.owner.enemies) == 0:
+    #             return False
+    #         for e in self.handler.owner.enemies:
+    #             dist = abs(math.hypot(x1 - e.sprite.x, y1 - e.sprite.y))
+    #             if dist < min_dist:
+    #                 min_dist = dist
+    #                 target = e
+    #         return target
+    #     except:
+    #         return False
 # Unfinished
 class SPBLRocketPowered(Skill):
     def __init__(self, master, level, handler):
         super(SPBLRocketPowered, self).__init__(master, level, handler)
 
-    def fire(self):
-        if self.handler.owner.controller.move_target:
-            mt = self.handler.owner.controller.move_target
-            self.handler.owner.stats.temp_stat_change(60, 'speed', 2)
-            self.handler.owner.stats.temp_stat_change(60, 'evade', 10)
-            self.master.spriteeffect.rocket_shoes(self.handler.owner.sprite.x, self.handler.owner.sprite.y, mt[0], mt[1])
+    # def fire(self):
+    #     if self.handler.owner.controller.move_target:
+    #         mt = self.handler.owner.controller.move_target
+    #         self.handler.owner.stats.temp_stat_change(60, 'speed', 2)
+    #         self.handler.owner.stats.temp_stat_change(60, 'evade', 10)
+    #         self.master.spriteeffect.rocket_shoes(self.handler.owner.sprite.x, self.handler.owner.sprite.y, mt[0], mt[1])
 
 # Unfinished
 class SPBLSmokyEyeSurprise(Skill):
@@ -494,14 +501,27 @@ spectre_skillset = {
 }
 
 sample_spectre_build = {
-    'slot_mouse_two': ['21', 1],
-    'slot_one': ['22', 1],
-    'slot_two': ['24', 1],
-    'slot_three': ['11', 2],
+    'slot_mouse_two': ['11', 1],
+    'slot_one': ['1', 1],
+    'slot_two': ['1', 1],
+    'slot_three': ['1', 2],
     'slot_four': ['1', 3],
-    'slot_q': ['25', 1],
-    'slot_e': ['15', 1],
-    'passive_one': ['4', 1],
-    'passive_two': ['16', 1],
-    'passive_three': ['13', 1],
+    'slot_q': ['1', 1],
+    'slot_e': ['1', 1],
+    'passive_one': ['1', 1],
+    'passive_two': ['1', 1],
+    'passive_three': ['1', 1],
 }
+
+# sample_spectre_build = {
+#     'slot_mouse_two': ['21', 1],
+#     'slot_one': ['22', 1],
+#     'slot_two': ['24', 1],
+#     'slot_three': ['11', 2],
+#     'slot_four': ['1', 3],
+#     'slot_q': ['25', 1],
+#     'slot_e': ['15', 1],
+#     'passive_one': ['4', 1],
+#     'passive_two': ['16', 1],
+#     'passive_three': ['13', 1],
+# }

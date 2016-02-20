@@ -136,14 +136,14 @@ class Master(object):
         for p in self.people['red']:
             p.sprite.x += mx
             p.sprite.y += my
-            for a in p.ability.thrown:
+            for a in p.ability.transmissions:
                 a.sprite.x += mx
                 a.sprite.y += my
 
         for p in self.people['blue']:
             p.sprite.x += mx
             p.sprite.y += my
-            for a in p.ability.thrown:
+            for a in p.ability.transmissions:
                 a.sprite.x += mx
                 a.sprite.y += my
 

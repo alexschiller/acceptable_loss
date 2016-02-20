@@ -88,13 +88,14 @@ class Character(object):
         except:
             pass
 
-    def on_hit(self, bullet):
-        final_damage = self.stats.update_health(bullet.damage)
+    def on_hit(self, transmission):
+        final_damage = self.stats.update_health(transmission.damage)
         self.controller.on_hit()
         self.update_bars()
         if final_damage:
             splatter = min(max(int(final_damage / self.stats.health_max) * 30, 5), 20)
-            self.spriteeffect.bullet_wound(bullet.vel_x, bullet.vel_y, self.sprite.x, self.sprite.y, splatter, self.blood_color) # noqa
+            self.spriteeffect.bullet_wound(transmission.ret[0], transmission.ret[0], self.sprite.x, self.sprite.y, splatter, self.blood_color) # noqa
+        transmission.kill = self.stats.health <= 0
 
     def update(self):
         self.stats.update()

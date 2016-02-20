@@ -11,10 +11,22 @@ class Ability(object):
     def __init__(self, master, owner, skillset, build, gun_one, gun_two):
         self.master = master
         self.owner = owner
-        self.delayed = []
+
         self.global_cooldown = False
         self.global_cooldown_time = 30
-        self.thrown = []
+
+        self.delayed = []
+        self.transmissions = []
+        self.packages = []
+
+        self.outcomes = {
+            'evade': [],
+            'miss': [],
+            'hit': [],
+            'crit': [],
+            'kill': [],
+        }
+
         self.build = Build(self.master, self, skillset, build)
         self.slot_mouse_two = self.build.slot_mouse_two
         self.slot_one = self.build.slot_one
@@ -23,11 +35,7 @@ class Ability(object):
         self.slot_four = self.build.slot_four
         self.slot_q = self.build.slot_q
         self.slot_e = self.build.slot_e
-        try:
-            self.core = skillset['core'](self.master, self)
-            print "YAY"
-        except:
-            print 'GRAB'
+        self.core = skillset['core'](self.master, self)
 
     def slot_mouse_two_fire(self):
         if not self.global_cooldown and not self.slot_mouse_two.cooldown:
@@ -64,16 +72,8 @@ class Ability(object):
             if self.slot_e.fire():
                 self.trigger_global_cooldown()
 
-    def build_bullet(self, gun, start_x, start_y, target_x, target_y, enemy_range, enemy, image=None): # noqa
-        calc_gun = gun
-        calc_gun['start_x'] = start_x
-        calc_gun['start_y'] = start_y
-        calc_gun['target_x'] = target_x
-        calc_gun['target_y'] = target_y
-        calc_gun['enemy_range'] = enemy_range
-        calc_gun['enemy'] = enemy
-        calc_gun['image'] = image or gun['image']
-        return dict.copy(gun)
+    def copy_gun(self): # noqa
+        return dict.copy(self.owner.stats.gun_one_data)
 
     def trigger_global_cooldown(self):
         self.global_cooldown += self.global_cooldown_time
@@ -102,7 +102,8 @@ class Ability(object):
         self.slot_four.update()
         self.slot_q.update()
         self.slot_e.update()
-        for t in self.thrown:
-            t.update()
-
+        for t in self.transmissions:
+            t.transmit()
+        for p in self.packages:
+            p.unpack()
         self.update_delayed()
