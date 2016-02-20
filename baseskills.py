@@ -71,8 +71,8 @@ class Transmission(object):
         self.check_package_accuracy()
 
     def transmit(self):
-        self.transmitting()
         self.check_end_transmission()
+        self.transmitting()
 
     def transmitting(self):
         pass
