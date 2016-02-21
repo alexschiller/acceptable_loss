@@ -227,25 +227,26 @@ class RoomManager(object):
             room_x_max = room_x_min + room.sprite.width
             room_y_min = room.sprite.y
             room_y_max = room_y_min + room.sprite.height
-            Character(
-                self.master,
-                random.choice([
-                    enemy_soldier_base(
-                        difficulty, random.randint(room_x_min, room_x_max),
-                        random.randint(room_y_min, room_y_max)),
+            for i in range(2):
+                Character(
+                    self.master,
+                    random.choice([
+                        # enemy_soldier_base(
+                        #     difficulty, random.randint(room_x_min, room_x_max),
+                        #     random.randint(room_y_min, room_y_max)),
 
-                    enemy_tank_base(
-                        difficulty, random.randint(room_x_min, room_x_max),
-                        random.randint(room_y_min, room_y_max)),
+                        # enemy_tank_base(
+                        #     difficulty, random.randint(room_x_min, room_x_max),
+                        #     random.randint(room_y_min, room_y_max)),
 
-                    enemy_zombie_base(
-                        difficulty, random.randint(room_x_min, room_x_max),
-                        random.randint(room_y_min, room_y_max)),
+                        enemy_zombie_base(
+                            difficulty, random.randint(room_x_min, room_x_max),
+                            random.randint(room_y_min, room_y_max)),
 
-                    enemy_drone_base(
-                        difficulty, random.randint(room_x_min, room_x_max),
-                        random.randint(room_y_min, room_y_max)),
-                ]))
+                        enemy_drone_base(
+                            difficulty, random.randint(room_x_min, room_x_max),
+                            random.randint(room_y_min, room_y_max)),
+                    ]))
 
     def move_all(self, dx, dy):
         for room in self.roomlist:
