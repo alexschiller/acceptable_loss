@@ -29,6 +29,7 @@ class SpectreMelee(Melee):
             self.range = 50
 
     def display_outcome(self):
+        play_sound(self.package['on_hit_sound'])
         x = self.sprite.x
         y = self.sprite.y
         if self.evade:
@@ -48,6 +49,7 @@ class AnarchyShot(Gunshot):
         self.travelled = 1
 
     def check_package_accuracy(self):
+        play_sound(self.package['on_hit_sound'])
         self.target = self.closest_enemy(self.start_x, self.start_y)
         if self.target:
             self.hit = True
@@ -471,9 +473,48 @@ class SPSNMuzzleBrake(Skill):
         super(SPSNMuzzleBrake, self).__init__(master, level, handler)
 
 # Unfinished
-class SPSNPointBlank(Skill):
+class SPSNCoupled(Skill):
     def __init__(self, master, level, handler):
-        super(SPSNPointBlank, self).__init__(master, level, handler)
+        super(SPSNCoupled, self).__init__(master, level, handler)
+        self.dash_sound = load_sound("dash.wav")
+
+    def fire(self):
+        enemy_range = self.get_enemy_dist()
+        if len(self.handler.core.order):
+            try:
+                if enemy_range <= 50 and enemy_range and not self.handler.global_cooldown:
+                    x = self.handler.core.order.pop()
+                    self.handler.core.order_in_action.append(x)
+                    x.delete_self()
+                    gun = self.handler.copy_gun()
+                    gun['damage_min'] = 1
+                    gun['damage_max'] *= 4
+                    SpectreMelee(self.master, self.handler, self, gun, self.handler.owner.sprite.x, self.handler.owner.sprite.y)
+                    # self.handler.owner.stats.recoil += self.handler.owner.stats.gun_data['recoil']
+                    return True
+                else:
+                    self.dash()
+                    return False
+            except:
+                return False
+
+    def dash(self):
+        if not self.handler.owner.stats.speed > self.handler.owner.stats._speed:
+            play_sound(self.dash_sound)
+        self.handler.owner.stats.temp_stat_change(2, 'speed', 10)
+        ret = calc_vel_xy(self.handler.owner.sprite.x, self.handler.owner.sprite.y,
+        self.handler.owner.target.sprite.x, self.handler.owner.target.sprite.y, 45)
+        self.handler.owner.controller.move_to(self.handler.owner.target.sprite.x + ret[0],
+            self.handler.owner.target.sprite.y + ret[1], 1)
+
+    def get_enemy_dist(self):
+        if self.handler.owner.target:
+            dist_x = self.handler.owner.sprite.x - self.handler.owner.target.sprite.x
+            dist_y = self.handler.owner.sprite.y - self.handler.owner.target.sprite.y
+            dist = math.hypot(dist_x, dist_y)
+            return dist
+        return False
+
 
 # Unfinished
 class SPSNIronDome(Skill):
@@ -490,6 +531,7 @@ class SPSNPerseverate(Skill):
     def __init__(self, master, level, handler):
         super(SPSNPerseverate, self).__init__(master, level, handler)
         self.image = load_image('crystal.png')
+        # self.on_hit = load_sound('anarchy_on_hit.wav')
 
     def fire(self):
         enemy_range = self.get_enemy_dist()
@@ -605,6 +647,8 @@ class SPBLAnarchy(Skill):
     def __init__(self, master, level, handler):
         super(SPBLAnarchy, self).__init__(master, level, handler)
         self.image = load_image('snipe.png')
+        self.sound = load_sound('anarchy.wav')
+        self.on_hit = load_sound('anarchy_on_hit.wav')
 
     def fire(self):
         if len(self.handler.core.chaos):
@@ -617,6 +661,7 @@ class SPBLAnarchy(Skill):
                         self.handler.core.add_chaos()
                     except:
                         break
+                play_sound(self.sound)
                 self.handler.core.chaos_in_action.append(c)
                 self.handler.core.chaos.remove(c)
             return True
@@ -626,6 +671,7 @@ class SPBLAnarchy(Skill):
         gun = self.handler.copy_gun()
         gun['image'] = self.image
         gun['accuracy'] += 100
+        gun['on_hit_sound'] = self.on_hit
         AnarchyShot(self.master, self.handler, self, gun, chaos.sprite.x, chaos.sprite.y)
 
     def closest_enemy(self, chaos):
@@ -718,6 +764,7 @@ class SPBLMayhem(Skill):
     def __init__(self, master, level, handler):
         super(SPBLMayhem, self).__init__(master, level, handler)
         self.image = load_image('crystal.png')
+        self.on_hit = load_sound('crystal_break.wav')
 
     def fire(self):
         if len(self.handler.core.chaos):
@@ -733,6 +780,7 @@ class SPBLMayhem(Skill):
 
     def activate(self, chaos):
         gun = self.handler.copy_gun()
+        gun['on_hit_sound'] = self.on_hit
         gun['image'] = self.image
         gun['damage_min'] = int(max(gun['damage_min'] * .1, 1))
         gun['damage_max'] = int(max(gun['damage_max'] * .1, 2))
@@ -754,7 +802,7 @@ spectre_skillset = {
     '11': SPSNSlash,
     '12': SPSNSalted,
     '13': SPSNMuzzleBrake,
-    '14': SPSNPointBlank,
+    '14': SPSNCoupled,
     '15': SPSNIronDome,
     '16': SPSNHardCore,
     '17': SPSNPerseverate,
@@ -775,10 +823,10 @@ spectre_skillset = {
 
 sample_spectre_build = {
     'slot_mouse_two': ['17', 1],
-    'slot_one': ['24', 1],
-    'slot_two': ['30', 1],
-    'slot_three': ['27', 2],
-    'slot_four': ['1', 3],
+    'slot_one': ['14', 1],
+    'slot_two': ['24', 1],
+    'slot_three': ['30', 2],
+    'slot_four': ['27', 3],
     'slot_q': ['1', 1],
     'slot_e': ['1', 1],
     'passive_one': ['1', 1],

@@ -226,4 +226,5 @@ class StatsManager(object):
             'armor_pierce': self.armor_pierce,
             'image': gun['image'],
             'gun_fire_sound': gun['gun_fire_sound'],
+            'on_hit_sound': gun['on_hit_sound'],
         }

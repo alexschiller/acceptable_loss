@@ -119,6 +119,7 @@ class Transmission(object):
             print e
 
     def display_outcome(self):
+        play_sound(self.package['on_hit_sound'])
         x = self.sprite.x
         y = self.sprite.y
         if self.evade:
@@ -178,6 +179,7 @@ class Gunshot(Transmission):
     def __init__(self, master, ability, skill, package, start_x, start_y):
         super(Gunshot, self).__init__(master, ability, skill, package, start_x, start_y)
         self.travelled = 1
+        play_sound(self.package['gun_fire_sound'])
 
     def transmitting(self):
         if self.hit:
@@ -286,7 +288,7 @@ class NoTargetGunshot(Gunshot):
 
         if self.hit and random.randint(0, 100) < self.target.stats.evade:
             self.evade = True
-        
+
         if self.hit:
             self.range = math.hypot(self.sprite.x - self.target.sprite.x, self.sprite.y - self.target.sprite.y)
         else:

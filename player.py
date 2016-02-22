@@ -377,7 +377,7 @@ sp_blade = {
         'armor_pierce': 2,
         'image': load_image('stabber.png'), # noqa
         'gun_fire_sound': load_sound('shot.wav'), # noqa
-        'on_hit_sound': load_sound('on_hit.wav'), # noqa
+        'on_hit_sound': load_sound('melee_on_hit.wav'), # noqa
         'effects': [],
         'gem_slots': {
             '1': {
