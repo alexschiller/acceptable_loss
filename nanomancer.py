@@ -161,6 +161,82 @@ class HomingShot(Gunshot):
         except:
             return False
 
+class NanoShot(HomingShot):
+    def __init__(self, master, ability, skill, package, start_x, start_y):
+        super(HomingShot, self).__init__(master, ability, skill, package, start_x, start_y)
+        self.travelled = 1
+        self.ret = [0, 0]
+        self.ret_x = random.randint(-10, 10)
+        self.ret_y = random.randint(-10, 10)
+        self.tracking = 1
+
+    def transmitting(self):
+        if self.tracking:
+            if self.hit:
+                self.ret = calc_vel_xy(self.target.sprite.x, self.target.sprite.y, self.sprite.x, self.sprite.y, 1)
+                self.sprite.rotation = (math.degrees(math.atan2(self.target.sprite.y - self.sprite.y, self.target.sprite.x - self.sprite.x)) * -1) + 90
+            else:
+                self.ret = calc_vel_xy(self.mouse_x, self.mouse_y, self.sprite.x, self.sprite.y, 1)
+                self.sprite.rotation = (math.degrees(math.atan2(self.mouse_y - self.sprite.y, self.mouse_x - self.sprite.x)) * -1) + 90
+            self.update_ret()
+            self.sprite.x += self.ret_x
+            self.sprite.y += self.ret_y
+
+        if math.hypot(self.target.sprite.x - self.sprite.x, self.target.sprite.y - self.sprite.y) < 10:
+            self.end_transmission = True
+
+        if not self.target:
+            self.end_transmission = True
+
+    def update_ret(self):
+        self.ret_x += self.ret[0]
+        if self.ret_x < -2:
+            self.ret_x += .5
+        elif self.ret_x > 1:
+            self.ret_x -= .5
+        self.ret_y += self.ret[1]
+        if self.ret_y < -2:
+            self.ret_y += .5
+        elif self.ret_y > 2:
+            self.ret_y -= .5
+
+    def check_package_accuracy(self):
+        self.target = self.closest_enemy(self.start_x, self.start_y)
+        if not self.target:
+            self.cleanup()
+            return False
+
+        self.hit = True
+        if self.hit and random.randint(0, 100) < self.package['crit']:
+            self.crit = True
+            self.package['damage_min'] = int(self.package['damage_min'] * self.package['crit_damage'])
+            self.package['damage_max'] = int(self.package['damage_max'] * self.package['crit_damage'])
+
+        if self.hit and random.randint(0, 100) < self.target.stats.evade:
+            self.evade = True
+
+        if self.hit:
+            self.range = 0
+        else:
+            self.range = 0
+
+    def closest_enemy(self, x, y):
+        target = None
+        try:
+            min_dist = 1000
+            x1 = x
+            y1 = y
+            if len(self.ability.owner.enemies) == 0:
+                return False
+            for e in self.ability.owner.enemies:
+                dist = abs(math.hypot(x1 - e.sprite.x, y1 - e.sprite.y))
+                if dist < min_dist:
+                    min_dist = dist
+                    target = e
+            return target
+        except:
+            return False
+
 
 class Chaos(object):
     def __init__(self, master, handler, start_x, start_y): # noqa
@@ -571,33 +647,19 @@ class SPSNPerseverate(Skill):
 class SPSNBurst(Skill):
     def __init__(self, master, level, handler):
         super(SPSNBurst, self).__init__(master, level, handler)
-        self.image = load_image('red_laser.png')
 
     def fire(self):
-        if len(self.handler.core.chaos):
-            c = self.handler.core.chaos.pop()
-            c.controller = self
-            c.target = self.closest_enemy(c)
-            if not c.target:
-                try:
-                    self.handler.core.add_chaos()
-                    c.delete_self()
-                except:
-                    return True
-                return True
-            c.update = c.tracer_update
-            self.handler.core.chaos_in_action.append(c)
-            return True
-        else:
-            return False
-
-    def activate(self, chaos):
         gun = self.handler.copy_gun()
-        gun['image'] = self.image
+        # gun['image'] = self.image
         gun['damage_min'] = int(max(gun['damage_min'] * .1, 1))
         gun['damage_max'] = int(max(gun['damage_max'] * .1, 2))
-        gun['velocity'] = 20
-        NoTargetGunshot(self.master, self.handler, self, dict.copy(gun), chaos.sprite.x, chaos.sprite.y)
+        # gun['velocity'] = 20
+        HomingShot(self.master, self.handler, self, dict.copy(gun), self.handler.owner.sprite.x, self.handler.owner.sprite.y)
+        HomingShot(self.master, self.handler, self, dict.copy(gun), self.handler.owner.sprite.x, self.handler.owner.sprite.y)
+        HomingShot(self.master, self.handler, self, dict.copy(gun), self.handler.owner.sprite.x, self.handler.owner.sprite.y)
+        HomingShot(self.master, self.handler, self, dict.copy(gun), self.handler.owner.sprite.x, self.handler.owner.sprite.y)
+        HomingShot(self.master, self.handler, self, dict.copy(gun), self.handler.owner.sprite.x, self.handler.owner.sprite.y)
+        return True
 
     def closest_enemy(self, chaos):
         target = None
@@ -791,7 +853,7 @@ class SPBLMayhem(Skill):
         for i in range(3):
             HomingShot(self.master, self.handler, self, dict.copy(gun), chaos.sprite.x, chaos.sprite.y)
 
-spectre_skillset = {
+nanomancer_skillset = {
     'core': SpectreCore,
     '1': SPOVTimedBreathing,
     '2': SPOVFlakJacket,
@@ -825,8 +887,8 @@ spectre_skillset = {
     '30': SPBLMayhem,
 }
 
-sample_spectre_build = {
-    'slot_mouse_two': ['17', 1],
+sample_nanomancer_build = {
+    'slot_mouse_two': ['18', 1],
     'slot_one': ['14', 1],
     'slot_two': ['24', 1],
     'slot_three': ['30', 2],

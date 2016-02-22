@@ -7,6 +7,7 @@ from gun import * # noqa
 from functools import partial # noqa
 from longbow import * # noqa
 from spectreskills import * # noqa
+from nanomancer import * # noqa
 from controller import Controller
 
 class Player(Character):
@@ -372,8 +373,8 @@ sp_blade = {
         'accuracy': 85,
         'rof': 5,
         'recoil': 5,
-        'crit': 20,
-        'crit_damage': 2,
+        'crit': 30,
+        'crit_damage': 1.3,
         'armor_pierce': 2,
         'image': load_image('stabber.png'), # noqa
         'gun_fire_sound': load_sound('shot.wav'), # noqa
@@ -394,6 +395,70 @@ player_base_spectre = {
     'armor': player_armor,
     'skillset': spectre_skillset,
     'build': sample_spectre_build,
+    'color': 'blue',
+    'friends': 'blue',
+    'enemies': 'red',
+    'blood_color': (30, 30, 30, 255),
+    'controller': PlayerController,
+    'stats': {
+        'level': 1,
+        'damage': 0,
+        'damage_min': 0,
+        'damage_max': 0,
+        'damage_perc': 0,
+        'attack_speed_perc': 0,
+        'crit': 5,
+        'crit_damage': .1,
+        'accuracy': 0,
+        'armor_pierce': 0,
+        'shield_max': 10,
+        'shield_max_perc': 0,
+        'shield_regen': .1,
+        'shield_on_hit': 0,
+        'health_max': 500,
+        'health_max_perc': 0,
+        'health_regen': 0,
+        'health_on_hit': 0,
+        'armor': 1,
+        'evade': 0,
+        'speed': 5,
+    },
+}
+
+nm_leech = {
+        'gun_class': 'Blade',
+        'level': 1,
+        'damage_min': 1,
+        'damage_max': 2,
+        'travel': 700,
+        'range_min': 100,
+        'range_max': 400,
+        'velocity': 3,
+        'accuracy': 85,
+        'rof': 10,
+        'recoil': 5,
+        'crit': 0,
+        'crit_damage': 1.1,
+        'armor_pierce': 0,
+        'image': load_image('nano.png'), # noqa
+        'gun_fire_sound': load_sound('shot.wav'), # noqa
+        'on_hit_sound': load_sound('melee_on_hit.wav'), # noqa
+        'effects': [],
+        'gem_slots': {
+            '1': {
+                'color': 'topaz',
+                'current_gem': {'color': 'diamond', 'level': 4, 'stats': {'accuracy': 6, 'shield_regen': 2, 'shield_on_hit': 1, 'health_max_perc': 8}, 'rarity': 3} # noqa
+            },
+        },
+    }
+
+player_base_nanomancer = {
+    'sprite': load_image('nanomancer.png'),
+    'coord': [window_width / 2, window_height / 2],
+    'gun': nm_leech,
+    'armor': player_armor,
+    'skillset': nanomancer_skillset,
+    'build': sample_nanomancer_build,
     'color': 'blue',
     'friends': 'blue',
     'enemies': 'red',
