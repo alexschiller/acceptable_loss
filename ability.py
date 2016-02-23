@@ -26,7 +26,6 @@ class Ability(object):
             'crit': [],
             'kill': [],
         }
-
         self.build = Build(self.master, self, skillset, build)
         self.slot_mouse_two = self.build.slot_mouse_two
         self.slot_one = self.build.slot_one
@@ -35,7 +34,10 @@ class Ability(object):
         self.slot_four = self.build.slot_four
         self.slot_q = self.build.slot_q
         self.slot_e = self.build.slot_e
-        self.core = skillset['core'](self.master, self)
+        try:
+            self.core = skillset['core'](self.master, self)
+        except Exception, e:
+            print e
 
     def slot_mouse_two_fire(self):
         if not self.global_cooldown and not self.slot_mouse_two.cooldown:

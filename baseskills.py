@@ -179,7 +179,10 @@ class Gunshot(Transmission):
     def __init__(self, master, ability, skill, package, start_x, start_y):
         super(Gunshot, self).__init__(master, ability, skill, package, start_x, start_y)
         self.travelled = 1
-        play_sound(self.package['gun_fire_sound'])
+        try:
+            play_sound(self.package['gun_fire_sound'])
+        except:
+            pass
 
     def transmitting(self):
         if self.hit:

@@ -170,6 +170,12 @@ class NanoShot(HomingShot):
         self.ret_y = random.randint(-10, 10)
         self.tracking = 1
 
+    def unpack(self):
+        try:
+            self.cleanup()
+        except Exception, e:
+            print e
+
     def transmitting(self):
         if self.tracking:
             if self.hit:
@@ -238,11 +244,11 @@ class NanoShot(HomingShot):
             return False
 
 
-class Chaos(object):
+class Nano(object):
     def __init__(self, master, handler, start_x, start_y): # noqa
         self.master = master
         self.handler = handler
-        img = load_image('chaos.png')
+        img = load_image('nano.png')
         self.sprite = pyglet.sprite.Sprite(img,
         start_x, start_y, batch=EffectsBatch)
         self.timer = 1
@@ -260,10 +266,12 @@ class Chaos(object):
         self.handler.ability.core.chaos_in_action.remove(self)
 
     def update(self):
+        if self.sprite.scale > 1:
+            self.sprite.scale -= .1
         if not self.controller:
             self.timer -= 1
             if not self.timer:
-                self.ret = calc_vel_xy(self.handler.sprite.x, self.handler.sprite.y, self.sprite.x, self.sprite.y, 5)
+                self.ret = calc_vel_xy(self.handler.sprite.x, self.handler.sprite.y, self.sprite.x, self.sprite.y, 3)
                 self.update_ret()
                 self.timer = random.randint(3, 5)
             self.sprite.x += self.ret_x
@@ -279,155 +287,34 @@ class Chaos(object):
                     print e
                 self.delete_self()
 
-    def tracer_update(self):
-        try:
-            self.timer -= 1
-            self.shoot_timer -= 1
-            if self.target.dead:
-                self.target = self.controller.closest_enemy(self)
-            if not self.controller:
-                if not self.timer:
-                    self.ret = calc_vel_xy(self.handler.sprite.x, self.handler.sprite.y, self.sprite.x, self.sprite.y, 5)
-                    self.update_ret()
-                    self.timer = random.randint(3, 5)
-                self.sprite.x += self.ret_x
-                self.sprite.y += self.ret_y
-            else:
-                if not self.timer:
-                    self.ret = calc_vel_xy(self.target.sprite.x, self.target.sprite.y, self.sprite.x, self.sprite.y, 5)
-                    self.update_ret()
-                    self.timer = random.randint(3, 5)
-                self.sprite.x += self.ret_x
-                self.sprite.y += self.ret_y
-            if not self.shoot_timer:
-                self.shoot_timer = 60
-                self.shoot += 1
-                self.controller.activate(self)
-                if self.shoot > 10:
-                    self.delete_self()
-        except:
-            self.delete_self()
-
     def update_ret(self):
         self.ret_x += self.ret[0]
-        if self.ret_x < -10:
+        if self.ret_x < -3:
             self.ret_x += 1
-        elif self.ret_x > 10:
+        elif self.ret_x > 3:
             self.ret_x -= 1
         self.ret_y += self.ret[1]
-        if self.ret_y < -10:
+        if self.ret_y < -3:
             self.ret_y += 1
-        elif self.ret_y > 10:
+        elif self.ret_y > 3:
             self.ret_y -= 1
 
-
-class Order(object):
-    def __init__(self, master, handler, start_x, start_y): # noqa
-        self.master = master
-        self.handler = handler
-        img = load_image('order.png')
-        self.sprite = pyglet.sprite.Sprite(img,
-        start_x, start_y, batch=EffectsBatch)
-        self.timer = 1
-        self.shoot_timer = 60
-        self.shoot = 0
-        self.ret = [0, 0]
-        self.ret_x = 0
-        self.ret_y = 0
-        self.controller = None
-        self.target = None
-
-    def delete_self(self):
-        self.master.spriteeffect.teleport(self.sprite.x, self.sprite.y)
-        self.sprite.delete()
-        self.handler.ability.core.order_in_action.remove(self)
-
-    def update(self):
-        if not self.controller:
-            self.timer -= 1
-            if not self.timer:
-                self.ret = calc_vel_xy(self.handler.sprite.x, self.handler.sprite.y, self.sprite.x, self.sprite.y, 5)
-                self.update_ret()
-                self.timer = random.randint(3, 5)
-            self.sprite.x += self.ret_x
-            self.sprite.y += self.ret_y
-        else:
-            self.ret = calc_vel_xy(self.target.sprite.x, self.target.sprite.y, self.sprite.x, self.sprite.y, 10)
-            self.sprite.x += self.ret[0]
-            self.sprite.y += self.ret[1]
-            if math.hypot(self.target.sprite.x - self.sprite.x, self.target.sprite.y - self.sprite.y) < 10:
-                try:
-                    self.controller.activate(self)
-                except Exception, e:
-                    print e
-                self.delete_self()
-
-    def tracer_update(self):
-        try:
-            self.timer -= 1
-            self.shoot_timer -= 1
-            if self.target.dead:
-                self.target = self.controller.closest_enemy(self)
-            if not self.controller:
-                if not self.timer:
-                    self.ret = calc_vel_xy(self.handler.sprite.x, self.handler.sprite.y, self.sprite.x, self.sprite.y, 5)
-                    self.update_ret()
-                    self.timer = random.randint(3, 5)
-                self.sprite.x += self.ret_x
-                self.sprite.y += self.ret_y
-            else:
-                if not self.timer:
-                    self.ret = calc_vel_xy(self.target.sprite.x, self.target.sprite.y, self.sprite.x, self.sprite.y, 5)
-                    self.update_ret()
-                    self.timer = random.randint(3, 5)
-                self.sprite.x += self.ret_x
-                self.sprite.y += self.ret_y
-            if not self.shoot_timer:
-                self.shoot_timer = 60
-                self.shoot += 1
-                self.controller.activate(self)
-                if self.shoot > 10:
-                    self.delete_self()
-        except:
-            self.delete_self()
-
-    def update_ret(self):
-        self.ret_x += self.ret[0]
-        if self.ret_x < -10:
-            self.ret_x += 1
-        elif self.ret_x > 10:
-            self.ret_x -= 1
-        self.ret_y += self.ret[1]
-        if self.ret_y < -10:
-            self.ret_y += 1
-        elif self.ret_y > 10:
-            self.ret_y -= 1
-
-class SpectreCore(Core):
+class NanoCore(Core):
     def __init__(self, master, handler):
-        super(SpectreCore, self).__init__(master, handler)
-        self.chaos = []
-        self.chaos_in_action = []
-        self.order = []
-        self.order_in_action = []
+        super(NanoCore, self).__init__(master, handler)
+        self.nano = []
+        self.nano_in_action = []
 
-    def add_chaos(self):
-        if len(self.chaos) + len(self.order) < 5:
-            self.chaos.append(Chaos(self.master, self.handler.owner, self.handler.owner.sprite.x, self.handler.owner.sprite.y))
-
-    def add_order(self):
-        if len(self.chaos) + len(self.order) < 5:
-            self.order.append(Order(self.master, self.handler.owner, self.handler.owner.sprite.x, self.handler.owner.sprite.y))
+    def add_nano(self):
+        if len(self.nano) < 30:
+            self.nano.append(Nano(self.master, self.handler.owner, self.handler.owner.sprite.x, self.handler.owner.sprite.y))
 
     def update(self):
-        for c in self.chaos:
-            c.update()
-        for c in self.chaos_in_action:
-            c.update()
-        for o in self.order:
-            o.update()
-        for o in self.order_in_action:
-            o.update()
+        self.add_nano()
+        for n in self.nano:
+            n.update()
+        for n in self.nano_in_action:
+            n.update()
 
 # Unfinished
 class SPOVTimedBreathing(Skill):
@@ -512,36 +399,21 @@ class SPSNSlash(Skill):
         return False
 
 # Unfinished
-class SPSNSalted(Skill):
+class SPSNBolted(Skill):
     def __init__(self, master, level, handler):
-        super(SPSNSalted, self).__init__(master, level, handler)
+        super(SPSNBolted, self).__init__(master, level, handler)
+        self.image = load_image('nano_bolt.png')
 
     def fire(self):
-        enemy_range = self.get_enemy_dist()
-        try:
-            if enemy_range <= 50 and enemy_range and not self.handler.global_cooldown:
-                SpectreMelee(self.master, self.handler, self, self.handler.copy_gun(), self.handler.owner.sprite.x, self.handler.owner.sprite.y)
-                self.handler.owner.stats.recoil += self.handler.owner.stats.gun_data['recoil']
-                return True
-            else:
-                self.dash()
-                return False
-        except:
-            return False
-
-    def dash(self):
-        ret = calc_vel_xy(self.handler.owner.sprite.x, self.handler.owner.sprite.y,
-        self.handler.owner.target.sprite.x, self.handler.owner.target.sprite.y, 45)
-        self.handler.owner.controller.move_to(self.handler.owner.target.sprite.x + ret[0],
-            self.handler.owner.target.sprite.y + ret[1], 1)
-
-    def get_enemy_dist(self):
-        if self.handler.owner.target:
-            dist_x = self.handler.owner.sprite.x - self.handler.owner.target.sprite.x
-            dist_y = self.handler.owner.sprite.y - self.handler.owner.target.sprite.y
-            dist = math.hypot(dist_x, dist_y)
-            return dist
-        return False
+        gun = self.handler.copy_gun()
+        # gun['image'] = self.image
+        gun['damage_min'] = int(max(gun['damage_min'] * 2, 1))
+        gun['damage_max'] = int(max(gun['damage_max'] * 2, 2))
+        # gun['velocity'] = 20
+        gun['velocity'] = 30
+        gun['image'] = self.image
+        PlayerGunshot(self.master, self.handler, self, dict.copy(gun), self.handler.owner.sprite.x, self.handler.owner.sprite.y)
+        return True
 
 # Unfinished
 class SPSNMuzzleBrake(Skill):
@@ -552,45 +424,6 @@ class SPSNMuzzleBrake(Skill):
 class SPSNCoupled(Skill):
     def __init__(self, master, level, handler):
         super(SPSNCoupled, self).__init__(master, level, handler)
-        self.dash_sound = load_sound("dash.wav")
-
-    def fire(self):
-        enemy_range = self.get_enemy_dist()
-        if len(self.handler.core.order):
-            try:
-                if enemy_range <= 50 and enemy_range and not self.handler.global_cooldown:
-                    x = self.handler.core.order.pop()
-                    self.handler.core.order_in_action.append(x)
-                    x.delete_self()
-                    gun = self.handler.copy_gun()
-                    gun['damage_min'] = 1
-                    gun['damage_max'] *= 4
-                    SpectreMelee(self.master, self.handler, self, gun, self.handler.owner.sprite.x, self.handler.owner.sprite.y)
-                    # self.handler.owner.stats.recoil += self.handler.owner.stats.gun_data['recoil']
-                    return True
-                else:
-                    self.dash()
-                    return False
-            except:
-                return False
-
-    def dash(self):
-        if not self.handler.owner.stats.speed > self.handler.owner.stats._speed:
-            play_sound(self.dash_sound)
-        self.handler.owner.stats.temp_stat_change(2, 'speed', 10)
-        ret = calc_vel_xy(self.handler.owner.sprite.x, self.handler.owner.sprite.y,
-        self.handler.owner.target.sprite.x, self.handler.owner.target.sprite.y, 45)
-        self.handler.owner.controller.move_to(self.handler.owner.target.sprite.x + ret[0],
-            self.handler.owner.target.sprite.y + ret[1], 1)
-
-    def get_enemy_dist(self):
-        if self.handler.owner.target:
-            dist_x = self.handler.owner.sprite.x - self.handler.owner.target.sprite.x
-            dist_y = self.handler.owner.sprite.y - self.handler.owner.target.sprite.y
-            dist = math.hypot(dist_x, dist_y)
-            return dist
-        return False
-
 
 # Unfinished
 class SPSNIronDome(Skill):
@@ -654,11 +487,15 @@ class SPSNBurst(Skill):
         gun['damage_min'] = int(max(gun['damage_min'] * .1, 1))
         gun['damage_max'] = int(max(gun['damage_max'] * .1, 2))
         # gun['velocity'] = 20
+        gun['gun_fire_sound'] = None
         HomingShot(self.master, self.handler, self, dict.copy(gun), self.handler.owner.sprite.x, self.handler.owner.sprite.y)
         HomingShot(self.master, self.handler, self, dict.copy(gun), self.handler.owner.sprite.x, self.handler.owner.sprite.y)
         HomingShot(self.master, self.handler, self, dict.copy(gun), self.handler.owner.sprite.x, self.handler.owner.sprite.y)
         HomingShot(self.master, self.handler, self, dict.copy(gun), self.handler.owner.sprite.x, self.handler.owner.sprite.y)
-        HomingShot(self.master, self.handler, self, dict.copy(gun), self.handler.owner.sprite.x, self.handler.owner.sprite.y)
+        NanoShot(self.master, self.handler, self, dict.copy(gun), self.handler.owner.sprite.x, self.handler.owner.sprite.y)
+        NanoShot(self.master, self.handler, self, dict.copy(gun), self.handler.owner.sprite.x, self.handler.owner.sprite.y)
+        NanoShot(self.master, self.handler, self, dict.copy(gun), self.handler.owner.sprite.x, self.handler.owner.sprite.y)
+        NanoShot(self.master, self.handler, self, dict.copy(gun), self.handler.owner.sprite.x, self.handler.owner.sprite.y)
         return True
 
     def closest_enemy(self, chaos):
@@ -693,6 +530,41 @@ class SPBLSlash(Skill):
     def __init__(self, master, level, handler):
         super(SPBLSlash, self).__init__(master, level, handler)
 
+    def fire(self):
+        enemy_range = self.get_enemy_dist()
+        try:
+            if enemy_range <= 75 and enemy_range and not self.handler.global_cooldown:
+                erx = self.handler.owner.target.sprite.x
+                ery = self.handler.owner.target.sprite.y
+                ret = calc_vel_xy(self.handler.owner.sprite.x, self.handler.owner.sprite.y, erx, ery, 10)
+                for n in self.handler.core.nano:
+                    n.sprite.scale = 2.5
+                    n.ret_x -= ret[0]
+                    n.ret_y -= ret[1]
+                # Melee(self.master, self.handler, self, self.handler.copy_gun(), self.handler.owner.sprite.x, self.handler.owner.sprite.y)
+                # self.handler.owner.stats.recoil += self.handler.owner.stats.gun_data['recoil']
+                return True
+            else:
+                self.dash()
+                return False
+        except:
+            return False
+
+    def dash(self):
+        ret = calc_vel_xy(self.handler.owner.sprite.x, self.handler.owner.sprite.y,
+        self.handler.owner.target.sprite.x, self.handler.owner.target.sprite.y, 45)
+        self.handler.owner.controller.move_to(self.handler.owner.target.sprite.x + ret[0],
+            self.handler.owner.target.sprite.y + ret[1], 1)
+
+    def get_enemy_dist(self):
+        if self.handler.owner.target:
+            dist_x = self.handler.owner.sprite.x - self.handler.owner.target.sprite.x
+            dist_y = self.handler.owner.sprite.y - self.handler.owner.target.sprite.y
+            dist = math.hypot(dist_x, dist_y)
+            return dist
+        return False
+
+
 # Unfinished
 class SPBLTrips(Skill):
     def __init__(self, master, level, handler):
@@ -708,50 +580,7 @@ class SPBLBangForYourBuck(Skill):
 class SPBLAnarchy(Skill):
     def __init__(self, master, level, handler):
         super(SPBLAnarchy, self).__init__(master, level, handler)
-        self.image = load_image('snipe.png')
-        self.sound = load_sound('anarchy.wav')
-        self.on_hit = load_sound('anarchy_on_hit.wav')
 
-    def fire(self):
-        if len(self.handler.core.chaos):
-            for c in self.handler.core.chaos:
-                c.controller = self
-                c.target = self.closest_enemy(c)
-                if not c.target:
-                    try:
-                        c.delete_self()
-                        self.handler.core.add_chaos()
-                    except:
-                        break
-                play_sound(self.sound)
-                self.handler.core.chaos_in_action.append(c)
-                self.handler.core.chaos.remove(c)
-            return True
-        return False
-
-    def activate(self, chaos):
-        gun = self.handler.copy_gun()
-        gun['image'] = self.image
-        gun['accuracy'] += 100
-        gun['on_hit_sound'] = self.on_hit
-        AnarchyShot(self.master, self.handler, self, gun, chaos.sprite.x, chaos.sprite.y)
-
-    def closest_enemy(self, chaos):
-        target = None
-        try:
-            min_dist = 2000
-            x1 = chaos.sprite.x
-            y1 = chaos.sprite.y
-            if len(self.handler.owner.enemies) == 0:
-                return False
-            for e in self.handler.owner.enemies:
-                dist = abs(math.hypot(x1 - e.sprite.x, y1 - e.sprite.y))
-                if dist < min_dist:
-                    min_dist = dist
-                    target = e
-            return target
-        except:
-            return False
 # Unfinished
 class SPBLRocketPowered(Skill):
     def __init__(self, master, level, handler):
@@ -766,50 +595,6 @@ class SPBLSmokyEyeSurprise(Skill):
 class SPBLTracer(Skill):
     def __init__(self, master, level, handler):
         super(SPBLTracer, self).__init__(master, level, handler)
-        self.image = load_image('red_laser.png')
-
-    def fire(self):
-        if len(self.handler.core.chaos):
-            c = self.handler.core.chaos.pop()
-            c.controller = self
-            c.target = self.closest_enemy(c)
-            if not c.target:
-                try:
-                    self.handler.core.add_chaos()
-                    c.delete_self()
-                except:
-                    return True
-                return True
-            c.update = c.tracer_update
-            self.handler.core.chaos_in_action.append(c)
-            return True
-        else:
-            return False
-
-    def activate(self, chaos):
-        gun = self.handler.copy_gun()
-        gun['image'] = self.image
-        gun['damage_min'] = int(max(gun['damage_min'] * .1, 1))
-        gun['damage_max'] = int(max(gun['damage_max'] * .1, 2))
-        gun['velocity'] = 20
-        NoTargetGunshot(self.master, self.handler, self, dict.copy(gun), chaos.sprite.x, chaos.sprite.y)
-
-    def closest_enemy(self, chaos):
-        target = None
-        try:
-            min_dist = float("inf")
-            x1 = chaos.sprite.x
-            y1 = chaos.sprite.y
-            if len(self.handler.owner.enemies) == 0:
-                return False
-            for e in self.handler.owner.enemies:
-                dist = abs(math.hypot(x1 - e.sprite.x, y1 - e.sprite.y))
-                if dist < min_dist:
-                    min_dist = dist
-                    target = e
-            return target
-        except:
-            return False
 
 # Unfinished
 class SPBLBlotOutTheSun(Skill):
@@ -825,36 +610,9 @@ class SPBLConked(Skill):
 class SPBLMayhem(Skill):
     def __init__(self, master, level, handler):
         super(SPBLMayhem, self).__init__(master, level, handler)
-        self.image = load_image('crystal.png')
-        self.on_hit = load_sound('crystal_break.wav')
-
-    def fire(self):
-        try:
-            if len(self.handler.core.chaos):
-                print self.handler.core.chaos
-                for c in self.handler.core.chaos:
-                    c.controller = self
-                    self.handler.core.chaos_in_action.append(c)
-                    self.activate(c)
-                    c.delete_self()
-                self.handler.core.chaos = []
-                return True
-            return False
-        except Exception, e:
-            print e
-            self.handler.core.chaos = []
-
-    def activate(self, chaos):
-        gun = self.handler.copy_gun()
-        gun['on_hit_sound'] = self.on_hit
-        gun['image'] = self.image
-        gun['damage_min'] = int(max(gun['damage_min'] * .1, 1))
-        gun['damage_max'] = int(max(gun['damage_max'] * .1, 2))
-        for i in range(3):
-            HomingShot(self.master, self.handler, self, dict.copy(gun), chaos.sprite.x, chaos.sprite.y)
 
 nanomancer_skillset = {
-    'core': SpectreCore,
+    'core': NanoCore,
     '1': SPOVTimedBreathing,
     '2': SPOVFlakJacket,
     '3': SPOVTwentyMileMarch,
@@ -866,7 +624,7 @@ nanomancer_skillset = {
     '9': SPOVCannibalize,
     '10': SPOVBarrage,
     '11': SPSNSlash,
-    '12': SPSNSalted,
+    '12': SPSNBolted,
     '13': SPSNMuzzleBrake,
     '14': SPSNCoupled,
     '15': SPSNIronDome,
@@ -888,11 +646,11 @@ nanomancer_skillset = {
 }
 
 sample_nanomancer_build = {
-    'slot_mouse_two': ['18', 1],
-    'slot_one': ['14', 1],
-    'slot_two': ['24', 1],
-    'slot_three': ['30', 2],
-    'slot_four': ['27', 3],
+    'slot_mouse_two': ['21', 1],
+    'slot_one': ['18', 1],
+    'slot_two': ['12', 1],
+    'slot_three': ['12', 2],
+    'slot_four': ['12', 3],
     'slot_q': ['1', 1],
     'slot_e': ['1', 1],
     'passive_one': ['1', 1],
