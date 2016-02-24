@@ -93,8 +93,9 @@ class Ability(object):
     def update(self):
         try:
             self.core.update()
-        except:
-            pass
+        except Exception, e:
+            print e
+
         if self.global_cooldown:
             self.global_cooldown -= 1
         self.slot_mouse_two.update()

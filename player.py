@@ -8,6 +8,7 @@ from functools import partial # noqa
 from longbow import * # noqa
 from spectreskills import * # noqa
 from nanomancer import * # noqa
+from wrecker import * # noqa
 from controller import Controller
 
 class Player(Character):
@@ -459,6 +460,43 @@ player_base_nanomancer = {
     'armor': player_armor,
     'skillset': nanomancer_skillset,
     'build': sample_nanomancer_build,
+    'color': 'blue',
+    'friends': 'blue',
+    'enemies': 'red',
+    'blood_color': (30, 30, 30, 255),
+    'controller': PlayerController,
+    'stats': {
+        'level': 1,
+        'damage': 0,
+        'damage_min': 0,
+        'damage_max': 0,
+        'damage_perc': 0,
+        'attack_speed_perc': 0,
+        'crit': 5,
+        'crit_damage': .1,
+        'accuracy': 0,
+        'armor_pierce': 0,
+        'shield_max': 10,
+        'shield_max_perc': 0,
+        'shield_regen': .1,
+        'shield_on_hit': 0,
+        'health_max': 500,
+        'health_max_perc': 0,
+        'health_regen': 0,
+        'health_on_hit': 0,
+        'armor': 1,
+        'evade': 0,
+        'speed': 5,
+    },
+}
+
+player_base_wrecker = {
+    'sprite': load_image('nanomancer.png'),
+    'coord': [window_width / 2, window_height / 2],
+    'gun': nm_leech,
+    'armor': player_armor,
+    'skillset': wrecker_skillset,
+    'build': sample_wrecker_build,
     'color': 'blue',
     'friends': 'blue',
     'enemies': 'red',
