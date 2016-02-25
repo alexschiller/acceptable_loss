@@ -9,6 +9,7 @@ from longbow import * # noqa
 from spectreskills import * # noqa
 from nanomancer import * # noqa
 from wrecker import * # noqa
+import itertools
 from controller import Controller
 
 class Player(Character):
@@ -140,6 +141,32 @@ class PlayerController(Controller):
         self.timg = load_image('target.png')
         self.move_target = None
         self.move_img = load_image('ex.png')
+        self.left_foot = pyglet.sprite.Sprite(load_image('mech_foot.png'), 0, 0, batch=gfx_batch)
+        self.right_foot = pyglet.sprite.Sprite(load_image('mech_foot.png'), 0, 0, batch=gfx_batch)
+        self.foot_cycle = itertools.cycle(
+            [0] * 3 +
+            [1] * 3 +
+            [2] * 3 +
+            [3] * 3 +
+            [4] * 3 +
+            [3] * 3 +
+            [2] * 3 +
+            [1] * 3 +
+            [0] * 3 +
+            [-1] * 3 +
+            [-2] * 3 +
+            [-3] * 3 +
+            [-4] * 3 +
+            [-3] * 3 +
+            [-2] * 3 +
+            [-1] * 3 +
+            [0] * 3)
+
+        self.left_foot.x = self.puppet.sprite.x - 5
+        self.right_foot.x = self.puppet.sprite.x + 5
+
+        self.left_foot.y = self.puppet.sprite.y
+        self.right_foot.y = self.puppet.sprite.y
 
     def on_hit(self):
         pass
@@ -179,15 +206,32 @@ class PlayerController(Controller):
     #     # self.puppet.stats.update_move(mx, my)
     #     # self.puppet.sprite.x += (self.puppet.stats.speed * mx)
     #     # self.puppet.sprite.y += (self.puppet.stats.speed * my)
+    def update_feet(self):
+        try:
+            cycle = self.foot_cycle.next()
+            self.left_foot.y = self.puppet.sprite.y + cycle * 3
+            self.right_foot.y = self.puppet.sprite.y - cycle * 3
+        except Exception, e:
+            print e
 
     def move_to(self, x, y, scale):
+
         self.move_target = [x, y]
         self.mouse_target_sprite = pyglet.sprite.Sprite(self.move_img,
             x, y, batch=BarBatch) # noqa
         self.mouse_target_sprite.scale = scale
+        # try:
+        #     play_sound(self.puppet.base['walk_sound'])
+        # except:
+        #     pass
 
     def update_movement(self):
+        self.left_foot.x = self.puppet.sprite.x - 5
+        self.right_foot.x = self.puppet.sprite.x + 5
+        self.left_foot.y = self.puppet.sprite.y
+        self.right_foot.y = self.puppet.sprite.y
         if self.move_target:
+            self.update_feet()
             if self.mouse_target_sprite.scale < 1:
                 self.mouse_target_sprite.scale += .05
             dist_x = float(self.move_target[0]) - self.puppet.sprite.x
@@ -434,7 +478,7 @@ nm_leech = {
         'travel': 700,
         'range_min': 100,
         'range_max': 400,
-        'velocity': 3,
+        'velocity': 15,
         'accuracy': 85,
         'rof': 10,
         'recoil': 5,
@@ -454,12 +498,13 @@ nm_leech = {
     }
 
 player_base_nanomancer = {
-    'sprite': load_image('nanomancer.png'),
+    'sprite': load_image('mech_one.png'),
     'coord': [window_width / 2, window_height / 2],
     'gun': nm_leech,
     'armor': player_armor,
     'skillset': nanomancer_skillset,
     'build': sample_nanomancer_build,
+    'walk_sound': load_sound('nanomancer_walk.wav'),
     'color': 'blue',
     'friends': 'blue',
     'enemies': 'red',

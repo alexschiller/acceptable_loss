@@ -268,29 +268,46 @@ class WreckerCore(Core):
             Chain(self.master, self.handler.owner, self.handler.owner.sprite.x, self.handler.owner.sprite.y)]
 
     def update(self):
-        for n, c in enumerate(self.chain):
-            p = self.handler.owner.sprite
-            if n == 0:
-                x = math.hypot(c.sprite.x - p.x, c.sprite.y - p.y)
-                print x
-                if x > 1:
-                    ret = calc_vel_xy(p.x, p.y, c.sprite.x, c.sprite.y, x / 2.0)
-                    c.sprite.x += ret[0]
-                    c.sprite.y += ret[1]
-            elif n == 7:
-                c0 = self.ball
-                x = math.hypot(c.sprite.x - c0.sprite.x, c0.sprite.y - c0.sprite.y)
-                if x > 1:
-                    ret = calc_vel_xy(c0.sprite.x, c0.sprite.y, c.sprite.x, c.sprite.y, x / 2.0)
-                    c.sprite.x -= ret[0]
-                    c.sprite.y -= ret[1]
-            else:
-                c0 = self.chain[n - 1]
-                x = math.hypot(c.sprite.x - c0.sprite.x, c0.sprite.y - c0.sprite.y)
-                if x > 1:
-                    ret = calc_vel_xy(c0.sprite.x, c0.sprite.y, c.sprite.x, c.sprite.y, x / 2.0)
-                    c.sprite.x += ret[0]
-                    c.sprite.y += ret[1]
+        pass
+        # for n, c in enumerate(self.chain):
+            # p = self.handler.owner.sprite
+            # if n == 0:
+
+            #     x = math.hypot(c.sprite.x - p.x, c.sprite.y - p.y)
+            #     if x > 2:
+            #         ret = calc_vel_xy(p.x, p.y, c.sprite.x, c.sprite.y, 3)
+            #         c.sprite.x += ret[0]
+            #         c.sprite.y += ret[1]
+
+            #     c0 = self.chain[n + 1]
+            #     x = math.hypot(c.sprite.x - c0.sprite.x, c0.sprite.y - c0.sprite.y)
+            #     if x > 2:
+            #         ret = calc_vel_xy(c0.sprite.x, c0.sprite.y, c.sprite.x, c.sprite.y, 2)
+            #         c.sprite.x += ret[0]
+            #         c.sprite.y += ret[1]
+
+            # elif n == 7:
+            #     c0 = self.ball
+            #     x = math.hypot(c.sprite.x - c0.sprite.x, c0.sprite.y - c0.sprite.y)
+            #     if x > 2:
+            #         ret = calc_vel_xy(c0.sprite.x, c0.sprite.y, c.sprite.x, c.sprite.y, 3)
+            #         c.sprite.x += ret[0]
+            #         c.sprite.y += ret[1]
+
+            # else:
+            #     c0 = self.chain[n - 1]
+            #     x = math.hypot(c.sprite.x - c0.sprite.x, c0.sprite.y - c0.sprite.y)
+            #     if x > 2:
+            #         ret = calc_vel_xy(c0.sprite.x, c0.sprite.y, c.sprite.x, c.sprite.y, 3)
+            #         c.sprite.x += ret[0]
+            #         c.sprite.y += ret[1]
+
+            #     c0 = self.chain[n + 1]
+            #     x = math.hypot(c.sprite.x - c0.sprite.x, c0.sprite.y - c0.sprite.y)
+            #     if x > 2:
+            #         ret = calc_vel_xy(c0.sprite.x, c0.sprite.y, c.sprite.x, c.sprite.y, 3)
+            #         c.sprite.x += ret[0]
+            #         c.sprite.y += ret[1]
 
 
 # Unfinished

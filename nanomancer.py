@@ -243,7 +243,6 @@ class NanoShot(HomingShot):
         except:
             return False
 
-
 class Nano(object):
     def __init__(self, master, handler, start_x, start_y): # noqa
         self.master = master
@@ -252,8 +251,6 @@ class Nano(object):
         self.sprite = pyglet.sprite.Sprite(img,
         start_x, start_y, batch=EffectsBatch)
         self.timer = 1
-        self.shoot_timer = 60
-        self.shoot = 0
         self.ret = [0, 0]
         self.ret_x = 0
         self.ret_y = 0
@@ -266,6 +263,8 @@ class Nano(object):
         self.handler.ability.core.chaos_in_action.remove(self)
 
     def update(self):
+        if random.choice([0, 0, 0, 0, 0, 1]):
+            self.sprite.scale += .2
         if self.sprite.scale > 1:
             self.sprite.scale -= .1
         if not self.controller:
@@ -529,6 +528,7 @@ class SPSNSalvo(Skill):
 class SPBLSlash(Skill):
     def __init__(self, master, level, handler):
         super(SPBLSlash, self).__init__(master, level, handler)
+        self.img = load_image('hand.png')
 
     def fire(self):
         enemy_range = self.get_enemy_dist()
@@ -541,7 +541,9 @@ class SPBLSlash(Skill):
                     n.sprite.scale = 2.5
                     n.ret_x -= ret[0]
                     n.ret_y -= ret[1]
-                # Melee(self.master, self.handler, self, self.handler.copy_gun(), self.handler.owner.sprite.x, self.handler.owner.sprite.y)
+                gun = self.handler.copy_gun()
+                gun['image'] = self.img
+                Melee(self.master, self.handler, self, gun, self.handler.owner.sprite.x, self.handler.owner.sprite.y)
                 # self.handler.owner.stats.recoil += self.handler.owner.stats.gun_data['recoil']
                 return True
             else:
