@@ -305,7 +305,7 @@ class NanoCore(Core):
         self.nano_in_action = []
 
     def add_nano(self):
-        if len(self.nano) < 30:
+        if len(self.nano) < 1:
             self.nano.append(Nano(self.master, self.handler.owner, self.handler.owner.sprite.x, self.handler.owner.sprite.y))
 
     def update(self):

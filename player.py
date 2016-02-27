@@ -141,27 +141,20 @@ class PlayerController(Controller):
         self.timg = load_image('target.png')
         self.move_target = None
         self.move_img = load_image('ex.png')
-        # self.left_foot = pyglet.sprite.Sprite(load_image('mech_foot.png'), 0, 0, batch=gfx_batch)
-        # self.right_foot = pyglet.sprite.Sprite(load_image('mech_foot.png'), 0, 0, batch=gfx_batch)
-        # self.foot_cycle = itertools.cycle(
-        #     [0] * 3 +
-        #     [1] * 3 +
-        #     [2] * 3 +
-        #     [3] * 3 +
-        #     [4] * 3 +
-        #     [3] * 3 +
-        #     [2] * 3 +
-        #     [1] * 3 +
-        #     [0] * 3 +
-        #     [-1] * 3 +
-        #     [-2] * 3 +
-        #     [-3] * 3 +
-        #     [-4] * 3 +
-        #     [-3] * 3 +
-        #     [-2] * 3 +
-        #     [-1] * 3 +
-        #     [0] * 3)
-
+        self.animation = [load_image('mech_-2.png'),
+            load_image('mech_-1.png'),
+            load_image('mech_0.png'),
+            load_image('mech_1.png'),
+            load_image('mech_2.png')]
+        self.cycle = itertools.cycle(
+            [2] * 8 +
+            [3] * 8 +
+            [4] * 8 +
+            [3] * 8 +
+            [2] * 8 +
+            [1] * 8 +
+            [0] * 8 +
+            [1] * 8)
         # self.left_foot.x = self.puppet.sprite.x - 5
         # self.right_foot.x = self.puppet.sprite.x + 5
 
@@ -225,12 +218,16 @@ class PlayerController(Controller):
         # except:
         #     pass
 
+    def animate(self):
+        self.puppet.sprite.image = self.animation[self.cycle.next()]
+
     def update_movement(self):
         # self.left_foot.x = self.puppet.sprite.x - 5
         # self.right_foot.x = self.puppet.sprite.x + 5
         # self.left_foot.y = self.puppet.sprite.y
         # self.right_foot.y = self.puppet.sprite.y
         if self.move_target:
+            self.animate()
             # self.update_feet()
             if self.mouse_target_sprite.scale < 1:
                 self.mouse_target_sprite.scale += .05
