@@ -3,6 +3,7 @@ from collide import * # noqa
 from utility import * # noqa
 from character import * # noqa
 import pyglet
+import itertools
 from functools import partial # noqa
 from controller import Controller
 from plasmaslinger import * # noqa
@@ -136,6 +137,18 @@ class PlayerController(Controller):
         self.move_target = None
         self.move_img = load_image('ex.png')
 
+        self.count_base = 20
+        self.anim_rx = 0
+        self.anim_ry = 0
+        self.count = 1
+        self.time_to_speed = 60
+        self.moving = 0
+
+        self.breath_timer_base = 15
+        self.breath_timer = 1
+        self.breath = 0
+        self.breath_cycle = itertools.cycle([-.005, .005])
+
     def on_hit(self):
         pass
 
@@ -171,8 +184,29 @@ class PlayerController(Controller):
             x, y, batch=BarBatch) # noqa
         self.mouse_target_sprite.scale = scale
 
+    def add_jitter(self):
+        self.count -= 1
+        if not self.count:
+            self.anim_rx = (random.randint(-2, 2) / 10.0)
+            self.anim_ry = (random.randint(-2, 2) / 10.0)
+            self.count += self.count_base
+
+        self.puppet.sprite.x += self.anim_rx
+        self.puppet.sprite.y += self.anim_ry
+
+        self.breath_timer -= 1
+        if not self.breath_timer:
+            self.breath = self.breath_cycle.next()
+            self.breath_timer += self.breath_timer_base
+        self.puppet.sprite.scale += self.breath
+
     def update_movement(self):
         if self.move_target:
+            if self.moving < self.time_to_speed:
+                self.moving += 1
+
+            self.add_jitter()
+
             if self.mouse_target_sprite.scale < 1:
                 self.mouse_target_sprite.scale += .05
             dist_x = float(self.move_target[0]) - self.puppet.sprite.x
@@ -185,7 +219,7 @@ class PlayerController(Controller):
                     self.puppet.sprite.x, self.puppet.sprite.y, abs(dist_x) + abs(dist_y))
             else:
                 ret = calc_vel_xy(self.move_target[0], self.move_target[1],
-                    self.puppet.sprite.x, self.puppet.sprite.y, self.puppet.stats.speed)
+                    self.puppet.sprite.x, self.puppet.sprite.y, self.puppet.stats.speed * self.moving / self.time_to_speed)
 
             self.last_mx = ret[0]
             self.last_my = ret[1]
@@ -195,6 +229,8 @@ class PlayerController(Controller):
             if abs(dist_x) + abs(dist_y) <= self.puppet.stats.speed:
                 self.move_target = None
                 self.mouse_target_sprite = None
+        else:
+            self.moving = 0
 
     def check_target(self):
         if self.puppet.target:

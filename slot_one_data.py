@@ -1,6 +1,6 @@
 player_base = {
     'class': 'plasmaslinger',
-    'sprite': 'mech_one.png',
+    'sprite': 'plasmaslinger.png',
     'coord': None,
     'gun': {
         'level': 1,
