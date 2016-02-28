@@ -7,7 +7,6 @@ from pyglet.window import key # noqa
 import cProfile # noqa
 import pstats # noqa
 import StringIO # noqa
-from energy import * # noqa
 from time import time, sleep # noqa
 from importer import * # noqa
 from states import * # noqa

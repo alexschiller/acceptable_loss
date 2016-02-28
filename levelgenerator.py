@@ -180,14 +180,18 @@ class RoomManager(object):
         self.portal = None
 
     def setup(self, amount):
-        for i in range(1, amount):
-            temproom = Room(i)
-            parent = self.roomlist[random.randint(0, len(self.roomlist) - 1)]
+        self.parent.left = 1
+        # for i in range(1, 4):
+        k = 1
+        for i in ['left', 'right', 'down']:
+            temproom = Room(k)
+            parent = self.roomlist[0]
             while not parent.available():
                 parent = self.roomlist[random.randint(0, len(self.roomlist) - 1)]
 
-            choices = parent.available()
-            choice = choices[random.randint(0, len(choices) - 1)]
+            # choices = parent.available()
+            # choice = choices[random.randint(0, len(choices) - 1)]
+            choice = i
             # test = ""
             # for shit in choices:
             #     test += " " + shit
@@ -220,6 +224,7 @@ class RoomManager(object):
             if self.grid[x[0] + 1][x[1]] != -1:  # down
                 temproom.down = self.roomlist[self.grid[x[0] + 1][x[1]]]
                 self.roomlist[self.grid[x[0] + 1][x[1]]].up = temproom
+            k += 1
 
     def add_enemies(self, difficulty):
         for room in self.roomlist:
