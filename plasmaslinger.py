@@ -1,252 +1,214 @@
-from pyglet.gl import * # noqa
-from collide import * # noqa
+from baseskills import * # noqa
+# import math
+# from functools import partial
 from utility import * # noqa
-from character import * # noqa
-import pyglet
-from gun import * # noqa
-from functools import partial # noqa
-from ability import * # noqa
-# import random
 
-class BolaEffect(object):
-    def __init__(self, master, owner, start_x, start_y, target_x, target_y): # noqa
-        self.sprite = pyglet.sprite.Sprite(load_image('bola.png'), start_x, start_y, batch=gfx_batch) # noqa
-        self.travel = 200 + random.randint(-50, 50)
-        self.master = master
-        self.owner = owner
-        self.target_x = target_x
-        self.target_y = target_y
-        self.start_x = start_x
-        self.start_y = start_y
-        ret = calc_vel_xy(target_x, target_y,
-            start_x, start_y, random.randint(7, 10))
-
-        self.vel_x = ret[0] + random.randint(-2, 2)
-        self.vel_y = ret[1] + random.randint(-2, 2)
-
-        self.travelled = 0
-
-    def remove_bola(self):
-        self.master.spriteeffect.bola_explosion(self.sprite.x, self.sprite.y)
-        try:
-            self.sprite.delete()
-            self.owner.thrown.remove(self)
-        except:
-            pass
-
-    def get_target(self):
-        try:
-            min_dist = 300  # must be within 300 of the bola
-            x1 = self.sprite.x
-            y1 = self.sprite.y
-            self.target = None
-            for e in self.owner.owner.enemies:
-                dist = abs(math.hypot(x1 - e.sprite.x, y1 - e.sprite.y))
-                if dist < min_dist:
-                    min_dist = dist
-                    self.target = e
-            return min_dist
-        except:
-            self.target = None
-
-    def shoot(self):
-        enemy_range = self.get_target()
-        if self.target:
-            bullet_base = self.owner.build_bullet(
-                self.owner.gun_one,
-                self.sprite.x,
-                self.sprite.y,
-                self.target.sprite.x,
-                self.target.sprite.y,
-                enemy_range,
-                self.target,)
-            bullet_base['damage']
-            bullet_base['image'] = self.owner.plasma_shot
-            self.owner.thrown.append(Thrown(self.master, self.owner, bullet_base))
-        self.remove_bola()
+class PlasmaCore(Core):
+    def __init__(self, master, handler):
+        super(PlasmaCore, self).__init__(master, handler)
 
     def update(self):
-        self.sprite.rotation += 5
-        try:
-            self.sprite.x += self.vel_x
-            self.sprite.y += self.vel_y
-            self.travelled += math.hypot(self.vel_x, self.vel_y)
-            if self.travelled > self.travel:
-                self.shoot()
-        except:
-            pass
+        pass
+        # self.add_nano()
+        # for n in self.nano:
+        #     n.update()
+        # for n in self.nano_in_action:
+        #     n.update()
 
-class AoeThrown(Thrown):
-    def __init__(self, *args, **kwargs):
-        super(AoeThrown, self).__init__(*args, **kwargs)
+# Unfinished
+class PSPDTimedBreathing(Skill):
+    def __init__(self, master, level, handler):
+        super(PSPDTimedBreathing, self).__init__(master, level, handler)
 
-    def aoe(self):
-        self.hit = True
-        b_x = self.sprite.x
-        b_y = self.sprite.y
-        self.master.spriteeffect.plasma_explosion(b_x, b_y)
-        for e in self.owner.owner.enemies:
-            if abs(math.hypot(b_x - e.sprite.x, b_y - e.sprite.y)) < 100:
-                e.on_hit(self)                
-                self.display_outcome()
+# Unfinished
+class PSPDFlakJacket(Skill):
+    def __init__(self, master, level, handler):
+        super(PSPDFlakJacket, self).__init__(master, level, handler)
 
-    def delete_thrown(self):
-        self.display_outcome()
-        self.aoe()
-        self.sprite.delete()
-        self.owner.thrown.remove(self)
+# Unfinished
+class PSPDTwentyMileMarch(Skill):
+    def __init__(self, master, level, handler):
+        super(PSPDTwentyMileMarch, self).__init__(master, level, handler)
 
-class PlasmaslingerAbility(Ability):
-    def __init__(self, *args, **kwargs):
-        super(PlasmaslingerAbility, self).__init__(*args, **kwargs)
-        self.plasma = 100
-        self.max_plasma = 100
-        self.vat = pyglet.sprite.Sprite(load_image('plasma_vat.png', anchor=False), window_width-472, 0, batch=gfx_batch),  # noqa
-        self.plasma_shot = load_image('bola_shot.png')
-        self.bushwhack_shot = load_image('bushwhack_shot.png')
+# Unfinished
+class PSPDLockAndLoad(Skill):
+    def __init__(self, master, level, handler):
+        super(PSPDLockAndLoad, self).__init__(master, level, handler)
 
-    def update(self):
-        self.update_delayed()
-        self.update_plasma()
+# Unfinished
+class PSPDFletcher(Skill):
+    def __init__(self, master, level, handler):
+        super(PSPDFletcher, self).__init__(master, level, handler)
 
-        for t in self.thrown:
-            t.update()
+# Unfinished
+class PSPDSpotAndShot(Skill):
+    def __init__(self, master, level, handler):
+        super(PSPDSpotAndShot, self).__init__(master, level, handler)
 
-        ph = int(max(115 * self.plasma / 100, 1))
-        self.plasma_bar = pyglet.sprite.Sprite(
-            pyglet.image.create(15, ph, green_sprite),
-            window_width - 443, 5, batch=BarBatch)
+# Unfinished
+class PSPDIronRations(Skill):
+    def __init__(self, master, level, handler):
+        super(PSPDIronRations, self).__init__(master, level, handler)
 
-    def action_checks(self, plasma):
-        if self.owner.target:
-            if not self.global_cooldown:
-                if self.plasma >= plasma:
-                    return True
-        return False
+# Unfinished
+class PSPDStrafe(Skill):
+    def __init__(self, master, level, handler):
+        super(PSPDStrafe, self).__init__(master, level, handler)
 
-    def update_plasma(self):
-        if self.plasma < self.max_plasma:
-            self.plasma += .3 * self.plasma / self.max_plasma + .05
-        else:
-            self.plasma = self.max_plasma
+# Unfinished
+class PSPDCannibalize(Skill):
+    def __init__(self, master, level, handler):
+        super(PSPDCannibalize, self).__init__(master, level, handler)
 
-    def enemy_in_range(self, enemy, gun):
-            dist_x = self.owner.sprite.x - enemy.sprite.x
-            dist_y = self.owner.sprite.y - enemy.sprite.y
-            dist = math.hypot(dist_x, dist_y)
-            if dist < gun['travel']:
-                return dist
-            return False
+# Unfinished
+class PSPDBarrage(Skill):
+    def __init__(self, master, level, handler):
+        super(PSPDBarrage, self).__init__(master, level, handler)
 
-    def add_bullet(self, bullet_base):
-        self.thrown.append(Thrown(master, self, bullet_base))
+# Unfinished
+class PSMASlash(Skill):
+    def __init__(self, master, level, handler):
+        super(PSMASlash, self).__init__(master, level, handler)
 
-    def magnum_double_tap(self):
-        if self.action_checks(10):
-            enemy_range = self.can_ability_shoot(self.gun_one)
-            if enemy_range:
-                bullet_base = self.build_bullet(
-                    self.gun_one,
-                    self.owner.sprite.x,
-                    self.owner.sprite.y,
-                    self.owner.target.sprite.x,
-                    self.owner.target.sprite.y,
-                    enemy_range,
-                    self.owner.target,)
-                bullet_base['image'] = self.plasma_shot
-                self.add_bullet(bullet_base)
-                self.delayed.append([5, partial(self.add_bullet, bullet_base)])
-                self.trigger_global_cooldown()
-                self.plasma -= 10
+# Unfinished
+class PSMABolted(Skill):
+    def __init__(self, master, level, handler):
+        super(PSMABolted, self).__init__(master, level, handler)
 
-    def magnum_five_beans_in_the_wheel(self):
-        if self.action_checks(10):
-            enemy_range = self.can_ability_shoot(self.gun_one)
-            if enemy_range:
-                bullet_base = self.build_bullet(
-                    self.gun_two,
-                    self.owner.sprite.x,
-                    self.owner.sprite.y,
-                    self.owner.target.sprite.x,
-                    self.owner.target.sprite.y,
-                    enemy_range,
-                    self.owner.target,)
-                bullet_base['damage'] *= .5
-                bullet_base['image'] = self.bushwhack_shot
-                self.owner.stats.temp_stat_change(180, 'health_regen', bullet_base['damage']) # noqa
-                self.thrown.append(Thrown(master, self, bullet_base))
-                self.trigger_global_cooldown()
-                self.plasma -= 10
+# Unfinished
+class PSMAMuzzleBrake(Skill):
+    def __init__(self, master, level, handler):
+        super(PSMAMuzzleBrake, self).__init__(master, level, handler)
 
-    def magnum_california_prayer_book(self):
-        if self.action_checks(5):
-            keep_going = 1
-            keep_count = 0
-            while keep_going:
-                if random.choice([1, 1, 1, 0]):
-                    self.thrown.append(
-                        BolaEffect(self.master, self, self.owner.sprite.x,
-                            self.owner.sprite.y, self.owner.target.sprite.x,
-                            self.owner.target.sprite.y,)
-                    )
-                    keep_count += 1
-                else:
-                    keep_going = 0
-            self.master.spriteeffect.message(self.owner.sprite.x, self.owner.sprite.y, 'shot: ' + str(keep_count), time=90) # noqa                    
-            self.trigger_global_cooldown()
-            self.plasma -= 5
+# Unfinished
+class PSMACoupled(Skill):
+    def __init__(self, master, level, handler):
+        super(PSMACoupled, self).__init__(master, level, handler)
 
-    def carbine_bushwhack(self):
-        if self.action_checks(10):
-            enemy_range = self.can_ability_shoot(self.gun_two)
-            if enemy_range:
-                bullet_base = self.build_bullet(
-                    self.gun_two,
-                    self.owner.sprite.x,
-                    self.owner.sprite.y,
-                    self.owner.target.sprite.x,
-                    self.owner.target.sprite.y,
-                    enemy_range,
-                    self.owner.target,)
-                bullet_base['damage'] *= 1.9
-                bullet_base['image'] = self.bushwhack_shot
-                self.thrown.append(Thrown(master, self, bullet_base))
-                self.trigger_global_cooldown()
-                self.plasma -= 10
+# Unfinished
+class PSMAIronDome(Skill):
+    def __init__(self, master, level, handler):
+        super(PSMAIronDome, self).__init__(master, level, handler)
 
-    def carbine_cowboy_cocktail(self):
-        if self.action_checks(20):
-            enemy_range = self.can_ability_shoot(self.gun_two)
-            if enemy_range:
-                bullet_base = self.build_bullet(
-                    self.gun_two,
-                    self.owner.sprite.x,
-                    self.owner.sprite.y,
-                    self.owner.target.sprite.x,
-                    self.owner.target.sprite.y,
-                    enemy_range,
-                    self.owner.target,)
-                bullet_base['velocity'] = 25
-                bullet_base['image'] = self.bushwhack_shot
-                self.thrown.append(AoeThrown(master, self, bullet_base))
-                self.trigger_global_cooldown()
-                self.plasma -= 10
+# Unfinished
+class PSMAHardCore(Skill):
+    def __init__(self, master, level, handler):
+        super(PSMAHardCore, self).__init__(master, level, handler)
 
-    def carbine_crackerjack(self):
-        if not self.global_cooldown and self.plasma >= 10:
-            for e in self.owner.enemies:
-                enemy_range = self.enemy_in_range(e, self.gun_two)
-                if enemy_range:
-                    bullet_base = self.build_bullet(
-                        self.gun_two,
-                        self.owner.sprite.x,
-                        self.owner.sprite.y,
-                        e.sprite.x,
-                        e.sprite.y,
-                        enemy_range,
-                        e,)
-                    bullet_base['damage']
-                    bullet_base['image'] = self.bushwhack_shot
-                    self.thrown.append(Thrown(master, self, bullet_base))
-            self.trigger_global_cooldown()
-            self.plasma -= 10
+# Unfinished
+class PSMAPerseverate(Skill):
+    def __init__(self, master, level, handler):
+        super(PSMAPerseverate, self).__init__(master, level, handler)
+
+# Unfinished
+class PSMABurst(Skill):
+    def __init__(self, master, level, handler):
+        super(PSMABurst, self).__init__(master, level, handler)
+
+# Unfinished
+class PSMATriggerDiscipline(Skill):
+    def __init__(self, master, level, handler):
+        super(PSMATriggerDiscipline, self).__init__(master, level, handler)
+
+# Unfinished
+class PSMASalvo(Skill):
+    def __init__(self, master, level, handler):
+        super(PSMASalvo, self).__init__(master, level, handler)
+
+# Unfinished
+class PSPOSlash(Skill):
+    def __init__(self, master, level, handler):
+        super(PSPOSlash, self).__init__(master, level, handler)
+
+# Unfinished
+class PSPOTrips(Skill):
+    def __init__(self, master, level, handler):
+        super(PSPOTrips, self).__init__(master, level, handler)
+
+
+# Unfinished
+class PSPOBangForYourBuck(Skill):
+    def __init__(self, master, level, handler):
+        super(PSPOBangForYourBuck, self).__init__(master, level, handler)
+
+# Unfinished
+class PSPOAnarchy(Skill):
+    def __init__(self, master, level, handler):
+        super(PSPOAnarchy, self).__init__(master, level, handler)
+
+# Unfinished
+class PSPORocketPowered(Skill):
+    def __init__(self, master, level, handler):
+        super(PSPORocketPowered, self).__init__(master, level, handler)
+
+# Unfinished
+class PSPOSmokyEyeSurprise(Skill):
+    def __init__(self, master, level, handler):
+        super(PSPOSmokyEyeSurprise, self).__init__(master, level, handler)
+
+# Unfinished
+class PSPOTracer(Skill):
+    def __init__(self, master, level, handler):
+        super(PSPOTracer, self).__init__(master, level, handler)
+
+# Unfinished
+class PSPOBlotOutTheSun(Skill):
+    def __init__(self, master, level, handler):
+        super(PSPOBlotOutTheSun, self).__init__(master, level, handler)
+
+# Unfinished
+class PSPOConked(Skill):
+    def __init__(self, master, level, handler):
+        super(PSPOConked, self).__init__(master, level, handler)
+
+# Unfinished
+class PSPOMayhem(Skill):
+    def __init__(self, master, level, handler):
+        super(PSPOMayhem, self).__init__(master, level, handler)
+
+plasmaslinger_skillset = {
+    'core': PlasmaCore,
+    '1': PSPDTimedBreathing,
+    '2': PSPDFlakJacket,
+    '3': PSPDTwentyMileMarch,
+    '4': PSPDLockAndLoad,
+    '5': PSPDFletcher,
+    '6': PSPDSpotAndShot,
+    '7': PSPDIronRations,
+    '8': PSPDStrafe,
+    '9': PSPDCannibalize,
+    '10': PSPDBarrage,
+    '11': PSMASlash,
+    '12': PSMABolted,
+    '13': PSMAMuzzleBrake,
+    '14': PSMACoupled,
+    '15': PSMAIronDome,
+    '16': PSMAHardCore,
+    '17': PSMAPerseverate,
+    '18': PSMABurst,
+    '19': PSMATriggerDiscipline,
+    '20': PSMASalvo,
+    '21': PSPOSlash,
+    '22': PSPOTrips,
+    '23': PSPOBangForYourBuck,
+    '24': PSPOAnarchy,
+    '25': PSPORocketPowered,
+    '26': PSPOSmokyEyeSurprise,
+    '27': PSPOTracer,
+    '28': PSPOBlotOutTheSun,
+    '29': PSPOConked,
+    '30': PSPOMayhem,
+}
+
+sample_plasmaslinger_build = {
+    'slot_mouse_two': ['21', 1],
+    'slot_one': ['18', 1],
+    'slot_two': ['12', 1],
+    'slot_three': ['12', 2],
+    'slot_four': ['12', 3],
+    'slot_q': ['1', 1],
+    'slot_e': ['1', 1],
+    'passive_one': ['1', 1],
+    'passive_two': ['1', 1],
+    'passive_three': ['1', 1],
+}
