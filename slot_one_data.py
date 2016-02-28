@@ -4,8 +4,8 @@ player_base = {
     'coord': None,
     'gun': {
         'level': 1,
-        'damage_min': 5,
-        'damage_max': 7,
+        'damage_min': 3,
+        'damage_max': 4,
         'travel': 700,
         'range_min': 200,
         'range_max': 600,
@@ -37,7 +37,7 @@ player_base = {
     },
     # 'skillset': None,
     'build': {
-        'slot_mouse_two': ['21', 1],
+        'slot_mouse_two': ['11', 1],
         'slot_one': ['18', 1],
         'slot_two': ['12', 1],
         'slot_three': ['12', 2],

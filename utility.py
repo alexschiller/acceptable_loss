@@ -62,7 +62,7 @@ class Master(object):
         # self.player.update()
         self.spriteeffect.update()
         # self.resources.update()
-        self.update_camera()
+        # self.update_camera()
         # self.threat.update()
         # self.radar.update()
         self.loot.update()
