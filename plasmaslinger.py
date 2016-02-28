@@ -24,12 +24,12 @@ class PlasmaCore(Core):
             target = [marker[0] + random.randint(-100, 100), marker[1] + random.randint(-100, 100)]
         while marker != target:
             counter += 1
-            ret = calc_vel_xy(target[0], target[1], marker[0], marker[1], 3)
+            ret = calc_vel_xy(target[0], target[1], marker[0], marker[1], 2)
             marker[0] += ret[0] + random.randint(-1, 1)
             marker[1] += ret[1] + random.randint(-1, 1)
             self.create_dot(marker[0], marker[1])
             if counter == dist / 2:
-                if random.choice([0, 1, 1]):
+                if random.choice([0, 0, 0, 1]):
                     if dist > 10:
                         self.create_lightning(marker[0],
                             marker[1],
