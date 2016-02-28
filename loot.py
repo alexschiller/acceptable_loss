@@ -4,7 +4,6 @@ from utility import * # noqa
 from character import * # noqa
 import pyglet
 import math
-from gun import * # noqa
 
 class Content(object):
     def __init__(self, loot): # noqa

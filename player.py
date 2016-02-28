@@ -3,14 +3,9 @@ from collide import * # noqa
 from utility import * # noqa
 from character import * # noqa
 import pyglet
-from gun import * # noqa
 from functools import partial # noqa
-from longbow import * # noqa
-from spectreskills import * # noqa
-from nanomancer import * # noqa
-from wrecker import * # noqa
-import itertools
 from controller import Controller
+from plasmaslinger import * # noqa
 
 class Player(Character):
     def __init__(self, *args, **kwargs):
@@ -134,32 +129,12 @@ class PlayerController(Controller):
         self.sprite = pyglet.sprite.Sprite(self.black_dot, 0, 0, batch=gfx_batch)
 
         self.collision = SpriteCollision(self.sprite)
-        # self.timer = itertools.cycle(range(3))
         red_sprite = pyglet.image.SolidColorImagePattern(color=(255, 0, 0, 150))
         self.red_dot = pyglet.image.create(5, 5, red_sprite)
         self.marker = None
         self.timg = load_image('target.png')
         self.move_target = None
         self.move_img = load_image('ex.png')
-        self.animation = [load_image('mech_-2.png'),
-            load_image('mech_-1.png'),
-            load_image('mech_0.png'),
-            load_image('mech_1.png'),
-            load_image('mech_2.png')]
-        self.cycle = itertools.cycle(
-            [2] * 8 +
-            [3] * 8 +
-            [4] * 8 +
-            [3] * 8 +
-            [2] * 8 +
-            [1] * 8 +
-            [0] * 8 +
-            [1] * 8)
-        # self.left_foot.x = self.puppet.sprite.x - 5
-        # self.right_foot.x = self.puppet.sprite.x + 5
-
-        # self.left_foot.y = self.puppet.sprite.y
-        # self.right_foot.y = self.puppet.sprite.y
 
     def on_hit(self):
         pass
@@ -189,46 +164,15 @@ class PlayerController(Controller):
             self.puppet.target = None
             self.marker = None
 
-    # def move(self, mx, my):
-    #     pass
-    #     # self.last_mx = mx
-    #     # self.last_my = my
-    #     # if mx and my:
-    #     #     mx = mx / 1.41
-    #     #     my = my / 1.41
-    #     # self.puppet.stats.update_move(mx, my)
-    #     # self.puppet.sprite.x += (self.puppet.stats.speed * mx)
-    #     # self.puppet.sprite.y += (self.puppet.stats.speed * my)
-    # def update_feet(self):
-    #     try:
-    #         cycle = self.foot_cycle.next()
-    #         self.left_foot.y = self.puppet.sprite.y + cycle * 3
-    #         self.right_foot.y = self.puppet.sprite.y - cycle * 3
-    #     except Exception, e:
-    #         print e
-
     def move_to(self, x, y, scale):
 
         self.move_target = [x, y]
         self.mouse_target_sprite = pyglet.sprite.Sprite(self.move_img,
             x, y, batch=BarBatch) # noqa
         self.mouse_target_sprite.scale = scale
-        # try:
-        #     play_sound(self.puppet.base['walk_sound'])
-        # except:
-        #     pass
-
-    def animate(self):
-        self.puppet.sprite.image = self.animation[self.cycle.next()]
 
     def update_movement(self):
-        # self.left_foot.x = self.puppet.sprite.x - 5
-        # self.right_foot.x = self.puppet.sprite.x + 5
-        # self.left_foot.y = self.puppet.sprite.y
-        # self.right_foot.y = self.puppet.sprite.y
         if self.move_target:
-            self.animate()
-            # self.update_feet()
             if self.mouse_target_sprite.scale < 1:
                 self.mouse_target_sprite.scale += .05
             dist_x = float(self.move_target[0]) - self.puppet.sprite.x
@@ -259,312 +203,24 @@ class PlayerController(Controller):
             except:
                 self.remove_target()
         else:
-            # pass
             self.rotate(self.sprite.x, self.sprite.y)
 
     def update(self):
         self.update_movement()
-        # if self.timer.next() == 1:
         self.puppet.update_bars()
         self.target_closest_enemy()
         for p in self.master.loot.current_loot:
             self.master.loot.unpack_package(p)
-            # if abs(self.puppet.sprite.x - p.sprite.x) < 10:
-            #     if abs(self.puppet.sprite.y - p.sprite.y) < 10:
-            #         if collide(p.collision, self.master.player.collision):
-            #             self.master.loot.unpack_package(p)
         self.check_target()
 
-lb_missile = {
-        'gun_class': 'Missile',
-        'level': 1,
-        'damage_min': 8,
-        'damage_max': 15,
-        'travel': 700,
-        'range_min': 300,
-        'range_max': 600,
-        'velocity': 30,
-        'accuracy': 70,
-        'rof': .5,
-        'recoil': 10,
-        'crit': 10,
-        'crit_damage': 2,
-        'armor_pierce': 5,
-        'image': load_image('missile.png'), # noqa
-        'gun_fire_sound': load_sound('missile.wav'), # noqa
-        'on_hit_sound': load_sound('on_hit.wav'), # noqa
-        'effects': [],
-        'gem_slots': {
-            '1': {
-                'color': 'topaz',
-                'current_gem': {'color': 'diamond', 'level': 4, 'stats': {'damage': 3, 'accuracy': 6, 'shield_regen': 2, 'shield_on_hit': 1, 'health_max_perc': 8}, 'rarity': 3} # noqa
-            },
-        },
-    }
+def read_data(data):
+    data['coord'] = [window_width / 2, window_height / 2]
+    data['controller'] = PlayerController
+    if data['class'] == 'plasmaslinger':
+        data['skillset'] = plasmaslinger_skillset
 
-lb_autocannon = {
-        'gun_class': 'Gun',
-        'level': 1,
-        'damage_min': 2,
-        'damage_max': 4,
-        'travel': 700,
-        'range_min': 200,
-        'range_max': 600,
-        'velocity': 40,
-        'accuracy': 85,
-        'rof': 10,
-        'recoil': 20,
-        'crit': 10,
-        'crit_damage': 3,
-        'armor_pierce': 8,
-        'image': load_image('autocannon.png'), # noqa
-        'gun_fire_sound': load_sound('shot.wav'), # noqa
-        'on_hit_sound': load_sound('on_hit.wav'), # noqa
-        'effects': [],
-        'gem_slots': {
-            '1': {
-                'color': 'topaz',
-                'current_gem': {'color': 'diamond', 'level': 4, 'stats': {'damage': 3, 'accuracy': 6, 'shield_regen': 2, 'shield_on_hit': 1, 'health_max_perc': 8}, 'rarity': 3} # noqa
-            },
-        },
-    }
-
-player_armor = {
-    'gem_slots': {
-        '1': {
-            'color': 'topaz',
-            'current_gem': {'color': 'diamond', 'level': 4, 'stats': {'damage': 3, 'accuracy': 6, 'shield_regen': 2, 'shield_on_hit': 1, 'health_max_perc': 8}, 'rarity': 3} # noqa
-            },
-        },
-    }
-
-
-player_base = {
-    'sprite': load_image('tiny.png'),
-    'coord': [window_width / 2, window_height / 2],
-    'gun': lb_autocannon,
-    'armor': player_armor,
-    'skillset': longbow_skillset,
-    'build': sample_longbow_build,
-    'color': 'blue',
-    'friends': 'blue',
-    'enemies': 'red',
-    'blood_color': (30, 30, 30, 255),
-    'controller': PlayerController,
-    'stats': {
-        'level': 1,
-        'damage': 0,
-        'damage_min': 0,
-        'damage_max': 0,
-        'damage_perc': 0,
-        'attack_speed_perc': 0,
-        'crit': 5,
-        'crit_damage': 2,
-        'accuracy': 0,
-        'armor_pierce': 0,
-        'shield_max': 10,
-        'shield_max_perc': 0,
-        'shield_regen': .1,
-        'shield_on_hit': 0,
-        'health_max': 500,
-        'health_max_perc': 0,
-        'health_regen': 0,
-        'health_on_hit': 0,
-        'armor': 1,
-        'evade': 0,
-        'speed': 3,
-    },
-}
-
-sp_sniper = {
-        'gun_class': 'Sniper',
-        'level': 1,
-        'damage_min': 3,
-        'damage_max': 5,
-        'travel': 700,
-        'range_min': 300,
-        'range_max': 1000,
-        'velocity': 10,
-        'accuracy': 70,
-        'rof': .1,
-        'recoil': 50,
-        'crit': 15,
-        'crit_damage': 1.5,
-        'armor_pierce': 2,
-        'image': load_image('sp_snipe.png'), # noqa
-        'gun_fire_sound': load_sound('shot.wav'), # noqa
-        'on_hit_sound': load_sound('on_hit.wav'), # noqa
-        'effects': [],
-        'gem_slots': {
-            '1': {
-                'color': 'topaz',
-                'current_gem': {'color': 'diamond', 'level': 4, 'stats': {'accuracy': 6, 'shield_regen': 2, 'shield_on_hit': 1, 'health_max_perc': 8}, 'rarity': 3} # noqa
-            },
-        },
-    }
-
-sp_blade = {
-        'gun_class': 'Blade',
-        'level': 1,
-        'damage_min': 1,
-        'damage_max': 2,
-        'travel': 700,
-        'range_min': 0,
-        'range_max': 60,
-        'velocity': 10,
-        'accuracy': 85,
-        'rof': 5,
-        'recoil': 5,
-        'crit': 30,
-        'crit_damage': 1.3,
-        'armor_pierce': 2,
-        'image': load_image('stabber.png'), # noqa
-        'gun_fire_sound': load_sound('shot.wav'), # noqa
-        'on_hit_sound': load_sound('melee_on_hit.wav'), # noqa
-        'effects': [],
-        'gem_slots': {
-            '1': {
-                'color': 'topaz',
-                'current_gem': {'color': 'diamond', 'level': 4, 'stats': {'accuracy': 6, 'shield_regen': 2, 'shield_on_hit': 1, 'health_max_perc': 8}, 'rarity': 3} # noqa
-            },
-        },
-    }
-
-player_base_spectre = {
-    'sprite': load_image('spectre.png'),
-    'coord': [window_width / 2, window_height / 2],
-    'gun': sp_blade,
-    'armor': player_armor,
-    'skillset': spectre_skillset,
-    'build': sample_spectre_build,
-    'color': 'blue',
-    'friends': 'blue',
-    'enemies': 'red',
-    'blood_color': (30, 30, 30, 255),
-    'controller': PlayerController,
-    'stats': {
-        'level': 1,
-        'damage': 0,
-        'damage_min': 0,
-        'damage_max': 0,
-        'damage_perc': 0,
-        'attack_speed_perc': 0,
-        'crit': 5,
-        'crit_damage': .1,
-        'accuracy': 0,
-        'armor_pierce': 0,
-        'shield_max': 10,
-        'shield_max_perc': 0,
-        'shield_regen': .1,
-        'shield_on_hit': 0,
-        'health_max': 500,
-        'health_max_perc': 0,
-        'health_regen': 0,
-        'health_on_hit': 0,
-        'armor': 1,
-        'evade': 0,
-        'speed': 5,
-    },
-}
-
-nm_leech = {
-        'gun_class': 'Blade',
-        'level': 1,
-        'damage_min': 1,
-        'damage_max': 2,
-        'travel': 700,
-        'range_min': 100,
-        'range_max': 400,
-        'velocity': 15,
-        'accuracy': 85,
-        'rof': 10,
-        'recoil': 5,
-        'crit': 0,
-        'crit_damage': 1.1,
-        'armor_pierce': 0,
-        'image': load_image('nano.png'), # noqa
-        'gun_fire_sound': load_sound('shot.wav'), # noqa
-        'on_hit_sound': load_sound('melee_on_hit.wav'), # noqa
-        'effects': [],
-        'gem_slots': {
-            '1': {
-                'color': 'topaz',
-                'current_gem': {'color': 'diamond', 'level': 4, 'stats': {'accuracy': 6, 'shield_regen': 2, 'shield_on_hit': 1, 'health_max_perc': 8}, 'rarity': 3} # noqa
-            },
-        },
-    }
-
-player_base_nanomancer = {
-    'sprite': load_image('mech_one.png'),
-    'coord': [window_width / 2, window_height / 2],
-    'gun': nm_leech,
-    'armor': player_armor,
-    'skillset': nanomancer_skillset,
-    'build': sample_nanomancer_build,
-    'walk_sound': load_sound('nanomancer_walk.wav'),
-    'color': 'blue',
-    'friends': 'blue',
-    'enemies': 'red',
-    'blood_color': (30, 30, 30, 255),
-    'controller': PlayerController,
-    'stats': {
-        'level': 1,
-        'damage': 0,
-        'damage_min': 0,
-        'damage_max': 0,
-        'damage_perc': 0,
-        'attack_speed_perc': 0,
-        'crit': 5,
-        'crit_damage': .1,
-        'accuracy': 0,
-        'armor_pierce': 0,
-        'shield_max': 10,
-        'shield_max_perc': 0,
-        'shield_regen': .1,
-        'shield_on_hit': 0,
-        'health_max': 500,
-        'health_max_perc': 0,
-        'health_regen': 0,
-        'health_on_hit': 0,
-        'armor': 1,
-        'evade': 0,
-        'speed': 5,
-    },
-}
-
-player_base_wrecker = {
-    'sprite': load_image('nanomancer.png'),
-    'coord': [window_width / 2, window_height / 2],
-    'gun': nm_leech,
-    'armor': player_armor,
-    'skillset': wrecker_skillset,
-    'build': sample_wrecker_build,
-    'color': 'blue',
-    'friends': 'blue',
-    'enemies': 'red',
-    'blood_color': (30, 30, 30, 255),
-    'controller': PlayerController,
-    'stats': {
-        'level': 1,
-        'damage': 0,
-        'damage_min': 0,
-        'damage_max': 0,
-        'damage_perc': 0,
-        'attack_speed_perc': 0,
-        'crit': 5,
-        'crit_damage': .1,
-        'accuracy': 0,
-        'armor_pierce': 0,
-        'shield_max': 10,
-        'shield_max_perc': 0,
-        'shield_regen': .1,
-        'shield_on_hit': 0,
-        'health_max': 500,
-        'health_max_perc': 0,
-        'health_regen': 0,
-        'health_on_hit': 0,
-        'armor': 1,
-        'evade': 0,
-        'speed': 5,
-    },
-}
+    data['sprite'] = load_image(data['sprite'])
+    data['gun']['image'] = load_image(data['gun']['image'])
+    data['gun']['gun_fire_sound'] = load_sound(data['gun']['gun_fire_sound'])
+    data['gun']['on_hit_sound'] = load_sound(data['gun']['on_hit_sound'])
+    return data

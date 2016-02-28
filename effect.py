@@ -3,7 +3,6 @@ from collide import * # noqa
 from utility import * # noqa
 from character import * # noqa
 import pyglet
-from gun import * # noqa
 
 class Effect(object):
     def __init__(self, start_x, start_y, vel_x, vel_y, travel=20, ecolor=[0, 0, 0], esizex=3, esizey=3): # noqa

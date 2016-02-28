@@ -1,10 +1,6 @@
 from pyglet.gl import * # noqa
 from collide import * # noqa
 from utility import * # noqa
-# from plasmaslinger import * # noqa
-from spectre import * # noqa
-from longbow import * # noqa
-
 
 class Controller(object):
     def __init__(self, puppet):
