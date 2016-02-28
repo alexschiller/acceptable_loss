@@ -1,6 +1,6 @@
 from baseskills import * # noqa
 # import math
-# from functools import partial
+from functools import partial
 from utility import * # noqa
 
 class PlasmaCore(Core):
@@ -196,10 +196,6 @@ class PSPOBolt(Skill):
                 gun['accuracy'] += 100
                 gun['gun_fire_sound'] = self.gun_fire_sound
                 Gunshot(self.master, self.handler, self, dict.copy(gun), self.handler.owner.target.sprite.x, self.handler.owner.target.sprite.y)
-                # gun['damage_min'] = int(gun['damage_min'] * self.damage_mod)
-                # gun['damage_max'] = int(gun['damage_max'] * self.damage_mod)
-                # # gun['velocity'] = 30
-                # gun['image'] = self.image
                 return True
         return False
 
@@ -212,9 +208,45 @@ class PSPOBolt(Skill):
         return False
 
 # Unfinished
-class PSPOTrips(Skill):
+class PSPOAnvilCrawler(Skill):
     def __init__(self, master, level, handler):
-        super(PSPOTrips, self).__init__(master, level, handler)
+        super(PSPOAnvilCrawler, self).__init__(master, level, handler)
+        self.gun_fire_sound = load_sound('lightning_bolt.wav')
+
+    def fire(self):
+        hits = 0
+        if self.handler.core.plasma >= 100:
+            for e in self.handler.owner.enemies:
+                if hits == 3:
+                    return True
+                self.handler.owner.target = e
+                dist = self.get_enemy_dist()
+                if dist <= 200:
+                    hits += 1
+                    self.handler.core.lightning_counter = 3
+                    self.handler.core.create_lightning(
+                        self.handler.owner.sprite.x,
+                        self.handler.owner.sprite.y,
+                        dist,
+                        [self.handler.owner.target.sprite.x, self.handler.owner.target.sprite.y]
+                    )
+
+                    # self.handler.core.bullets -= 1
+                    gun = self.handler.copy_gun()
+                    gun['accuracy'] += 100
+                    gun['gun_fire_sound'] = self.gun_fire_sound
+                    Gunshot(self.master, self.handler, self, dict.copy(gun), self.handler.owner.target.sprite.x, self.handler.owner.target.sprite.y)
+            self.handler.core.plasma -= 100
+            return True
+        return False
+
+    def get_enemy_dist(self):
+        if self.handler.owner.target:
+            dist_x = self.handler.owner.sprite.x - self.handler.owner.target.sprite.x
+            dist_y = self.handler.owner.sprite.y - self.handler.owner.target.sprite.y
+            dist = math.hypot(dist_x, dist_y)
+            return dist
+        return False
 
 
 # Unfinished
@@ -223,9 +255,56 @@ class PSPOBangForYourBuck(Skill):
         super(PSPOBangForYourBuck, self).__init__(master, level, handler)
 
 # Unfinished
-class PSPOAnarchy(Skill):
+class PSPOSpark(Skill):
     def __init__(self, master, level, handler):
-        super(PSPOAnarchy, self).__init__(master, level, handler)
+        super(PSPOSpark, self).__init__(master, level, handler)
+        self.gun_fire_sound = load_sound('lightning_bolt.wav')
+
+    def fire(self):
+        if self.handler.core.plasma >= 50:
+            dist = self.get_enemy_dist()
+            if dist:
+                if dist <= 100:
+
+                    self.handler.core.plasma -= 50
+                    gun = self.handler.copy_gun()
+                    gun['accuracy'] += 100
+                    gun['damage_min'] = int(max(gun['damage_min'] * .1, 1))
+                    gun['damage_max'] = int(max(gun['damage_max'] * .1, 2))
+                    gun['gun_fire_sound'] = self.gun_fire_sound
+                    self.add_strike(gun, dist)
+                    self.handler.delayed.append([10, partial(self.add_strike, gun, dist)])
+                    self.handler.delayed.append([20, partial(self.add_strike, gun, dist)])
+                    return True
+                else:
+                    self.dash()
+        return False
+
+    def add_strike(self, gun, dist):
+        if self.handler.owner.target:
+            self.handler.core.lightning_counter = 3
+            self.handler.core.create_lightning(
+                self.handler.owner.sprite.x,
+                self.handler.owner.sprite.y,
+                dist,
+                [self.handler.owner.target.sprite.x, self.handler.owner.target.sprite.y]
+            )
+            Gunshot(self.master, self.handler, self, dict.copy(gun), self.handler.owner.target.sprite.x, self.handler.owner.target.sprite.y)
+
+    def dash(self):
+        ret = calc_vel_xy(self.handler.owner.sprite.x, self.handler.owner.sprite.y,
+        self.handler.owner.target.sprite.x, self.handler.owner.target.sprite.y, 45)
+        self.handler.owner.controller.move_to(self.handler.owner.target.sprite.x + ret[0],
+            self.handler.owner.target.sprite.y + ret[1], 1)
+
+    def get_enemy_dist(self):
+        if self.handler.owner.target:
+            dist_x = self.handler.owner.sprite.x - self.handler.owner.target.sprite.x
+            dist_y = self.handler.owner.sprite.y - self.handler.owner.target.sprite.y
+            dist = math.hypot(dist_x, dist_y)
+            return dist
+        return False
+
 
 # Unfinished
 class PSPORocketPowered(Skill):
@@ -280,9 +359,9 @@ plasmaslinger_skillset = {
     '19': PSMATriggerDiscipline,
     '20': PSMASalvo,
     '21': PSPOBolt,
-    '22': PSPOTrips,
+    '22': PSPOAnvilCrawler,
     '23': PSPOBangForYourBuck,
-    '24': PSPOAnarchy,
+    '24': PSPOSpark,
     '25': PSPORocketPowered,
     '26': PSPOSmokyEyeSurprise,
     '27': PSPOTracer,

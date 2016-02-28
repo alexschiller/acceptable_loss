@@ -232,7 +232,7 @@ class RoomManager(object):
             room_x_max = room_x_min + room.sprite.width
             room_y_min = room.sprite.y
             room_y_max = room_y_min + room.sprite.height
-            for i in range(1):
+            for i in range(2):
                 Character(
                     self.master,
                     random.choice([
