@@ -13,6 +13,8 @@ class PlasmaCore(Core):
         self.lightning = []
         self.lightning_counter = 0
         self.white_dot = pyglet.image.create(2, 2, white_sprite)
+        self.plasma = 100
+        self.plasma_max = 100
 
     def create_dot(self, x, y):
         self.lightning.append(pyglet.sprite.Sprite(self.white_dot, x, y, batch=BarBatch))
@@ -39,12 +41,14 @@ class PlasmaCore(Core):
                 break
 
     def update(self):
+        if self.plasma < self.plasma_max:
+            self.plasma += 1
         if len(self.lightning):
             self.lightning_counter -= 1
             if not self.lightning_counter:
                 self.lightning = []
         else:
-            if random.randint(0, 100) > 90:
+            if random.randint(0, 100) >= 100 - self.plasma / 10:
                 self.lightning_counter = 3
                 self.create_lightning(self.handler.owner.sprite.x, self.handler.owner.sprite.y)
 
@@ -119,6 +123,7 @@ class PSMABang(Skill):
             gun['damage_max'] = int(gun['damage_max'] * self.damage_mod)
             # gun['velocity'] = 30
             gun['image'] = self.image
+
             PlayerGunshot(self.master, self.handler, self, dict.copy(gun), self.handler.owner.sprite.x, self.handler.owner.sprite.y)
             return True
         return False
@@ -169,9 +174,42 @@ class PSMASalvo(Skill):
         super(PSMASalvo, self).__init__(master, level, handler)
 
 # Unfinished
-class PSPOSlash(Skill):
+class PSPOBolt(Skill):
     def __init__(self, master, level, handler):
-        super(PSPOSlash, self).__init__(master, level, handler)
+        super(PSPOBolt, self).__init__(master, level, handler)
+        self.gun_fire_sound = load_sound('lightning_bolt.wav')
+
+    def fire(self):
+        if self.handler.core.plasma >= 50:
+            dist = self.get_enemy_dist()
+            if dist:
+                self.handler.core.lightning_counter = 3
+                self.handler.core.create_lightning(
+                    self.handler.owner.sprite.x,
+                    self.handler.owner.sprite.y,
+                    dist,
+                    [self.handler.owner.target.sprite.x, self.handler.owner.target.sprite.y]
+                )
+                self.handler.core.plasma -= 50
+                # self.handler.core.bullets -= 1
+                gun = self.handler.copy_gun()
+                gun['accuracy'] += 100
+                gun['gun_fire_sound'] = self.gun_fire_sound
+                Gunshot(self.master, self.handler, self, dict.copy(gun), self.handler.owner.target.sprite.x, self.handler.owner.target.sprite.y)
+                # gun['damage_min'] = int(gun['damage_min'] * self.damage_mod)
+                # gun['damage_max'] = int(gun['damage_max'] * self.damage_mod)
+                # # gun['velocity'] = 30
+                # gun['image'] = self.image
+                return True
+        return False
+
+    def get_enemy_dist(self):
+        if self.handler.owner.target:
+            dist_x = self.handler.owner.sprite.x - self.handler.owner.target.sprite.x
+            dist_y = self.handler.owner.sprite.y - self.handler.owner.target.sprite.y
+            dist = math.hypot(dist_x, dist_y)
+            return dist
+        return False
 
 # Unfinished
 class PSPOTrips(Skill):
@@ -241,7 +279,7 @@ plasmaslinger_skillset = {
     '18': PSMABurst,
     '19': PSMATriggerDiscipline,
     '20': PSMASalvo,
-    '21': PSPOSlash,
+    '21': PSPOBolt,
     '22': PSPOTrips,
     '23': PSPOBangForYourBuck,
     '24': PSPOAnarchy,

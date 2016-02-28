@@ -38,7 +38,7 @@ player_base = {
     # 'skillset': None,
     'build': {
         'slot_mouse_two': ['11', 1],
-        'slot_one': ['18', 1],
+        'slot_one': ['21', 1],
         'slot_two': ['12', 1],
         'slot_three': ['12', 2],
         'slot_four': ['12', 3],
