@@ -74,7 +74,7 @@ player_base = {
         'health_on_hit': 0,
         'armor': 1,
         'evade': 0,
-        'speed': 5,
+        'speed': 3,
     },
     'gem_inventory': [],
     'gun_inventory': [],

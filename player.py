@@ -137,17 +137,16 @@ class PlayerController(Controller):
         self.move_target = None
         self.move_img = load_image('ex.png')
 
-        self.count_base = 20
-        self.anim_rx = 0
-        self.anim_ry = 0
-        self.count = 1
-        self.time_to_speed = 60
+        self.time_to_speed = 30
         self.moving = 0
 
-        self.breath_timer_base = 15
+        self.breath_timer_base = 60
         self.breath_timer = 1
         self.breath = 0
-        self.breath_cycle = itertools.cycle([-.005, .005])
+        self.breath_cycle = itertools.cycle([-.0025, .0025])
+
+        self.anim_rx = 0
+        self.anim_ry = 0
 
     def on_hit(self):
         pass
@@ -185,20 +184,16 @@ class PlayerController(Controller):
         self.mouse_target_sprite.scale = scale
 
     def add_jitter(self):
-        self.count -= 1
-        if not self.count:
-            self.anim_rx = (random.randint(-2, 2) / 10.0)
-            self.anim_ry = (random.randint(-2, 2) / 10.0)
-            self.count += self.count_base
-
-        self.puppet.sprite.x += self.anim_rx
-        self.puppet.sprite.y += self.anim_ry
-
         self.breath_timer -= 1
         if not self.breath_timer:
+            self.anim_rx = (random.randint(-1, 1) / 10.0)
+            self.anim_ry = (random.randint(-1, 1) / 10.0)
             self.breath = self.breath_cycle.next()
             self.breath_timer += self.breath_timer_base
+
         self.puppet.sprite.scale += self.breath
+        self.puppet.sprite.x += self.anim_rx
+        self.puppet.sprite.y += self.anim_ry
 
     def update_movement(self):
         if self.move_target:
