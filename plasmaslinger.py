@@ -312,9 +312,24 @@ class PSPORocketPowered(Skill):
         super(PSPORocketPowered, self).__init__(master, level, handler)
 
 # Unfinished
-class PSPOSmokyEyeSurprise(Skill):
+class PSPOPlasmaBall(Skill):
     def __init__(self, master, level, handler):
-        super(PSPOSmokyEyeSurprise, self).__init__(master, level, handler)
+        super(PSPOPlasmaBall, self).__init__(master, level, handler)
+        self.image = load_image('plasma_ball.png')
+        self.damage_mod = 1 + .05 * self.level
+
+    def fire(self):
+        if self.handler.core.plasma >= 20:
+            self.handler.core.plasma -= 20
+            gun = self.handler.copy_gun()
+            gun['damage_min'] = int(gun['damage_min'] * self.damage_mod)
+            gun['damage_max'] = int(gun['damage_max'] * self.damage_mod)
+            # gun['velocity'] = 30
+            gun['image'] = self.image
+
+            PlayerGunshot(self.master, self.handler, self, dict.copy(gun), self.handler.owner.sprite.x, self.handler.owner.sprite.y)
+            return True
+        return False
 
 # Unfinished
 class PSPOTracer(Skill):
@@ -363,7 +378,7 @@ plasmaslinger_skillset = {
     '23': PSPOBangForYourBuck,
     '24': PSPOSpark,
     '25': PSPORocketPowered,
-    '26': PSPOSmokyEyeSurprise,
+    '26': PSPOPlasmaBall,
     '27': PSPOTracer,
     '28': PSPOBlotOutTheSun,
     '29': PSPOConked,
