@@ -52,7 +52,7 @@ class Game(pyglet.window.Window):
         self.pr = cProfile.Profile()
         self.pr.enable()
         self.assets = GameAssets()
-        pyglet.gl.glClearColor(1, 1, 1, 1)
+        pyglet.gl.glClearColor(.8, .8, .8, 1)
         self.state_manager = StateManager(self.assets)
         self.alive = True
         self.framerate = 0, time()

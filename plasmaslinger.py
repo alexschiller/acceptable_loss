@@ -19,30 +19,28 @@ class PlasmaCore(Core):
     def create_dot(self, x, y):
         self.lightning.append(pyglet.sprite.Sprite(self.white_dot, x, y, batch=BarBatch))
 
-    def create_lightning(self, start_x, start_y, dist=20, target=None):
+    def create_lightning(self, start_x, start_y, dist=15, target=None):
         marker = [start_x, start_y]
         counter = 0
         if not target:
             target = [marker[0] + random.randint(-100, 100), marker[1] + random.randint(-100, 100)]
-        while marker != target:
+        while counter < dist:
             counter += 1
-            ret = calc_vel_xy(target[0], target[1], marker[0], marker[1], 2)
-            marker[0] += ret[0] + random.randint(-1, 1)
-            marker[1] += ret[1] + random.randint(-1, 1)
+            ret = calc_vel_xy(target[0], target[1], marker[0], marker[1], 3)
+            marker[0] += ret[0] + random.randint(-2, 2)
+            marker[1] += ret[1] + random.randint(-2, 2)
             self.create_dot(marker[0], marker[1])
-            if counter == dist / 2:
-                if random.choice([0, 0, 0, 1]):
-                    if dist > 10:
-                        self.create_lightning(marker[0],
-                            marker[1],
-                            dist=dist / 2,
-                        )
-            if counter > dist:
-                break
+            # if counter == dist / 2:
+            #     if random.choice([0, 0, 0, 1]):
+            #         if dist > 10:
+            #             self.create_lightning(marker[0],
+            #                 marker[1],
+            #                 dist=dist / 2,
+            #             )
 
     def update(self):
         if self.plasma < self.plasma_max:
-            self.plasma += 1
+            self.plasma += .5
         if len(self.lightning):
             self.lightning_counter -= 1
             if not self.lightning_counter:
@@ -183,6 +181,7 @@ class PSPOBolt(Skill):
         if self.handler.core.plasma >= 50:
             dist = self.get_enemy_dist()
             if dist:
+                self.handler.core.plasma -= 50
                 self.handler.core.lightning_counter = 3
                 self.handler.core.create_lightning(
                     self.handler.owner.sprite.x,
@@ -190,7 +189,7 @@ class PSPOBolt(Skill):
                     dist,
                     [self.handler.owner.target.sprite.x, self.handler.owner.target.sprite.y]
                 )
-                self.handler.core.plasma -= 50
+
                 # self.handler.core.bullets -= 1
                 gun = self.handler.copy_gun()
                 gun['accuracy'] += 100
@@ -216,6 +215,7 @@ class PSPOAnvilCrawler(Skill):
     def fire(self):
         hits = 0
         if self.handler.core.plasma >= 100:
+            self.handler.core.plasma -= 100
             for e in self.handler.owner.enemies:
                 if hits == 3:
                     return True
@@ -236,7 +236,7 @@ class PSPOAnvilCrawler(Skill):
                     gun['accuracy'] += 100
                     gun['gun_fire_sound'] = self.gun_fire_sound
                     Gunshot(self.master, self.handler, self, dict.copy(gun), self.handler.owner.target.sprite.x, self.handler.owner.target.sprite.y)
-            self.handler.core.plasma -= 100
+
             return True
         return False
 
