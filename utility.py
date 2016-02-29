@@ -48,8 +48,10 @@ class Master(object):
         self.loot = None
 
     def update(self):
-
-        self.dungeon.update()
+        try:
+            self.dungeon.update()
+        except:
+            pass
         for p in self.people['blue']:
             p.update()
 
@@ -96,8 +98,12 @@ class Master(object):
             # my = mouse_camera_y * 10
         self.move_all(mx, my)
 
-    def reset(self):
-
+    def reset(self, difficulty):
+        self.difficulty = difficulty
+        try:
+            self.dungeon.delete_all()
+        except:
+            pass
         self.home = pyglet.sprite.Sprite(
             load_image('home.png'),
             window_width_half, window_height_half, batch=gfx_batch

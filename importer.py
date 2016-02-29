@@ -19,7 +19,10 @@ def reset_imp():
 
     for thing in master.people['red']:
             thing.on_death()
-    master.dungeon.delete_all()
+    try:
+        master.dungeon.delete_all()
+    except:
+        pass
 
     for item in master.loot.current_loot:
         del item

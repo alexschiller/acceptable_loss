@@ -265,6 +265,7 @@ class MainMenuState(StateObject):
 class SelectState(StateObject):
     def __init__(self, manager, flag=False):
         super(SelectState, self).__init__(manager)
+        master.reset(0)
         self.val = flag
         self.batch = pyglet.graphics.Batch()
         self.state_manager = manager
@@ -384,8 +385,8 @@ class SelectState(StateObject):
 
     def enter_game(self):
         if self.val:
+                master.reset(self.difficulty)
                 reset_imp()
-                master.reset()
                 master.player.sprite.x = master.home.x
                 master.player.sprite.y = master.home.y
         else:
