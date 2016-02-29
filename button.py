@@ -69,23 +69,21 @@ class Button(object):
                 self.sprite.y < y and
                 y < self.sprite.y + self.sprite.height):
             if mode == 1 and self.trigger == 1:
-                print "HE123LLO"
                 self.trigger = 0
                 self.sprite.image = self.hoversprite
-                try:
-                    self.do_action()
-                except:
-                    pass
+                # try:
+                self.do_action()
+                # except:
+                    # pass
             if mode == 0:
                 self.sprite.image = self.downsprite
                 self.trigger = 1
 
     def do_action(self):
-        print "OK"
-        try:
-            self.func()
-        except:
-            pass
+        # try:
+        self.func()
+        # except:
+        #     pass
 
 
 class DraggableButton(Button):

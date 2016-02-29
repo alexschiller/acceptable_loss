@@ -170,10 +170,10 @@ class GameState(StateObject):
                 self.Build = 0
                 self.manager.assets.im.change_flag()
                 # self.swap()
-        mx = 0
-        my = 0
+        # mx = 0
+        # my = 0
         if key_handler[key.X]:
-            if collide(master.player.collision, master.room_manager.portal.collision):
+            if collide(master.player.collision, master.dungeon.room.portal.collision):
                 self.manager.swap_special('select')
 
         if key_handler[key.H]:
@@ -389,7 +389,8 @@ class SelectState(StateObject):
                 master.player.sprite.x = master.home.x
                 master.player.sprite.y = master.home.y
         else:
-            ready_level(master, self.difficulty, 5)
+            ready_level(master, self.difficulty)
+        print "YO"
         self.state_manager.swap("game")
 
     def setup(self):
@@ -416,6 +417,7 @@ class StateManager(object):
         self.pause = PauseState(self)
 
     def swap(self, string):
+        print string + " swap"
         self.past = self.current
         if string == 'game':
             self.current = GameState(self)
@@ -427,6 +429,7 @@ class StateManager(object):
             self.current = SelectState(self)
 
     def swap_special(self, string):
+        print string + " special"
         if string == 'select':
             self.current = SelectState(self, flag=True)
 

@@ -61,6 +61,7 @@ class Game(pyglet.window.Window):
     def render(self, *args):
         self.clear()
         self.state_manager.current.update(0)
+        master.draw()
 
         for batch in self.state_manager.current.batches:
             batch.draw()

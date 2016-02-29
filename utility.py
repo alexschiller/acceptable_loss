@@ -40,7 +40,7 @@ class Master(object):
         self.pr = cProfile.Profile()
         self.pr.enable()
         self.difficulty = 3
-
+        self.dungeon = None
         self.resources = None
         self.radar = None
         self.home = None
@@ -49,7 +49,7 @@ class Master(object):
 
     def update(self):
 
-        self.room_manager.update()
+        self.dungeon.update()
         for p in self.people['blue']:
             p.update()
 
@@ -62,7 +62,7 @@ class Master(object):
         # self.player.update()
         self.spriteeffect.update()
         # self.resources.update()
-        self.update_camera()
+        # self.update_camera()
         # self.threat.update()
         # self.radar.update()
         self.loot.update()
@@ -97,12 +97,6 @@ class Master(object):
         self.move_all(mx, my)
 
     def reset(self):
-
-        self.room_manager.setup(3)
-        self.room_manager.parent.create_sprites(100, 100, TerrainBatch, self.player)
-        self.room_manager.add_enemies(self.difficulty)
-        print self.difficulty
-        self.room_manager.create_portal()
 
         self.home = pyglet.sprite.Sprite(
             load_image('home.png'),
@@ -146,6 +140,12 @@ class Master(object):
             for a in p.ability.transmissions:
                 a.sprite.x += mx
                 a.sprite.y += my
+
+    def draw(self):
+        try:
+            self.dungeon.draw()
+        except:
+            pass
 
 master = Master()
 master.gem = Gem()
@@ -258,6 +258,7 @@ resource_base = {
     'dblue': 0,
     'purple': 0
 }
+
 
 def sign(number):
     try:

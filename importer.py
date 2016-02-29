@@ -1,11 +1,12 @@
 from effect import * # noqa
-from levelgenerator import * # noqa
+from dungeon import * # noqa
 from character import * # noqa
 from player import * # noqa
 from utility import * # noqa
 from loot import * # noqa
 from button import * # noqa
 from slot_one_data import player_base
+
 
 def teleport(master, mouse_position):
     master.player.sprite.x = mouse_position[0]
@@ -14,17 +15,23 @@ def teleport(master, mouse_position):
 
 
 def reset_imp():
+    print "reset level"
+
     for thing in master.people['red']:
             thing.on_death()
-    master.room_manager.delete_all()
-    master.room_manager = None
-    master.room_manager = RoomManager(master)
+    master.dungeon.delete_all()
+
     for item in master.loot.current_loot:
         del item
     for item in master.loot.moving_loot:
         del item
+    master.dungeon.setup()
+    master.dungeon.initialize(master)
 
-def ready_level(master, difficulty, num_rooms):
+
+def ready_level(master, difficulty):
+    print "ready level"
+    master.difficulty = difficulty
     master.loot = Loot(master)
     master.spriteeffect = SpriteEffect(master)
     # comment out this block to get rid of room color stuff
@@ -34,17 +41,14 @@ def ready_level(master, difficulty, num_rooms):
     master.player = Player(master, base=read_data(player_base))
     master.player_controller = master.player.controller
 
-    master.room_manager = RoomManager(master)
-    master.room_manager.setup(num_rooms)
-    master.room_manager.parent.create_sprites(100, 100, TerrainBatch, master.player)
-    master.room_manager.add_enemies(difficulty)
-    master.room_manager.create_portal()
+    master.dungeon = Dungeon()
+    master.dungeon.setup()
+    master.dungeon.initialize(master)
 
     master.home = pyglet.sprite.Sprite(
         load_image('home.png'),
         window_width_half, window_height_half, batch=gfx_batch
     )
-    master.difficulty = difficulty
 
 
 def start_state_buttons(image_dict, func_dict, button_batch, label_batch):
