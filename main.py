@@ -17,6 +17,10 @@ from hotbar import * # noqa
 from inventory import * # noqa
 
 
+def randotest():
+    print "TEST COMPLETE"
+
+
 class GameAssets(object):
     def __init__(self):
         self.bum = MenuManager(1200, 0, menu_back) # noqa
@@ -57,9 +61,14 @@ class Game(pyglet.window.Window):
         self.alive = True
         self.framerate = 0, time()
         self.count = 0
+        self.keymanager = KeyManager()
+        self.keymanager.register_window(self)
+        self.keymanager.register_handler(key_handler)
+        self.keymanager.register_event_hold("SelectState", key.A, randotest)
 
     def render(self, *args):
         self.clear()
+        self.keymanager.on_key_hold()
         self.state_manager.current.update(0)
         master.draw()
 
@@ -116,6 +125,8 @@ class Game(pyglet.window.Window):
 
 game = Game(window_height, window_width)
 game.push_handlers(key_handler)
+key_handler.register(game.keymanager)
+
 
 if __name__ == '__main__':
     pyglet.clock.set_fps_limit(10)
