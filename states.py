@@ -5,16 +5,82 @@ from utility import * # noqa
 from importer import * # noqa
 
 
+def randotest():
+    print "TEST COMPLETE BOITCH"
+
+keycodes = [
+    1, 2, 4, 8, 16, 32, 64, 128, 256, 2, 65288, 65289, 65290, 65291, 65293, 65293, 65299, 65300, 65301, 65307, 65360,
+    65361, 65362, 65363, 65364, 65365, 65366, 65367, 65368, 65535, 65376, 65377, 65378, 65379, 65381, 65382, 65383, 65384,
+    65385, 65386, 65387, 65406, 65406, 65362, 65363, 65364, 65361, 1, 2, 3, 4, 65366, 65365, 5, 6, 65288, 65535, 65407, 65408,
+    65417, 65421, 65425, 65426, 65427, 65428, 65429, 65430, 65431, 65432, 65433, 65434, 65434, 65435, 65435, 65436, 65437,
+    65438, 65439, 65469, 65450, 65451, 65452, 65453, 65454, 65455, 65456, 65457, 65458, 65459, 65460, 65461, 65462, 65463,
+    65464, 65465, 65470, 65471, 65472, 65473, 65474, 65475, 65476, 65477, 65478, 65479, 65480, 65481, 65482, 65483, 65484,
+    65485, 65505, 65506, 65507, 65508, 65509, 65511, 65512, 65513, 65514, 65515, 65516, 65517, 65518, 65488, 65489, 32, 33,
+    34, 35, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 51,
+    58, 59, 60, 61, 62, 63, 64, 91, 92, 93, 94, 95, 96, 96, 97, 98, 99, 100, 101,
+    52, 53, 54, 55, 56, 57, 65490, 65519,
+    102, 103, 104, 105, 106, 107, 108, 109, 110, 111, 112, 113, 114, 115, 116, 117, 118, 119, 120, 121, 122, 123, 124, 125, 126
+]
+
+
+class KeyManager(object):
+    def __init__(self):
+        self.keys_held = []
+        self.window = None
+        self.release_states = {}
+        self.hold_states = {}
+        self.key_handler = None
+
+    def register_handler(self, handler):
+        self.key_handler = handler
+        for symbol in keycodes:
+            print symbol
+            self.release_states[symbol] = {}
+            self.hold_states[symbol] = {}
+            for state in ['PauseState', 'GameState', 'MainMenuState', 'SelectState']:
+                self.release_states[symbol][state] = 0
+                self.hold_states[symbol][state] = 0
+
+    def register_window(self, window):
+        self.window = window
+
+    def on_key_press(self, symbol, modifiers):
+        if symbol not in self.keys_held:
+            self.keys_held.append(symbol)
+
+    def on_key_hold(self):
+        for symbol in self.keys_held:
+            if self.hold_states[symbol][str(self.window.state_manager.current)] is not 0:
+                self.hold_states[symbol][str(self.window.state_manager.current)]()
+
+    def on_key_release(self, symbol, modifiers):
+        if self.release_states[symbol][str(self.window.state_manager.current)] is not 0:
+            self.release_states[symbol][str(self.window.state_manager.current)]()
+        if symbol in self.keys_held:
+            self.keys_held.remove(symbol)
+
+    def register_event_hold(self, state, symbol, func):
+        self.hold_states[symbol][state] = func
+
+    def register_event_release(self, state, symbol, func):
+        self.release_states[symbol][state] = func
+
+
 class ProtoKeyStateHandler(key.KeyStateHandler):
 
     def __init__(self):
+        self[key.A] = False
         self.list = []
         self.active = False
+        self.manager = None
 
     def on_key_press(self, symbol, modifiers):
         self[symbol] = True
-        if self.active:
-            self.list.append(symbol)
+        self.manager.on_key_press(symbol, modifiers)
+
+    def on_key_release(self, symbol, modifiers):
+        self[symbol] = False
+        self.manager.on_key_release(symbol, modifiers)
 
     def activate(self):
         self.active = True
@@ -24,6 +90,9 @@ class ProtoKeyStateHandler(key.KeyStateHandler):
 
     def clear_state(self):
         self.list = []
+
+    def register(self, manager):
+        self.manager = manager
 
     def get_next_item(self):
         if len(self.list) > 0:
@@ -63,6 +132,9 @@ class StateObject(object):
 
     def update(self, ts):
         pass
+
+    def __str__(self): # noqa
+        return "StateObject"
 
 
 class PauseState(StateObject):
@@ -105,6 +177,8 @@ class PauseState(StateObject):
             TerrainBatch, PortalBatch, BuildingBatch, BulletBatch,
             gfx_batch, EffectsBatch, BarBatch, ButtonBatch, LabelBatch,
         ]
+    def __str__(self): # noqa
+        return "PauseState"
 
 
 class GameState(StateObject):
@@ -117,6 +191,9 @@ class GameState(StateObject):
         self.last_time = 0
         self.batch_setup()
         self.mouse_two_down = False
+
+    def __str__(self): # noqa
+        return "GameState"
 
     def batch_setup(self):
         self.batches = [
@@ -145,8 +222,8 @@ class GameState(StateObject):
         # master.update_button_image(x, y, dx, dy)
 
     def update(self, ts):
-        mx = 0
-        my = 0
+        # mx = 0
+        # my = 0
         if self.mouse_two_down:
             master.player_controller.slot_mouse_two_fire()
         if key_handler[key.P]:
@@ -187,7 +264,7 @@ class GameState(StateObject):
             master.pr.disable()
             s = StringIO.StringIO()
             sortby = 'cumulative'
-            ps = pstats.Stats(master.pr, stream=s).sort_stats(sortby)
+            ps = pstats.Stats(master.pr, stream=s).sort_stats(sortby) # noqa
 
             f = open('output.txt', 'w')
             f.write(s.getvalue())
@@ -261,6 +338,9 @@ class MainMenuState(StateObject):
         if key_handler[key.ENTER] or key_handler[key.RETURN]:
             self.manager.swap('select')
 
+    def __str__(self): # noqa
+        return "MainMenuState"
+
 
 class SelectState(StateObject):
     def __init__(self, manager, flag=False):
@@ -291,6 +371,9 @@ class SelectState(StateObject):
         self.number_button_images = []
         self.make_images()
         self.setup()
+
+    def __str__(self): # noqa
+        return "SelectState"
 
     def make_images(self):
         for item in self.dict:
@@ -344,6 +427,9 @@ class SelectState(StateObject):
 
     def update(self, ts):
         self.update_icons()
+
+    def register_keys(self, manager):
+        manager.register_event_release(str(self), key.A, randotest)
 
     def test(self):
         pass
