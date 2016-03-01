@@ -33,7 +33,7 @@ for file in glob.glob("*.png"):
     try:
         img = pyglet.image.load(file)
         if img.height <= 200 and img.width <= 200 and img.height * img.width >= 700:
-            imglist.append(img)
+            imglist.append([img, file])
     except:
         pass
 os.chdir(savedpath)
@@ -61,22 +61,56 @@ class ImageMenu(object):
         for i in range(5):
             try:
                 sprite = pyglet.sprite.Sprite(
-                    self.images[i],
+                    self.images[i][0],
                     self.sprite.x + self.sprite.width / 2, 100 + 100 * i, batch=self.batches[1]
                 )
                 self.image_sprites.append(MenuButton(sprite, self, i))
             except:
                 pass
         self.setup()
+        self.buttonflag = 0
+        self.hoverflag = 0
+        self.pressflag = 0
+
+    def changebf(self):
+        self.buttonflag = 1
+        self.hoverflag = 0
+        self.pressflag = 0
+
+    def changehf(self):
+        self.buttonflag = 0
+        self.hoverflag = 1
+        self.pressflag = 0
+
+    def changeall(self):
+        self.buttonflag = 1
+        self.hoverflag = 1
+        self.pressflag = 1
+
+    def changepf(self):
+        self.buttonflag = 0
+        self.hoverflag = 0
+        self.pressflag = 1
 
     def alert(self, ide):
-        print "almost"
-        self.game.option_menu.button.sprite.image = self.images[ide]
-        self.game.option_menu.button.hoversprite = self.images[ide]
-        self.game.option_menu.button.downsprite = self.images[ide]
-        self.game.option_menu.button.upsprite = self.images[ide]
+        if self.buttonflag:
+            print "bf : " + str(self.buttonflag)
+            self.game.option_menu.button.sprite.image = self.images[ide][0]
 
-        print "got there"
+        if self.hoverflag:
+            self.game.option_menu.button.hoversprite = self.images[ide][0]
+            self.game.option_menu.button.hoversprite_img_loc = self.images[ide][1]
+            print self.images[ide][1]
+
+        if self.pressflag:
+            self.game.option_menu.button.downsprite = self.images[ide][0]
+            self.game.option_menu.button.down_img_loc = self.images[ide][1]
+            print self.images[ide][1]
+
+        if self.buttonflag:
+            self.game.option_menu.button.upsprite = self.images[ide][0]
+            self.game.option_menu.button.upsprite_img_loc = self.images[ide][1]
+            print self.images[ide][1]
 
     def changepage(self):
         self.image_sprites = []
@@ -84,7 +118,7 @@ class ImageMenu(object):
         for i in range((self.page - 1) * 5, self.page * 5):
             try:
                 sprite = pyglet.sprite.Sprite(
-                    self.images[i],
+                    self.images[i][0],
                     self.sprite.x + self.sprite.width / 2, 100 + 100 * x, batch=self.batches[1]
                 )
                 self.image_sprites.append(MenuButton(sprite, self, i))
@@ -119,6 +153,34 @@ class ImageMenu(object):
                 self.sprite.y + self.sprite.height - 35, self.pageright, self.batches[1],
             )
         )
+        #  flag changers
+        self.buttons.append(   # all
+            Button(
+                back, back, back, self.sprite.x + self.sprite.width / 2 - 140,
+                self.sprite.y + self.sprite.height - 75, self.changeall, self.batches[1],
+            )
+        )
+
+        self.buttons.append(   # bf
+            Button(
+                back, back, back, self.sprite.x + self.sprite.width / 2 - 105,
+                self.sprite.y + self.sprite.height - 75, self.changebf, self.batches[1],
+            )
+        )
+
+        self.buttons.append(   # hf
+            Button(
+                back, back, back, self.sprite.x + self.sprite.width / 2 - 70,
+                self.sprite.y + self.sprite.height - 75, self.changehf, self.batches[1],
+            )
+        )
+
+        self.buttons.append(   # pf
+            Button(
+                back, back, back, self.sprite.x + self.sprite.width / 2 - 35,
+                self.sprite.y + self.sprite.height - 75, self.changepf, self.batches[1],
+            )
+        )
 
     def on_mouse_press(self, x, y, mode):
         if self.flag:
@@ -145,10 +207,10 @@ class ImageMenu(object):
 class ClickMenu(object):
     def __init__(self, button, x, y, game):
         self.flag = 0
-        self.batches = [pyglet.graphics.Batch(), pyglet.graphics.Batch()]
+        self.batches = [pyglet.graphics.Batch(), pyglet.graphics.Batch(), pyglet.graphics.Batch()]
         self.game = game
         self.button = button
-        self.backing = pyglet.image.create(100, 150, pyglet.image.SolidColorImagePattern(color=(100, 100, 20, 255))) # noqa
+        self.backing = pyglet.image.create(100, 150, pyglet.image.SolidColorImagePattern(color=(144, 144, 144, 255))) # noqa
         self.sprite = pyglet.sprite.Sprite(
             self.backing,
             x, y, batch=self.batches[0]
@@ -162,8 +224,7 @@ class ClickMenu(object):
         self.sprite.x -= difx
         self.sprite.y -= dify
         for button in self.buttons:
-            button.sprite.x -= difx
-            button.sprite.y -= dify
+            button.move(button.sprite.x - difx, button.sprite.y - dify)
 
     def load_image(self):
         print "load_image"
@@ -192,13 +253,16 @@ class ClickMenu(object):
             return False
 
     def setup(self):
-        back = pyglet.image.create(90, 30, pyglet.image.SolidColorImagePattern(color=(1, 1, 1, 180)))
+        back = pyglet.image.create(90, 30, pyglet.image.SolidColorImagePattern(color=(40, 44, 44, 180)))
         self.buttons.append(
             Button(
                 back, back, back, self.sprite.x + 5,
-                self.sprite.y + self.sprite.height - 35, self.load_image, self.batches[1],
+                self.sprite.y + self.sprite.height - 35, self.load_image, self.batches[1], "change image",
+                None, self.batches[2]
             )
         )
+        self.buttons[0].label.font_size = 12
+
         # self.buttons.append(
         #     Button(
         #         back, back, back, self.sprite.x + 5,
@@ -243,7 +307,7 @@ def load_image(image, anchor=True):
     try:
         return image_dict(image)
     except:
-        img = pyglet.image.load('images/' + image)
+        img = pyglet.image.load('../images/' + image)
         if anchor:
             img.anchor_x = img.width // 2
             img.anchor_y = img.height // 2

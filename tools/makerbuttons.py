@@ -1,9 +1,9 @@
 import pyglet
-from utility import LabelBatch
-from collide import * # noqa
 
 DragButtons = []
 Containers = []
+
+LabelBatch = None
 
 
 def foo():
@@ -62,6 +62,9 @@ class Manager(object):
 
 class Button(object):
     def __init__(self, upsprite, hoversprite, downsprite, x, y, callback=None, batch=None, label=None, args=None, labelbatch=LabelBatch):
+        self.upsprite_img_loc = None
+        self.hoversprite_img_loc = None
+        self.downsprite_img_loc = None
         self.func = callback
         self.upsprite = upsprite
         self.downsprite = downsprite
@@ -110,8 +113,8 @@ class Button(object):
             self.sprite.image = self.upsprite
 
     def move(self, x, y):
-        self.sprite.x, self.label.x = x, x
-        self.sprite.y, self.label.y = y, y
+        self.sprite.x, self.label.x = x, x + self.sprite.width / 2
+        self.sprite.y, self.label.y = y, y + self.sprite.height / 2
 
     def on_mouse_press(self, x, y, mode, val=False):
 
@@ -149,15 +152,15 @@ class DraggableButton(Button):
             upsprite, hoversprite, downsprite, x, y,
             callback, batch, label, labelbatch=labelbatch
         )
-        self.collision = SpriteCollision(self.sprite)
+        # self.collision = SpriteCollision(self.sprite)
 
-    def on_collide(self, button):
-        ret = calc_vel_xy(
-            self.sprite.x, self.sprite.y,
-            button.sprite.x, button.sprite.y, 10
-        )
-        self.sprite.x += ret[0]
-        self.sprite.y += ret[1]
+    # def on_collide(self, button):
+    #     ret = calc_vel_xy(
+    #         self.sprite.x, self.sprite.y,
+    #         button.sprite.x, button.sprite.y, 10
+    #     )
+    #     self.sprite.x += ret[0]
+    #     self.sprite.y += ret[1]
 
     def on_mouse_press(self, x, y, mode):
         if (
@@ -232,4 +235,4 @@ class Container(Button):
             upsprite, hoversprite, downsprite, x, y,
             None, batch, labe= None # noqa
         )
-        self.collision = SpriteCollision(self.sprite)
+        # self.collision = SpriteCollision(self.sprite)
