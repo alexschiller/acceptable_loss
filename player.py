@@ -11,7 +11,7 @@ from plasmaslinger import * # noqa
 class Player(Character):
     def __init__(self, *args, **kwargs):
         super(Player, self).__init__(*args, **kwargs)
-        self.visor = pyglet.sprite.Sprite(load_image('visor.png', anchor=False), -1, window_height-171, batch=gfx_batch),  # noqa
+        # self.visor = pyglet.sprite.Sprite(load_image('visor.png', anchor=False), -1, window_height-171, batch=gfx_batch),  # noqa
         self.energy = 100
         self.inventory = []
 
@@ -19,18 +19,19 @@ class Player(Character):
         self.jump_cycle_direction = -1
         self.jumping = 0
 
-        self.shield_bar = pyglet.sprite.Sprite(pyglet.image.create(271, 13, blue_sprite),
-            10, window_height - 25, batch=BarBatch) # noqa
-        self.health_bar = pyglet.sprite.Sprite(pyglet.image.create(271, 13, red_sprite),
-            10, window_height - 40, batch=BarBatch) # noqa
+        # self.shield_bar = pyglet.sprite.Sprite(pyglet.image.create(271, 13, blue_sprite),
+            # 10, window_height - 25, batch=BarBatch) # noqa
+        self.hp_bar_len = int(window_width * .324)
+        self.health_bar = pyglet.sprite.Sprite(pyglet.image.create(int(window_width * .324), 30, red_sprite),
+            20, 20, batch=gfx_batch) # noqa
 
-        self.ae_bar = pyglet.sprite.Sprite(
-            pyglet.image.create(50, 13, white_sprite),
-            31, window_height - 168, batch=BarBatch)
+        # self.ae_bar = pyglet.sprite.Sprite(
+        #     pyglet.image.create(50, 13, white_sprite),
+        #     31, window_height - 168, batch=BarBatch)
 
-        self.acc_bar = pyglet.sprite.Sprite(
-            pyglet.image.create(3, 13, red_sprite),
-            150, window_height - 168, batch=BarBatch)
+        # self.acc_bar = pyglet.sprite.Sprite(
+        #     pyglet.image.create(3, 13, red_sprite),
+        #     150, window_height - 168, batch=BarBatch)
 
         self.acc_mouse_bar_l = pyglet.sprite.Sprite(
             pyglet.image.create(20, 2, red_sprite),
@@ -102,8 +103,9 @@ class Player(Character):
         self.update_jump()
         if self.energy < 100:
             self.energy = 100
-        self.shield_bar.x = 10 - (271 - (self.stats.shield / float(self.stats.shield_max) * 271)) # noqa
-        self.health_bar.x = 10 - (271 - (self.stats.health / float(self.stats.health_max) * 271)) # noqa
+
+        # self.shield_bar.x = 10 - (271 - (self.stats.shield / float(self.stats.shield_max) * 271)) # noqa
+        self.health_bar.x = 20 - (self.hp_bar_len - (self.stats.health / float(self.stats.health_max) * self.hp_bar_len)) # noqa
 
         acc_val = self.calc_acc()
         x = self.controller.sprite.x
@@ -118,7 +120,7 @@ class Player(Character):
         self.acc_mouse_bar_t.y = y + acc_val + 3
         self.acc_mouse_bar_b.y = y - acc_val - 20
 
-        self.ae_bar.x = 31 + self.stats.evade_move / 10 * 50
+        # self.ae_bar.x = 31 + self.stats.evade_move / 10 * 50
 
 
 class PlayerController(Controller):
