@@ -221,7 +221,7 @@ class Melee(Transmission):
 
         self.travelled += math.hypot(self.ret[0], self.ret[1])
 
-        if self.travelled >= self.range / 2.0:
+        if self.travelled >= self.range / 2:
             self.stab = 0
 
         if self.travelled >= self.range:

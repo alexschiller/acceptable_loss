@@ -3,6 +3,31 @@ from baseskills import * # noqa
 from functools import partial
 from utility import * # noqa
 
+class LightningMelee(Melee):
+    def __init__(self, master, ability, skill, package, start_x, start_y):
+        super(LightningMelee, self).__init__(master, ability, skill, package, start_x, start_y)
+
+    def check_package_accuracy(self):
+        self.target = self.ability.owner.target
+        if self.target:
+            self.hit = random.randint(0, 100) < self.package['accuracy'] * self.ability.owner.acc_mouse_mod
+            if self.hit and random.randint(0, 100) < self.package['crit']:
+                self.crit = True
+                self.package['damage_min'] = int(self.package['damage_min'] * self.package['crit_damage'])
+                self.package['damage_max'] = int(self.package['damage_max'] * self.package['crit_damage'])
+
+            if self.hit and random.randint(0, 100) < self.target.stats.evade:
+                self.evade = True
+
+            if self.hit:
+                    self.sprite.rotation = (math.degrees(math.atan2(self.target.sprite.y - self.sprite.y, self.target.sprite.x - self.sprite.x)) * -1) + 90
+                    self.range = 50
+            else:
+                self.sprite.rotation = (math.degrees(math.atan2(self.mouse_y - self.sprite.y, self.mouse_x - self.sprite.x)) * -1) + 90
+                self.range = 50
+        else:
+            self.range = 50
+
 class PlasmaCore(Core):
     def __init__(self, master, handler):
         super(PlasmaCore, self).__init__(master, handler)
@@ -110,26 +135,52 @@ class PSPDBarrage(Skill):
 class PSMABang(Skill):
     def __init__(self, master, level, handler):
         super(PSMABang, self).__init__(master, level, handler)
-        self.image = load_image('psma.png')
-        self.damage_mod = 1 + .05 * self.level
+    #     self.image = load_image('psma.png')
+    #     self.damage_mod = 1 + .05 * self.level
 
-    def fire(self):
-        if self.handler.core.bullets:
-            self.handler.core.bullets -= 1
-            gun = self.handler.copy_gun()
-            gun['damage_min'] = int(gun['damage_min'] * self.damage_mod)
-            gun['damage_max'] = int(gun['damage_max'] * self.damage_mod)
-            # gun['velocity'] = 30
-            gun['image'] = self.image
+    # def fire(self):
+    #     if self.handler.core.bullets:
+    #         self.handler.core.bullets -= 1
+    #         gun = self.handler.copy_gun()
+    #         gun['damage_min'] = int(gun['damage_min'] * self.damage_mod)
+    #         gun['damage_max'] = int(gun['damage_max'] * self.damage_mod)
+    #         # gun['velocity'] = 30
+    #         gun['image'] = self.image
 
-            PlayerGunshot(self.master, self.handler, self, dict.copy(gun), self.handler.owner.sprite.x, self.handler.owner.sprite.y)
-            return True
-        return False
+    #         PlayerGunshot(self.master, self.handler, self, dict.copy(gun), self.handler.owner.sprite.x, self.handler.owner.sprite.y)
+    #         return True
+    #     return False
 
 # Unfinished
-class PSMABolted(Skill):
+class PSMAShieldSplitter(Skill):
     def __init__(self, master, level, handler):
-        super(PSMABolted, self).__init__(master, level, handler)
+        super(PSMAShieldSplitter, self).__init__(master, level, handler)
+
+    def fire(self):
+        enemy_range = self.get_enemy_dist()
+        try:
+            if enemy_range <= 50 and enemy_range and not self.handler.global_cooldown:
+                LightningMelee(self.master, self.handler, self, self.handler.copy_gun(), self.handler.owner.sprite.x, self.handler.owner.sprite.y)
+                return True
+            else:
+                self.dash()
+                return False
+        except:
+            return False
+
+    def dash(self):
+        ret = calc_vel_xy(self.handler.owner.sprite.x, self.handler.owner.sprite.y,
+        self.handler.owner.target.sprite.x, self.handler.owner.target.sprite.y, 45)
+        self.handler.owner.controller.move_to(self.handler.owner.target.sprite.x + ret[0],
+            self.handler.owner.target.sprite.y + ret[1], 1)
+
+    def get_enemy_dist(self):
+        if self.handler.owner.target:
+            dist_x = self.handler.owner.sprite.x - self.handler.owner.target.sprite.x
+            dist_y = self.handler.owner.sprite.y - self.handler.owner.target.sprite.y
+            dist = math.hypot(dist_x, dist_y)
+            return dist
+        return False
 
 # Unfinished
 class PSMAMuzzleBrake(Skill):
@@ -364,7 +415,7 @@ plasmaslinger_skillset = {
     '9': PSPDCannibalize,
     '10': PSPDBarrage,
     '11': PSMABang,
-    '12': PSMABolted,
+    '12': PSMAShieldSplitter,
     '13': PSMAMuzzleBrake,
     '14': PSMACoupled,
     '15': PSMAIronDome,

@@ -6,17 +6,17 @@ player_base = {
         'level': 1,
         'damage_min': 3,
         'damage_max': 4,
-        'travel': 700,
-        'range_min': 200,
-        'range_max': 600,
-        'velocity': 15,
+        'travel': 100,
+        'range_min': 0,
+        'range_max': 100,
+        'velocity': 5,
         'accuracy': 85,
         'rof': 10,
         'recoil': 5,
         'crit': 10,
         'crit_damage': 1.5,
         'armor_pierce': 1,
-        'image': 'magnum.png', # noqa
+        'image': 'rod.png', # noqa
         'gun_fire_sound': 'shot.wav', # noqa
         'on_hit_sound': 'on_hit.wav', # noqa
         'effects': [],
@@ -37,7 +37,7 @@ player_base = {
     },
     # 'skillset': None,
     'build': {
-        'slot_mouse_two': ['26', 1],
+        'slot_mouse_two': ['12', 1],
         'slot_one': ['21', 1],
         'slot_two': ['22', 1],
         'slot_three': ['11', 2],
