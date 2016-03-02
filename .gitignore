@@ -1,3 +1,4 @@
 output.txt
 .idea/
 *.pyc
+tools/button_dict.py
