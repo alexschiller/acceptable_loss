@@ -28,9 +28,60 @@ class LightningMelee(Melee):
         else:
             self.range = 50
 
+    # def transmitting(self):
+
+    #     if self.hit:
+    #         self.ret = calc_vel_xy(self.target.sprite.x, self.target.sprite.y, self.sprite.x, self.sprite.y, self.package['velocity'])
+    #     else:
+    #         self.ret = calc_vel_xy(self.mouse_x, self.mouse_y, self.sprite.x, self.sprite.y, self.package['velocity'])
+
+    #     if self.stab:
+    #         self.sprite.scale += .2
+    #     else:
+    #         self.travelled += math.hypot(self.ret[0], self.ret[1])
+
+    #     if self.travelled >= self.range / 2:
+    #         self.stab = 0
+
+    #     if self.travelled >= self.range:
+    #         self.end_transmission = True
+
+class Orb(object):
+    def __init__(self, master, handler): # noqa
+        self.master = master
+        self.handler = handler
+        self.sprite = pyglet.sprite.Sprite(load_image('orb.png'), self.handler.owner.sprite.x + 20, self.handler.owner.sprite.y + 20, batch=BarBatch)
+        self.timer = 1
+        self.ret = [0, 0]
+        self.ret_x = 0
+        self.ret_y = 0
+
+    def update(self, plasma):
+        self.sprite.scale = (plasma + 50) / 150
+        self.timer -= 1
+        if not self.timer:
+            self.ret = calc_vel_xy(self.handler.owner.sprite.x, self.handler.owner.sprite.y, self.sprite.x, self.sprite.y, 2)
+            self.update_ret()
+            self.timer = random.randint(3, 5)
+        self.sprite.x += self.ret_x
+        self.sprite.y += self.ret_y
+
+    def update_ret(self):
+        self.ret_x += self.ret[0]
+        if self.ret_x < -5:
+            self.ret_x += 1
+        elif self.ret_x > 5:
+            self.ret_x -= 1
+        self.ret_y += self.ret[1]
+        if self.ret_y < -5:
+            self.ret_y += 1
+        elif self.ret_y > 5:
+            self.ret_y -= 1
+
 class PlasmaCore(Core):
     def __init__(self, master, handler):
         super(PlasmaCore, self).__init__(master, handler)
+        self.orb = Orb(master, handler)
         self.bullets = 6
         self.max_bullets = 6
         self.reload_timer = 120
@@ -49,11 +100,11 @@ class PlasmaCore(Core):
         counter = 0
         if not target:
             target = [marker[0] + random.randint(-100, 100), marker[1] + random.randint(-100, 100)]
-        while counter < dist:
+        while counter < dist * .3:
             counter += 1
-            ret = calc_vel_xy(target[0], target[1], marker[0], marker[1], 3)
-            marker[0] += ret[0] + random.randint(-2, 2)
-            marker[1] += ret[1] + random.randint(-2, 2)
+            ret = calc_vel_xy(target[0], target[1], marker[0], marker[1], 5)
+            marker[0] += ret[0] + random.randint(-1, 1)
+            marker[1] += ret[1] + random.randint(-1, 1)
             self.create_dot(marker[0], marker[1])
             # if counter == dist / 2:
             #     if random.choice([0, 0, 0, 1]):
@@ -64,22 +115,24 @@ class PlasmaCore(Core):
             #             )
 
     def update(self):
+
         if self.plasma < self.plasma_max:
-            self.plasma += .5
+            self.plasma += 1
         if len(self.lightning):
             self.lightning_counter -= 1
             if not self.lightning_counter:
                 self.lightning = []
-        else:
-            if random.randint(0, 100) >= 100 - self.plasma / 10:
-                self.lightning_counter = 3
-                self.create_lightning(self.handler.owner.sprite.x, self.handler.owner.sprite.y)
+        self.orb.update(self.plasma)
+        # else:
+        #     if random.randint(0, 100) >= 100 - self.plasma / 10:
+        #         self.lightning_counter = 3
+        #         self.create_lightning(self.handler.owner.sprite.x, self.handler.owner.sprite.y)
 
-        if not self.bullets:
-            self.reload_timer -= 1
-            if not self.reload_timer:
-                self.bullets += self.max_bullets
-                self.reload_timer += self.reload_timer_max
+        # if not self.bullets:
+        #     self.reload_timer -= 1
+        #     if not self.reload_timer:
+        #         self.bullets += self.max_bullets
+        #         self.reload_timer += self.reload_timer_max
 
 # Unfinished
 class PSPDTimedBreathing(Skill):
