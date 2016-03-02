@@ -16,7 +16,7 @@ player_base = {
         'crit': 10,
         'crit_damage': 1.5,
         'armor_pierce': 1,
-        'image': 'rod.png', # noqa
+        'image': 'hammer.png', # noqa
         'gun_fire_sound': 'shot.wav', # noqa
         'on_hit_sound': 'on_hit.wav', # noqa
         'effects': [],

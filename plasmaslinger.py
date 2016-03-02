@@ -1,13 +1,16 @@
 from baseskills import * # noqa
-# import math
+import math
 from functools import partial
 from utility import * # noqa
+
 
 class LightningMelee(Melee):
     def __init__(self, master, ability, skill, package, start_x, start_y):
         super(LightningMelee, self).__init__(master, ability, skill, package, start_x, start_y)
+        self.travelled = 0
 
     def check_package_accuracy(self):
+        play_sound(self.package['gun_fire_sound'])
         self.target = self.ability.owner.target
         if self.target:
             self.hit = random.randint(0, 100) < self.package['accuracy'] * self.ability.owner.acc_mouse_mod
@@ -20,31 +23,33 @@ class LightningMelee(Melee):
                 self.evade = True
 
             if self.hit:
-                    self.sprite.rotation = (math.degrees(math.atan2(self.target.sprite.y - self.sprite.y, self.target.sprite.x - self.sprite.x)) * -1) + 90
-                    self.range = 50
+                self.sprite.rotation = (math.degrees(math.atan2(self.target.sprite.y - self.sprite.y, self.target.sprite.x - self.sprite.x)) * -1) + 90
+                ret = calc_vel_xy(self.target.sprite.x, self.target.sprite.y, self.ability.owner.sprite.x, self.ability.owner.sprite.y, 50)
+                self.sprite.x += ret[0]
+                self.sprite.y += ret[1]
+                self.range = 20
             else:
                 self.sprite.rotation = (math.degrees(math.atan2(self.mouse_y - self.sprite.y, self.mouse_x - self.sprite.x)) * -1) + 90
-                self.range = 50
+                self.range = 20
         else:
-            self.range = 50
+            self.range = 20
 
-    # def transmitting(self):
+    def transmitting(self):
+        if self.hit:
+            self.ret = calc_vel_xy(self.target.sprite.x, self.target.sprite.y, self.ability.owner.sprite.x, self.ability.owner.sprite.y, self.package['velocity'])
+        else:
+            self.travelled = self.range
+            self.end_transmission = True
+            # return False
 
-    #     if self.hit:
-    #         self.ret = calc_vel_xy(self.target.sprite.x, self.target.sprite.y, self.sprite.x, self.sprite.y, self.package['velocity'])
-    #     else:
-    #         self.ret = calc_vel_xy(self.mouse_x, self.mouse_y, self.sprite.x, self.sprite.y, self.package['velocity'])
+        # self.package['velocity'] += 1
+        self.sprite.x -= self.ret[0]
+        self.sprite.y -= self.ret[1]
 
-    #     if self.stab:
-    #         self.sprite.scale += .2
-    #     else:
-    #         self.travelled += math.hypot(self.ret[0], self.ret[1])
+        self.travelled += math.hypot(self.ret[0], self.ret[1])
 
-    #     if self.travelled >= self.range / 2:
-    #         self.stab = 0
-
-    #     if self.travelled >= self.range:
-    #         self.end_transmission = True
+        if self.travelled >= self.range:
+            self.end_transmission = True
 
 class Orb(object):
     def __init__(self, master, handler): # noqa
@@ -81,7 +86,7 @@ class Orb(object):
 class PlasmaCore(Core):
     def __init__(self, master, handler):
         super(PlasmaCore, self).__init__(master, handler)
-        self.orb = Orb(master, handler)
+        # self.orb = Orb(master, handler)
         self.bullets = 6
         self.max_bullets = 6
         self.reload_timer = 120
@@ -122,7 +127,7 @@ class PlasmaCore(Core):
             self.lightning_counter -= 1
             if not self.lightning_counter:
                 self.lightning = []
-        self.orb.update(self.plasma)
+        # self.orb.update(self.plasma)
         # else:
         #     if random.randint(0, 100) >= 100 - self.plasma / 10:
         #         self.lightning_counter = 3
@@ -208,12 +213,17 @@ class PSMABang(Skill):
 class PSMAShieldSplitter(Skill):
     def __init__(self, master, level, handler):
         super(PSMAShieldSplitter, self).__init__(master, level, handler)
+        self.img = load_image('strike.png')
+        self.sound = load_sound('slash.wav')
 
     def fire(self):
         enemy_range = self.get_enemy_dist()
         try:
             if enemy_range <= 50 and enemy_range and not self.handler.global_cooldown:
-                LightningMelee(self.master, self.handler, self, self.handler.copy_gun(), self.handler.owner.sprite.x, self.handler.owner.sprite.y)
+                gun = self.handler.copy_gun()
+                gun['image'] = self.img
+                gun['gun_fire_sound'] = self.sound
+                LightningMelee(self.master, self.handler, self, gun, self.handler.owner.sprite.x, self.handler.owner.sprite.y)
                 return True
             else:
                 self.dash()
