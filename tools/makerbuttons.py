@@ -151,10 +151,10 @@ class Button(object):
                     self.trigger = 1
 
     def do_action(self):
-        # try:
-        self.func()
-        # except:
-        #     pass
+        try:
+            self.func()
+        except:
+            pass
 
     def export(self):
         bdict = {

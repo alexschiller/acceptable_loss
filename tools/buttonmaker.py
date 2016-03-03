@@ -253,7 +253,6 @@ class ClickMenu(object):
                 self.sprite.y < y and
                 y < self.sprite.y + self.sprite.height
             ):
-                print self.buttons
                 for button in self.buttons:
                     button.on_mouse_press(x, y, mode)
                 return True
@@ -296,6 +295,11 @@ class ClickMenu(object):
 
 class StringMenu(ClickMenu):
     def __init__(self, x, y, game):
+        self.page = 1
+        self.maxpage = len(callables) / 10
+        if len(callables) % 10 > 0:
+            self.maxpage += 1
+
         self.flag = 0
         self.batches = [pyglet.graphics.Batch(), pyglet.graphics.Batch(), pyglet.graphics.Batch()]
         self.game = game
@@ -305,21 +309,86 @@ class StringMenu(ClickMenu):
             1000, 0, batch=self.batches[0]
         )
         self.buttons = []
+        self.string_calls = []
         self.setup()
 
     def alert(self, ide):
         self.game.option_menu.button.callbackstr = callables[ide]
+
+    def changepage(self):
+        for item in self.string_calls:
+            item.label.delete()
+        self.string_calls = []
+        i = (self. page - 1) * 10
+        backing = pyglet.image.create(90, 30, pyglet.image.SolidColorImagePattern(color=(144, 144, 144, 255))) # noqa
+        try:
+            print "Hello"
+            for item in callables:
+                print item
+                sprite = pyglet.sprite.Sprite(
+                    backing, self.sprite.x + self.sprite.width / 2 - backing.width / 2, 200 + (backing.height + 10) * i,
+                    batch=self.batches[1]
+                )
+                self.string_calls.append(MenuButton(sprite, self, i, item, self.batches[2]))
+                i += 1
+        except:
+            print "hit except"
+            pass
+
+    def pageleft(self):
+        self.page -= 1
+        if self.page < 1:
+            self.page = self.maxpage
+        self.changepage()
+
+    def pageright(self):
+        self.page += 1
+        if self.page > self.maxpage:
+            self.page = 1
+        self.changepage()
 
     def setup(self):
         i = 0
         backing = pyglet.image.create(90, 30, pyglet.image.SolidColorImagePattern(color=(144, 144, 144, 255))) # noqa
         for item in callables:
             sprite = pyglet.sprite.Sprite(
-                backing, self.sprite.x + self.sprite.width / 2, 5 + (backing.height + 10) * i,
+                backing, self.sprite.x + self.sprite.width / 2 - backing.width / 2, 200 + (backing.height + 10) * i,
                 batch=self.batches[1]
             )
-            self.buttons.append(MenuButton(sprite, self, i, item, self.batches[2]))
+            self.string_calls.append(MenuButton(sprite, self, i, item, self.batches[2]))
             i += 1
+            if i == 10:
+                break
+
+        back = pyglet.image.create(30, 30, pyglet.image.SolidColorImagePattern(color=(100, 100, 90, 180)))
+        self.buttons.append(
+            Button(
+                back, back, back, self.sprite.x + 5,
+                self.sprite.y + self.sprite.height - 35, self.pageleft, self.batches[1],
+            )
+        )
+        self.buttons.append(
+            Button(
+                back, back, back, self.sprite.x + self.sprite.width - 35,
+                self.sprite.y + self.sprite.height - 35, self.pageright, self.batches[1],
+            )
+        )
+
+    def on_mouse_press(self, x, y, mode):
+        if self.flag:
+            if (
+                self.sprite.x < x and
+                x < self.sprite.x + self.sprite.width and
+                self.sprite.y < y and
+                y < self.sprite.y + self.sprite.height
+            ):
+                for button in self.string_calls:
+                    button.on_mouse_press(x, y, mode)
+                for button in self.buttons:
+                    button.on_mouse_press(x, y, mode)
+                return True
+        else:
+            return False
 
 
 class ProtoKeyStateHandler(key.KeyStateHandler):
@@ -488,7 +557,6 @@ class Game(pyglet.window.Window):
                 self.option_menu.flag = 1
                 self.option_menu.button = b
                 self.option_menu.setlocation(x, y)
-                print [self.option_menu.sprite.x, self.option_menu.sprite.y]
 
     def on_mouse_motion(self, x, y, dx, dy):
         self.manager.update_image(x, y, dx, dy)
