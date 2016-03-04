@@ -319,21 +319,18 @@ class StringMenu(ClickMenu):
         for item in self.string_calls:
             item.label.delete()
         self.string_calls = []
-        i = (self. page - 1) * 10
         backing = pyglet.image.create(90, 30, pyglet.image.SolidColorImagePattern(color=(144, 144, 144, 255))) # noqa
-        try:
-            print "Hello"
-            for item in callables:
-                print item
+        x = 0
+        for i in range((self.page - 1) * 10, self.page * 10):
+            try:
                 sprite = pyglet.sprite.Sprite(
-                    backing, self.sprite.x + self.sprite.width / 2 - backing.width / 2, 200 + (backing.height + 10) * i,
-                    batch=self.batches[1]
+                    backing,
+                    self.sprite.x + self.sprite.width / 2, 300 + 40 * x, batch=self.batches[1]
                 )
-                self.string_calls.append(MenuButton(sprite, self, i, item, self.batches[2]))
-                i += 1
-        except:
-            print "hit except"
-            pass
+                self.string_calls.append(MenuButton(sprite, self, i, callables[i], self.batches[2]))
+                x += 1
+            except:
+                pass
 
     def pageleft(self):
         self.page -= 1
@@ -348,17 +345,18 @@ class StringMenu(ClickMenu):
         self.changepage()
 
     def setup(self):
-        i = 0
+        # i = 0
         backing = pyglet.image.create(90, 30, pyglet.image.SolidColorImagePattern(color=(144, 144, 144, 255))) # noqa
-        for item in callables:
-            sprite = pyglet.sprite.Sprite(
-                backing, self.sprite.x + self.sprite.width / 2 - backing.width / 2, 200 + (backing.height + 10) * i,
-                batch=self.batches[1]
-            )
-            self.string_calls.append(MenuButton(sprite, self, i, item, self.batches[2]))
-            i += 1
-            if i == 10:
-                break
+        self.changepage()
+        # for item in callables:
+        #     sprite = pyglet.sprite.Sprite(
+        #         backing, self.sprite.x + self.sprite.width / 2 - backing.width / 2, 200 + (backing.height + 10) * i,
+        #         batch=self.batches[1]
+        #     )
+        #     self.string_calls.append(MenuButton(sprite, self, i, item, self.batches[2]))
+        #     i += 1
+        #     if i == 10:
+        #         break
 
         back = pyglet.image.create(30, 30, pyglet.image.SolidColorImagePattern(color=(100, 100, 90, 180)))
         self.buttons.append(
