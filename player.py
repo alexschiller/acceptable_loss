@@ -102,11 +102,13 @@ class Player(Character):
     def update_bars(self):
         self.hbubble.x = self.sprite.x
         self.hbubble.y = self.sprite.y
-        self.hbubble.scale = self.stats.health / (self.stats.health_max + .1)
+        self.hbubble.scale = max(1 - self.stats.health / (self.stats.health_max + .01), .01)
 
         self.sbubble.x = self.sprite.x
         self.sbubble.y = self.sprite.y
-        self.sbubble.scale = self.stats.shield / (self.stats.shield_max + .1)
+        self.sbubble.scale = max(1 - self.stats.shield / (self.stats.shield_max + .01), .01)
+        if self.sbubble.scale >= .95:
+            self.sbubble.scale = .01
 
         self.update_jump()
         if self.energy < 100:

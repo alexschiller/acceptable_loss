@@ -44,11 +44,13 @@ class Character(object):
         # pass
         self.hbubble.x = self.sprite.x
         self.hbubble.y = self.sprite.y
-        self.hbubble.scale = self.stats.health / (self.stats.health_max + .1)
+        self.hbubble.scale = max(1 - self.stats.health / (self.stats.health_max + .01), .01)
 
         self.sbubble.x = self.sprite.x
         self.sbubble.y = self.sprite.y
-        self.sbubble.scale = self.stats.shield / (self.stats.shield_max + .1)
+        self.sbubble.scale = max(1 - self.stats.shield / (self.stats.shield_max + .01), .01)
+        if self.sbubble.scale >= .95:
+            self.sbubble.scale = .01
 
     def death_check(self):
         if self.stats.health <= 0:
@@ -82,9 +84,14 @@ class Character(object):
         if final_damage:
             splatter = min(max(int(final_damage / self.stats.health_max) * 30, 5), 20)
             self.spriteeffect.bullet_wound(transmission.ret[0], transmission.ret[0], self.sprite.x, self.sprite.y, splatter, self.blood_color) # noqa
+        else:
+            self.sbubble.x = self.sprite.x
+            self.sbubble.y = self.sprite.y
         transmission.kill = self.stats.health <= 0
 
     def update(self):
+        self.sbubble.x = -100
+        self.sbubble.y = -100
         self.update_bars()
         self.stats.update()
         # self.update_bar_position()

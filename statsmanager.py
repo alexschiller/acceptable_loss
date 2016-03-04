@@ -40,7 +40,7 @@ class StatsManager(object):
         self._evade_move = 0
 
         self.recoil = 0
-
+        self.shield_cooldown = 0
         self.delayed = []
 
         self._shield = self._shield_max
@@ -96,10 +96,14 @@ class StatsManager(object):
         pass
 
     def update_stats(self):
-        if self._shield < int(self.shield_max):
-            self._shield += float(self.shield_regen) / 60.0
+        if self.shield_cooldown:
+            self.shield_cooldown -= 1
         else:
-            self._shield = int(self.shield_max)
+            if self._shield < int(self.shield_max):
+                self._shield += float(self.shield_regen) / 60.0
+            else:
+                self._shield = int(self.shield_max)
+
         if self._health < int(self.health_max):
             self._health += float(self.health_regen) / 60.0
         else:
@@ -117,6 +121,7 @@ class StatsManager(object):
     def update_health(self, damage):
         self._shield -= damage
         if self._shield <= 0:
+            self.shield_cooldown = 120
             damage = self._shield * -1
             self._shield = 0
             damage -= self.armor
