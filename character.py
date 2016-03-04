@@ -18,13 +18,13 @@ class Character(object):
         self.acc_mouse_mod = 1
         # self.build = base['build']
         self.target = None
-        self.bars = []
         self.dead = False
+
+        self.hbubble = pyglet.sprite.Sprite(load_image('hbubble.png'), base['coord'][0], base['coord'][1], batch=gfx_batch) # noqa
+        self.sbubble = pyglet.sprite.Sprite(load_image('sbubble.png'), base['coord'][0], base['coord'][1], batch=gfx_batch) # noqa
 
         self.sprite = pyglet.sprite.Sprite(base['sprite'], base['coord'][0], base['coord'][1], batch=gfx_batch) # noqa
         self.collision = SpriteCollision(self.sprite)
-
-        self.master.people[base['color']].append(self)
 
         self.controller = base['controller'](self)
         self.stats = StatsManager(base['stats'],
@@ -38,30 +38,17 @@ class Character(object):
             base['build'],
         )
 
+        self.master.people[base['color']].append(self)
+
     def update_bars(self):
         # pass
-        try:
-            self.bars = []
-            hw = int(self.sprite.width * 2 * self.stats.health / self.stats.health_max) # noqa
-            sw = int(self.sprite.width * 2 * self.stats.shield / (self.stats.shield_max + .01)) # noqa
-            if hw > 0:
-                self.bars.append(pyglet.sprite.Sprite(
-                    pyglet.image.create(hw, 2, red_sprite),
-                    self.sprite.x - self.sprite.width,
-                    self.sprite.y + self.sprite.height, batch=BarBatch))
+        self.hbubble.x = self.sprite.x
+        self.hbubble.y = self.sprite.y
+        self.hbubble.scale = self.stats.health / (self.stats.health_max + .1)
 
-            if sw > 0:
-                self.bars.append(pyglet.sprite.Sprite(
-                    pyglet.image.create(sw, 2, blue_sprite),
-                    self.sprite.x - self.sprite.width,
-                    self.sprite.y + self.sprite.height + 5, batch=BarBatch))
-        except:
-            self.bars = []
-
-    def update_bar_position(self):
-        for n, bar in enumerate(self.bars):
-            bar.x = self.sprite.x - self.sprite.width
-            bar.y = self.sprite.y + self.sprite.height + n * 5
+        self.sbubble.x = self.sprite.x
+        self.sbubble.y = self.sprite.y
+        self.sbubble.scale = self.stats.shield / (self.stats.shield_max + .1)
 
     def death_check(self):
         if self.stats.health <= 0:
@@ -77,6 +64,8 @@ class Character(object):
         self.dead = True
         self.master.loot.pack_package(self.generate_loot(), self.sprite.x, self.sprite.y)
         try:
+            self.hbubble.delete()
+            self.sbubble.delete()
             self.sprite.delete()
             for p in self.ability.packages:
                 p.cleanup()
@@ -89,15 +78,16 @@ class Character(object):
     def on_hit(self, transmission):
         final_damage = self.stats.update_health(transmission.damage)
         self.controller.on_hit()
-        self.update_bars()
+        # self.update_bars()
         if final_damage:
             splatter = min(max(int(final_damage / self.stats.health_max) * 30, 5), 20)
             self.spriteeffect.bullet_wound(transmission.ret[0], transmission.ret[0], self.sprite.x, self.sprite.y, splatter, self.blood_color) # noqa
         transmission.kill = self.stats.health <= 0
 
     def update(self):
+        self.update_bars()
         self.stats.update()
-        self.update_bar_position()
+        # self.update_bar_position()
         self.controller.update()
         self.ability.update()
         self.death_check()

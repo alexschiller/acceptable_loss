@@ -3,7 +3,7 @@ import math
 from functools import partial
 from utility import * # noqa
 
-
+# comment for ally
 class LightningMelee(Melee):
     def __init__(self, master, ability, skill, package, start_x, start_y):
         super(LightningMelee, self).__init__(master, ability, skill, package, start_x, start_y)
@@ -110,13 +110,6 @@ class PlasmaCore(Core):
             marker[0] += ret[0] + random.randint(-1, 1)
             marker[1] += ret[1] + random.randint(-1, 1)
             self.create_dot(marker[0], marker[1])
-            # if counter == dist / 2:
-            #     if random.choice([0, 0, 0, 1]):
-            #         if dist > 10:
-            #             self.create_lightning(marker[0],
-            #                 marker[1],
-            #                 dist=dist / 2,
-            #             )
 
     def update(self):
 
@@ -126,17 +119,6 @@ class PlasmaCore(Core):
             self.lightning_counter -= 1
             if not self.lightning_counter:
                 self.lightning = []
-        # self.orb.update(self.plasma)
-        # else:
-        #     if random.randint(0, 100) >= 100 - self.plasma / 10:
-        #         self.lightning_counter = 3
-        #         self.create_lightning(self.handler.owner.sprite.x, self.handler.owner.sprite.y)
-
-        # if not self.bullets:
-        #     self.reload_timer -= 1
-        #     if not self.reload_timer:
-        #         self.bullets += self.max_bullets
-        #         self.reload_timer += self.reload_timer_max
 
 # Unfinished
 class PSPDTimedBreathing(Skill):

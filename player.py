@@ -21,9 +21,9 @@ class Player(Character):
 
         # self.shield_bar = pyglet.sprite.Sprite(pyglet.image.create(271, 13, blue_sprite),
             # 10, window_height - 25, batch=BarBatch) # noqa
-        self.hp_bar_len = int(window_width * .324)
-        self.health_bar = pyglet.sprite.Sprite(pyglet.image.create(int(window_width * .324), 30, red_sprite),
-            20, 20, batch=gfx_batch) # noqa
+        # self.hp_bar_len = int(window_width * .324)
+        # self.health_bar = pyglet.sprite.Sprite(pyglet.image.create(int(window_width * .324), 30, red_sprite),
+        #     20, 20, batch=gfx_batch) # noqa
 
         # self.ae_bar = pyglet.sprite.Sprite(
         #     pyglet.image.create(50, 13, white_sprite),
@@ -100,12 +100,20 @@ class Player(Character):
         return acc_val
 
     def update_bars(self):
+        self.hbubble.x = self.sprite.x
+        self.hbubble.y = self.sprite.y
+        self.hbubble.scale = self.stats.health / (self.stats.health_max + .1)
+
+        self.sbubble.x = self.sprite.x
+        self.sbubble.y = self.sprite.y
+        self.sbubble.scale = self.stats.shield / (self.stats.shield_max + .1)
+
         self.update_jump()
         if self.energy < 100:
             self.energy = 100
 
         # self.shield_bar.x = 10 - (271 - (self.stats.shield / float(self.stats.shield_max) * 271)) # noqa
-        self.health_bar.x = 20 - (self.hp_bar_len - (self.stats.health / float(self.stats.health_max) * self.hp_bar_len)) # noqa
+        # self.health_bar.x = 20 - (self.hp_bar_len - (self.stats.health / float(self.stats.health_max) * self.hp_bar_len)) # noqa
 
         acc_val = self.calc_acc()
         x = self.controller.sprite.x
@@ -135,7 +143,7 @@ class PlayerController(Controller):
         red_sprite = pyglet.image.SolidColorImagePattern(color=(255, 0, 0, 150))
         self.red_dot = pyglet.image.create(5, 5, red_sprite)
         self.marker = None
-        self.timg = load_image('target.png')
+        self.timg = load_image('target_round.png')
         self.move_target = None
         self.move_img = load_image('ex.png')
 
@@ -154,7 +162,7 @@ class PlayerController(Controller):
         pass
 
     def build_target(self, e):
-        self.marker = pyglet.sprite.Sprite(self.timg, e.sprite.x - 10, e.sprite.y - 10, batch=gfx_batch)  # noqa 
+        self.marker = pyglet.sprite.Sprite(self.timg, e.sprite.x, e.sprite.y, batch=gfx_batch)  # noqa 
 
     def target_closest_enemy(self, distance=300):
         self.remove_target()
