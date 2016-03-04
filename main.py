@@ -15,7 +15,8 @@ from button import Manager, Button,TextBox, DraggableButton, foo # noqa
 from menu import * # noqa
 from hotbar import * # noqa
 from inventory import * # noqa
-
+import faulthandler
+faulthandler.enable()
 
 def randotest():
     print "TEST COMPLETE"
