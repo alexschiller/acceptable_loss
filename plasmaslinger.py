@@ -86,7 +86,7 @@ class Orb(object):
 class PlasmaCore(Core):
     def __init__(self, master, handler):
         super(PlasmaCore, self).__init__(master, handler)
-        # self.orb = Orb(master, handler)
+        self.spinner = pyglet.sprite.Sprite(load_image('light_box.png'), self.handler.owner.sprite.x + 20, self.handler.owner.sprite.y + 20, batch=BarBatch)
         self.bullets = 6
         self.max_bullets = 6
         self.reload_timer = 120
@@ -112,7 +112,9 @@ class PlasmaCore(Core):
             self.create_dot(marker[0], marker[1])
 
     def update(self):
-
+        self.spinner.rotation += 5 * self.plasma / self.plasma_max
+        self.spinner.x = self.handler.owner.sprite.x
+        self.spinner.y = self.handler.owner.sprite.y
         if self.plasma < self.plasma_max:
             self.plasma += 1
         if len(self.lightning):
