@@ -102,11 +102,10 @@ class PlasmaCore(Core):
 
     def create_lightning(self, start_x, start_y, dist=15, target=None):
         marker = [start_x, start_y]
-        counter = 0
         if not target:
             target = [marker[0] + random.randint(-100, 100), marker[1] + random.randint(-100, 100)]
-        while counter < dist * .3:
-            counter += 1
+        for i in range(int(dist * .3)):
+            # counter += 1
             ret = calc_vel_xy(target[0], target[1], marker[0], marker[1], 5)
             marker[0] += ret[0] + random.randint(-1, 1)
             marker[1] += ret[1] + random.randint(-1, 1)
