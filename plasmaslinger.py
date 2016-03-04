@@ -112,11 +112,11 @@ class PlasmaCore(Core):
             self.create_dot(marker[0], marker[1])
 
     def update(self):
-        self.spinner.rotation += 5 * self.plasma / self.plasma_max
+        if self.plasma <= 0:
+            self.plasma = 1
+        self.spinner.rotation += (13 * self.plasma / self.plasma_max + 2)
         self.spinner.x = self.handler.owner.sprite.x
         self.spinner.y = self.handler.owner.sprite.y
-        if self.plasma < self.plasma_max:
-            self.plasma += 1
         if len(self.lightning):
             self.lightning_counter -= 1
             if not self.lightning_counter:
@@ -206,6 +206,7 @@ class PSMAShieldSplitter(Skill):
                 gun = self.handler.copy_gun()
                 gun['image'] = self.img
                 gun['gun_fire_sound'] = self.sound
+                self.handler.core.plasma += 20
                 LightningMelee(self.master, self.handler, self, gun, self.handler.owner.sprite.x, self.handler.owner.sprite.y)
                 return True
             else:
@@ -275,24 +276,26 @@ class PSPOBolt(Skill):
         self.gun_fire_sound = load_sound('lightning_bolt.wav')
 
     def fire(self):
-        if self.handler.core.plasma >= 50:
-            dist = self.get_enemy_dist()
-            if dist:
-                self.handler.core.plasma -= 50
-                self.handler.core.lightning_counter = 3
-                self.handler.core.create_lightning(
-                    self.handler.owner.sprite.x,
-                    self.handler.owner.sprite.y,
-                    dist,
-                    [self.handler.owner.target.sprite.x, self.handler.owner.target.sprite.y]
-                )
+        dist = self.get_enemy_dist()
+        if dist:
+            self.handler.core.lightning_counter = 3
+            self.handler.core.create_lightning(
+                self.handler.owner.sprite.x,
+                self.handler.owner.sprite.y,
+                dist,
+                [self.handler.owner.target.sprite.x, self.handler.owner.target.sprite.y]
+            )
 
-                # self.handler.core.bullets -= 1
-                gun = self.handler.copy_gun()
-                gun['accuracy'] += 100
-                gun['gun_fire_sound'] = self.gun_fire_sound
-                Gunshot(self.master, self.handler, self, dict.copy(gun), self.handler.owner.target.sprite.x, self.handler.owner.target.sprite.y)
-                return True
+            # self.handler.core.bullets -= 1
+            gun = self.handler.copy_gun()
+            gun['accuracy'] += 100
+            pmod = self.handler.core.plasma / self.handler.core.plasma_max * 3
+            gun['gun_fire_sound'] = self.gun_fire_sound
+            gun['damage_min'] = int(max(gun['damage_min'] * pmod, 1))
+            gun['damage_max'] = int(max(gun['damage_max'] * pmod, 2))
+            Gunshot(self.master, self.handler, self, dict.copy(gun), self.handler.owner.target.sprite.x, self.handler.owner.target.sprite.y)
+            self.handler.core.plasma = 0
+            return True
         return False
 
     def get_enemy_dist(self):
