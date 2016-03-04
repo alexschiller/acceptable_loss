@@ -11,11 +11,22 @@ def foo():
 
 
 class MenuButton(object):
-    def __init__(self, sprite, manager, identity):
+    def __init__(self, sprite, manager, identity, label=None, labelbatch=None):
         self.manager = manager
         self.identity = identity
         self.trigger = 0
         self.sprite = sprite
+        if label is not None:
+            self.label = pyglet.text.Label(
+                label,
+                font_name='Times New Roman',
+                font_size=14,
+                x=self.sprite.x + self.sprite.width / 2,
+                y=self.sprite.y + self.sprite.height / 2,
+                anchor_x='center',
+                anchor_y='center',
+                batch=labelbatch
+            )
 
     def on_mouse_press(self, x, y, mode):
         if (self.sprite.x < x and
@@ -70,6 +81,7 @@ class Button(object):
         self.downsprite = downsprite
         self.hoversprite = hoversprite
         self.trigger = 0
+        self.callbackstr = None
         self.sprite = pyglet.sprite.Sprite(
             upsprite,
             x, y, batch=batch
@@ -78,7 +90,7 @@ class Button(object):
             self.label = pyglet.text.Label(
                 label,
                 font_name='Times New Roman',
-                font_size=32,
+                font_size=24,
                 x=self.sprite.x + self.sprite.width / 2,
                 y=self.sprite.y + self.sprite.height / 2,
                 anchor_x='center',
@@ -129,12 +141,11 @@ class Button(object):
                 if mode == 1 and self.trigger == 1:
                     self.trigger = 0
                     self.sprite.image = self.hoversprite
-                    try:
-                        if val:
-                            print "HEKLJS:DKFJ:LSDKFJLS:DFJSL:DKFJSDL:KFJ"
-                        self.do_action()
-                    except:
-                        pass
+                    # try:
+                    # if val:
+                    self.do_action()
+                    # except:
+                    # pass
                 if mode == 0:
                     self.sprite.image = self.downsprite
                     self.trigger = 1
@@ -144,6 +155,14 @@ class Button(object):
             self.func()
         except:
             pass
+
+    def export(self):
+        bdict = {
+            'upsprite': self.upsprite_img_loc, 'downsprite': self.downsprite_img_loc,
+            'hoversprite': self.hoversprite_img_loc, 'x': self.sprite.x, 'y': self.sprite.y,
+            'callback': self.callbackstr
+        }
+        return bdict
 
 
 class DraggableButton(Button):
