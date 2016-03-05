@@ -1,8 +1,9 @@
 import math
+from utility import play_sound, load_sound
 
 class StatsManager(object):
     def __init__(self, base, gun, armor):
-
+        self.shield_hit = load_sound('shield_hit.wav')
         self.base = base
         self.level = base['level']
 
@@ -119,6 +120,8 @@ class StatsManager(object):
             self.recoil -= math.ceil(self.recoil / 90.0)
 
     def update_health(self, damage):
+        if self._shield > 0:
+            play_sound(self.shield_hit)
         self._shield -= damage
         if self._shield == 0:
             self.shield_cooldown = 120

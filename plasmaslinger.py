@@ -113,7 +113,9 @@ class PlasmaCore(Core):
     def update(self):
         if self.plasma <= 0:
             self.plasma = 1
-        self.spinner.rotation += (13 * self.plasma / self.plasma_max + 2)
+        if self.plasma > self.plasma_max:
+            self.plasma = self.plasma_max
+        self.spinner.rotation += (22 * self.plasma / self.plasma_max + 3)
         self.spinner.x = self.handler.owner.sprite.x
         self.spinner.y = self.handler.owner.sprite.y
         if len(self.lightning):
@@ -122,9 +124,19 @@ class PlasmaCore(Core):
                 self.lightning = []
 
 # Unfinished
-class PSPDTimedBreathing(Skill):
+class PSPDRepurpose(Skill):
     def __init__(self, master, level, handler):
-        super(PSPDTimedBreathing, self).__init__(master, level, handler)
+        super(PSPDRepurpose, self).__init__(master, level, handler)
+        self.sound = load_sound('repurpose.wav')
+
+    def fire(self):
+        if self.handler.owner.stats.shield and self.handler.core.plasma != self.handler.core.plasma_max:
+            play_sound(self.sound)
+            self.master.spriteeffect.teleport(self.handler.owner.sprite.x, self.handler.owner.sprite.y)
+            self.handler.core.plasma += 50 * (self.handler.owner.stats.shield / self.handler.owner.stats.shield_max)
+            self.handler.owner.stats.update_health(self.handler.owner.stats.shield)
+            return True
+        return False
 
 # Unfinished
 class PSPDFlakJacket(Skill):
@@ -237,9 +249,44 @@ class PSMAMuzzleBrake(Skill):
         super(PSMAMuzzleBrake, self).__init__(master, level, handler)
 
 # Unfinished
-class PSMACoupled(Skill):
+class PSMALightSpeed(Skill):
     def __init__(self, master, level, handler):
-        super(PSMACoupled, self).__init__(master, level, handler)
+        super(PSMALightSpeed, self).__init__(master, level, handler)
+        self.img = load_image('strike.png')
+        self.sound = load_sound('slash.wav')
+
+    def fire(self):
+        enemy_range = self.get_enemy_dist()
+        try:
+            if enemy_range <= 50 and enemy_range and not self.handler.global_cooldown:
+                gun = self.handler.copy_gun()
+                gun['image'] = self.img
+                gun['gun_fire_sound'] = self.sound
+                pmod = .2
+                gun['damage_min'] = int(max(gun['damage_min'] * pmod, 1))
+                gun['damage_max'] = int(max(gun['damage_max'] * pmod, 2))
+                for i in range(random.randint(1, 10)):
+                    self.handler.delayed.append([i, partial(LightningMelee, self.master, self.handler, self, gun, self.handler.owner.sprite.x, self.handler.owner.sprite.y)])
+                return True
+            else:
+                self.dash()
+                return False
+        except:
+            return False
+
+    def dash(self):
+        ret = calc_vel_xy(self.handler.owner.sprite.x, self.handler.owner.sprite.y,
+        self.handler.owner.target.sprite.x, self.handler.owner.target.sprite.y, 45)
+        self.handler.owner.controller.move_to(self.handler.owner.target.sprite.x + ret[0],
+            self.handler.owner.target.sprite.y + ret[1], 1)
+
+    def get_enemy_dist(self):
+        if self.handler.owner.target:
+            dist_x = self.handler.owner.sprite.x - self.handler.owner.target.sprite.x
+            dist_y = self.handler.owner.sprite.y - self.handler.owner.target.sprite.y
+            dist = math.hypot(dist_x, dist_y)
+            return dist
+        return False
 
 # Unfinished
 class PSMAIronDome(Skill):
@@ -496,7 +543,7 @@ class PSPOBallLightning(Skill):
 
 plasmaslinger_skillset = {
     'core': PlasmaCore,
-    '1': PSPDTimedBreathing,
+    '1': PSPDRepurpose,
     '2': PSPDFlakJacket,
     '3': PSPDTwentyMileMarch,
     '4': PSPDLockAndLoad,
@@ -509,7 +556,7 @@ plasmaslinger_skillset = {
     '11': PSMABang,
     '12': PSMAShieldSplitter,
     '13': PSMAMuzzleBrake,
-    '14': PSMACoupled,
+    '14': PSMALightSpeed,
     '15': PSMAIronDome,
     '16': PSMAHardCore,
     '17': PSMAPerseverate,
