@@ -3,7 +3,6 @@ import math
 from functools import partial
 from utility import * # noqa
 
-# comment for ally
 class LightningMelee(Melee):
     def __init__(self, master, ability, skill, package, start_x, start_y):
         super(LightningMelee, self).__init__(master, ability, skill, package, start_x, start_y)
@@ -206,6 +205,9 @@ class PSMAShieldSplitter(Skill):
                 gun = self.handler.copy_gun()
                 gun['image'] = self.img
                 gun['gun_fire_sound'] = self.sound
+                pmod = .5
+                gun['damage_min'] = int(max(gun['damage_min'] * pmod, 1))
+                gun['damage_max'] = int(max(gun['damage_max'] * pmod, 2))
                 self.handler.core.plasma += 20
                 LightningMelee(self.master, self.handler, self, gun, self.handler.owner.sprite.x, self.handler.owner.sprite.y)
                 return True
@@ -277,7 +279,7 @@ class PSPOBolt(Skill):
 
     def fire(self):
         dist = self.get_enemy_dist()
-        if dist:
+        if dist and dist <= (50 + 700 * self.handler.core.plasma / self.handler.core.plasma_max):
             self.handler.core.lightning_counter = 3
             self.handler.core.create_lightning(
                 self.handler.owner.sprite.x,
@@ -314,29 +316,33 @@ class PSPOAnvilCrawler(Skill):
 
     def fire(self):
         hits = 0
-        if self.handler.core.plasma >= 100:
-            self.handler.core.plasma -= 100
-            for e in self.handler.owner.enemies:
-                if hits == 3:
-                    return True
-                self.handler.owner.target = e
-                dist = self.get_enemy_dist()
-                if dist <= 200:
-                    hits += 1
-                    self.handler.core.lightning_counter = 3
-                    self.handler.core.create_lightning(
-                        self.handler.owner.sprite.x,
-                        self.handler.owner.sprite.y,
-                        dist,
-                        [self.handler.owner.target.sprite.x, self.handler.owner.target.sprite.y]
-                    )
+        for e in self.handler.owner.enemies:
+            if hits >= 3:
+                break
+            self.handler.owner.target = e
+            dist = self.get_enemy_dist()
+            if dist <= (self.handler.core.plasma / self.handler.core.plasma_max * 200) + 50:
+                hits += 1
+                self.handler.core.lightning_counter = 3
+                self.handler.core.create_lightning(
+                    self.handler.owner.sprite.x,
+                    self.handler.owner.sprite.y,
+                    dist,
+                    [self.handler.owner.target.sprite.x, self.handler.owner.target.sprite.y]
+                )
 
-                    # self.handler.core.bullets -= 1
-                    gun = self.handler.copy_gun()
-                    gun['accuracy'] += 100
-                    gun['gun_fire_sound'] = self.gun_fire_sound
-                    Gunshot(self.master, self.handler, self, dict.copy(gun), self.handler.owner.target.sprite.x, self.handler.owner.target.sprite.y)
+                # self.handler.core.bullets -= 1
+                gun = self.handler.copy_gun()
+                gun['accuracy'] += 100
+                gun['gun_fire_sound'] = self.gun_fire_sound
+                pmod = self.handler.core.plasma / self.handler.core.plasma_max * .5
+                gun['gun_fire_sound'] = self.gun_fire_sound
+                gun['damage_min'] = int(max(gun['damage_min'] * pmod, 1))
+                gun['damage_max'] = int(max(gun['damage_max'] * pmod, 2))
+                Gunshot(self.master, self.handler, self, dict.copy(gun), self.handler.owner.target.sprite.x, self.handler.owner.target.sprite.y)
 
+        if hits > 0:
+            self.handler.core.plasma = 0
             return True
         return False
 
@@ -407,9 +413,45 @@ class PSPOSpark(Skill):
 
 
 # Unfinished
-class PSPORocketPowered(Skill):
+class PSPOZipZap(Skill):
     def __init__(self, master, level, handler):
-        super(PSPORocketPowered, self).__init__(master, level, handler)
+        super(PSPOZipZap, self).__init__(master, level, handler)
+        self.img = load_image('strike.png')
+        self.sound = load_sound('slash.wav')
+
+    def fire(self):
+        enemy_range = self.get_enemy_dist()
+        try:
+            if enemy_range <= 50 and enemy_range and not self.handler.global_cooldown:
+                gun = self.handler.copy_gun()
+                gun['image'] = self.img
+                gun['gun_fire_sound'] = self.sound
+                # pmod = 1
+                # gun['damage_min'] = int(max(gun['damage_min'] * pmod, 1))
+                # gun['damage_max'] = int(max(gun['damage_max'] * pmod, 2))
+                LightningMelee(self.master, self.handler, self, gun, self.handler.owner.sprite.x, self.handler.owner.sprite.y)
+                return True
+            else:
+                self.dash()
+                return False
+        except:
+            return False
+
+    def dash(self):
+        self.handler.owner.stats.temp_stat_change(2, 'speed', 10)
+        self.handler.owner.stats.update_health(self.handler.owner.stats.shield)
+        ret = calc_vel_xy(self.handler.owner.sprite.x, self.handler.owner.sprite.y,
+        self.handler.owner.target.sprite.x, self.handler.owner.target.sprite.y, 45)
+        self.handler.owner.controller.move_to(self.handler.owner.target.sprite.x + ret[0],
+            self.handler.owner.target.sprite.y + ret[1], 1)
+
+    def get_enemy_dist(self):
+        if self.handler.owner.target:
+            dist_x = self.handler.owner.sprite.x - self.handler.owner.target.sprite.x
+            dist_y = self.handler.owner.sprite.y - self.handler.owner.target.sprite.y
+            dist = math.hypot(dist_x, dist_y)
+            return dist
+        return False
 
 # Unfinished
 class PSPOPlasmaBall(Skill):
@@ -447,9 +489,10 @@ class PSPOConked(Skill):
         super(PSPOConked, self).__init__(master, level, handler)
 
 # Unfinished
-class PSPOMayhem(Skill):
+class PSPOBallLightning(Skill):
     def __init__(self, master, level, handler):
-        super(PSPOMayhem, self).__init__(master, level, handler)
+        super(PSPOBallLightning, self).__init__(master, level, handler)
+
 
 plasmaslinger_skillset = {
     'core': PlasmaCore,
@@ -477,10 +520,10 @@ plasmaslinger_skillset = {
     '22': PSPOAnvilCrawler,
     '23': PSPOBangForYourBuck,
     '24': PSPOSpark,
-    '25': PSPORocketPowered,
+    '25': PSPOZipZap,
     '26': PSPOPlasmaBall,
     '27': PSPOTracer,
     '28': PSPOBlotOutTheSun,
     '29': PSPOConked,
-    '30': PSPOMayhem,
+    '30': PSPOBallLightning,
 }

@@ -120,6 +120,9 @@ class StatsManager(object):
 
     def update_health(self, damage):
         self._shield -= damage
+        if self._shield == 0:
+            self.shield_cooldown = 120
+            return 0
         if self._shield <= 0:
             self.shield_cooldown = 120
             damage = self._shield * -1
