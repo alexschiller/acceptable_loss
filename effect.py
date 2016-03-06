@@ -6,18 +6,23 @@ import pyglet
 
 class Effect(object):
     def __init__(self, start_x, start_y, vel_x, vel_y, travel=20, ecolor=[0, 0, 0], esizex=3, esizey=3): # noqa
-        if vel_x == 0 and vel_y == 0:
-            vel_x, vel_y = 5, 10
-        effect_color = pyglet.image.SolidColorImagePattern(color=(ecolor[0],
-            ecolor[1], ecolor[2], 255))
-        effect_shape = pyglet.image.create(esizex, esizey, effect_color)
+        try:
+            if vel_x == 0 and vel_y == 0:
+                vel_x, vel_y = 5, 10
+            effect_color = pyglet.image.SolidColorImagePattern(color=(ecolor[0],
+                ecolor[1], ecolor[2], 255))
+            effect_shape = pyglet.image.create(esizex, esizey, effect_color)
 
-        self.sprite = pyglet.sprite.Sprite(effect_shape,
-        start_x, start_y, batch=EffectsBatch)
-        self.vel_x = vel_x
-        self.vel_y = vel_y
-        self.travel = travel
-        self.travelled = 0
+            self.sprite = pyglet.sprite.Sprite(effect_shape,
+            start_x, start_y, batch=EffectsBatch)
+            self.vel_x = vel_x
+            self.vel_y = vel_y
+            self.travel = travel
+            self.travelled = 0
+        except Exception, e:
+            print e
+            return None
+
 
 class Text(object):
     def __init__(self, start_x, start_y, text, f_color, f_size, time=30): # noqa
@@ -35,12 +40,15 @@ class SpriteEffect(object):
 
     def update(self):
         for effect in self.effects:
-            effect.sprite.x += effect.vel_x
-            effect.sprite.y += effect.vel_y
-            effect.travelled = effect.travelled + abs(effect.vel_x) + abs(effect.vel_y)
-            if effect.travelled >= effect.travel:
-                effect.sprite.delete()
-                self.effects.remove(effect)
+            try:
+                effect.sprite.x += effect.vel_x
+                effect.sprite.y += effect.vel_y
+                effect.travelled = effect.travelled + abs(effect.vel_x) + abs(effect.vel_y)
+                if effect.travelled >= effect.travel:
+                    effect.sprite.delete()
+                    self.effects.remove(effect)
+            except Exception, e:
+                print e
 
     def bullet_wound(self, vel_x, vel_y, start_x, start_y, sprites, ecolor):
         for e in range(sprites):
