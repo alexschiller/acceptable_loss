@@ -244,9 +244,45 @@ class PSMAShieldSplitter(Skill):
         return False
 
 # Unfinished
-class PSMAMuzzleBrake(Skill):
+class PSMALightSword(Skill):
     def __init__(self, master, level, handler):
-        super(PSMAMuzzleBrake, self).__init__(master, level, handler)
+        super(PSMALightSword, self).__init__(master, level, handler)
+        self.img = load_image('lightsword.png')
+        self.sound = load_sound('slash.wav')
+
+    def fire(self):
+        enemy_range = self.get_enemy_dist()
+        try:
+            if enemy_range <= 50 and enemy_range and not self.handler.global_cooldown:
+                gun = self.handler.copy_gun()
+                gun['image'] = self.img
+                gun['gun_fire_sound'] = self.sound
+                pmod = .5
+                gun['armor_pierce'] += 10
+                gun['damage_min'] = int(max(gun['damage_min'] * pmod, 1))
+                gun['damage_max'] = int(max(gun['damage_max'] * pmod, 2))
+                self.handler.core.plasma += 5
+                LightningMelee(self.master, self.handler, self, gun, self.handler.owner.sprite.x, self.handler.owner.sprite.y)
+                return True
+            else:
+                self.dash()
+                return False
+        except:
+            return False
+
+    def dash(self):
+        ret = calc_vel_xy(self.handler.owner.sprite.x, self.handler.owner.sprite.y,
+        self.handler.owner.target.sprite.x, self.handler.owner.target.sprite.y, 45)
+        self.handler.owner.controller.move_to(self.handler.owner.target.sprite.x + ret[0],
+            self.handler.owner.target.sprite.y + ret[1], 1)
+
+    def get_enemy_dist(self):
+        if self.handler.owner.target:
+            dist_x = self.handler.owner.sprite.x - self.handler.owner.target.sprite.x
+            dist_y = self.handler.owner.sprite.y - self.handler.owner.target.sprite.y
+            dist = math.hypot(dist_x, dist_y)
+            return dist
+        return False
 
 # Unfinished
 class PSMALightSpeed(Skill):
@@ -555,7 +591,7 @@ plasmaslinger_skillset = {
     '10': PSPDBarrage,
     '11': PSMABang,
     '12': PSMAShieldSplitter,
-    '13': PSMAMuzzleBrake,
+    '13': PSMALightSword,
     '14': PSMALightSpeed,
     '15': PSMAIronDome,
     '16': PSMAHardCore,
