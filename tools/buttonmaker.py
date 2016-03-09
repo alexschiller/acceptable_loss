@@ -238,6 +238,9 @@ class ClickMenu(object):
     def load_strings(self):
         self.game.select_func()
 
+    def load_coord(self):
+        self.game.select_coord()
+
     def change_image(self, string):
         try:
             img = pyglet.image.load(string)
@@ -280,6 +283,16 @@ class ClickMenu(object):
 
         self.buttons[1].label.font_size = 12
 
+        self.buttons.append(
+            Button(
+                back, back, back, self.sprite.x + 5,
+                self.sprite.y + self.sprite.height - 105, self.load_coord, self.batches[1], "set cords",
+                None, self.batches[2]
+            )
+        )
+
+        self.buttons[2].label.font_size = 12
+
         # self.buttons.append(
         #     Button(
         #         back, back, back, self.sprite.x + 5,
@@ -289,6 +302,80 @@ class ClickMenu(object):
 
     def update(self):
         if self.flag:
+            for batch in self.batches:
+                batch.draw()
+
+
+class NumMenu(ClickMenu):
+    def __init__(self, x, y, game):
+        self.flag = 0
+        self.select = 0
+        self.cords = ""
+
+        self.batches = [pyglet.graphics.Batch(), pyglet.graphics.Batch(), pyglet.graphics.Batch()]
+        self.game = game
+        self.backing = menu_back = pyglet.image.create(400, window_height, pyglet.image.SolidColorImagePattern(color=(200, 200, 120, 155))) # noqa
+        self.sprite = pyglet.sprite.Sprite(
+            self.backing,
+            1000, 0, batch=self.batches[0]
+        )
+        self.buttons = []
+        self.label = pyglet.text.Label(
+            "",
+            font_name='Times New Roman',
+            font_size=32,
+            x=self.sprite.x + self.sprite.width / 2,
+            y=self.sprite.height - 200,
+            anchor_x='center',
+            anchor_y='center',
+            batch=self.batches[2]
+        )
+        self.setup()
+
+    def set(self):
+        if self.select == 0:
+            self.game.option_menu.button.sprite.x = int(self.cords)
+        else:
+            self.game.option_menu.button.sprite.y = int(self.cords)
+
+    def clear(self):
+        self.cords = ""
+        print self.cords
+
+    def alert(self, ide):
+        if ide != 'set' and ide != 'c':
+            self.cords += str(ide)
+            print self.cords
+        else:
+            if ide == 'set':
+                self.set()
+            if ide == 'c':
+                self.clear()
+
+    def setup(self):
+        size = 50
+        back = pyglet.image.create(size, size, pyglet.image.SolidColorImagePattern(color=(100, 100, 120, 155))) # noqa
+        for i in range(10):
+                sprite = pyglet.sprite.Sprite(
+                    back,
+                    self.sprite.x + self.sprite.width / 2 + (size + 5) * ((i % 3) - 1), 300 + (size + 5) * (i / 3), batch=self.batches[1]
+                )
+                self.buttons.append(MenuButton(sprite, self, i, str(i), self.batches[2]))
+        sprite = pyglet.sprite.Sprite(
+            back,
+            self.sprite.x + self.sprite.width / 2 + (size + 5) * ((10 % 3) - 1), 300 + (size + 5) * (10 / 3), batch=self.batches[1]
+        )
+        self.buttons.append(MenuButton(sprite, self, 'c', 'c', self.batches[2]))
+
+        sprite = pyglet.sprite.Sprite(
+            back,
+            self.sprite.x + self.sprite.width / 2 + (size + 5) * ((11 % 3) - 1), 300 + (size + 5) * (11 / 3), batch=self.batches[1]
+        )
+        self.buttons.append(MenuButton(sprite, self, 'set', 'set', self.batches[2]))
+
+    def update(self):
+        if self.flag:
+            self.label.text = self.cords
             for batch in self.batches:
                 batch.draw()
 
@@ -452,12 +539,16 @@ class Game(pyglet.window.Window):
         self.option_menu = ClickMenu(None, 0, 0, self)
         self.imagemenu = ImageMenu(imglist, self)
         self.stringmenu = StringMenu(0, 0, self)
+        self.coordmenu = NumMenu(0, 0, self)
 
     def select_image(self):
         self.imagemenu.flag = 1
 
     def select_func(self):
         self.stringmenu.flag = 1
+
+    def select_coord(self):
+        self.coordmenu.flag = 1
 
     def create_button(self):
         self.module_manager.add_button(
@@ -496,6 +587,7 @@ class Game(pyglet.window.Window):
         self.option_menu.update()
         self.imagemenu.update()
         self.stringmenu.update()
+        self.coordmenu.update()
         self.flip()
 
     def make_dict(self):
@@ -530,11 +622,18 @@ class Game(pyglet.window.Window):
         self.option_menu.on_mouse_press(x, y, 1)
         self.imagemenu.on_mouse_press(x, y, 1)
         self.stringmenu.on_mouse_press(x, y, 1)
+        self.coordmenu.on_mouse_press(x, y, 1)
 
     def on_mouse_press(self, x, y, button, modifiers):
         self.manager.update(x, y, 0)
         self.module_manager.update(x, y, 0)
+
         if button == 1:
+            if self.coordmenu.on_mouse_press(x, y, 0):
+                pass
+            else:
+                self.coordmenu.flag = 0
+
             if self.imagemenu.on_mouse_press(x, y, 0):
                 pass
             else:
