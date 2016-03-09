@@ -96,6 +96,16 @@ class StatsManager(object):
         self.delayed.append([time, stat, modifier])
         pass
 
+    def add_shield(self, amount):
+        self.shield_cooldown = 0
+        if self._shield < int(self.shield_max):
+            self._shield += amount
+        else:
+            self._shield = int(self.shield_max)
+
+        if self._shield > int(self.shield_max):
+            self._shield = int(self.shield_max)
+
     def update_stats(self):
         if self.shield_cooldown:
             self.shield_cooldown -= 1

@@ -124,21 +124,28 @@ class PlasmaCore(Core):
                 self.lightning = []
 
 
-# Unfinished
 class LDBreaker(Skill):
     def __init__(self, master, level, handler):
         super(LDBreaker, self).__init__(master, level, handler)
         self.img = load_image('strike.png')
         self.sound = load_sound('slash.wav')
+        self.shield_sound = load_sound('shield_up.wav')
 
     def fire(self):
         enemy_range = self.get_enemy_dist()
         try:
             if enemy_range <= 50 and enemy_range and not self.handler.global_cooldown:
+                if self.level >= 4:
+                    self.four()
+                    if self.level >= 7:
+                        self.seven()
+                        if self.level >= 10:
+                            self.ten()
+
                 gun = self.handler.copy_gun()
                 gun['image'] = self.img
                 gun['gun_fire_sound'] = self.sound
-                pmod = .5
+                pmod = .5 + self.level * .05
                 gun['damage_min'] = int(max(gun['damage_min'] * pmod, 1))
                 gun['damage_max'] = int(max(gun['damage_max'] * pmod, 2))
                 self.handler.core.plasma += 20
@@ -149,6 +156,19 @@ class LDBreaker(Skill):
                 return False
         except:
             return False
+
+    def four(self):
+        if random.randint(0, 100) >= 90:
+            play_sound(self.shield_sound)
+            self.handler.owner.stats.add_shield(self.handler.owner.stats.shield_max / 10.0)
+
+    def seven(self):
+        self.handler.core.plasma += 10
+
+    def ten(self):
+        if random.randint(0, 100) >= 90:
+            play_sound(self.shield_sound)
+            self.handler.owner.stats.add_shield(self.handler.owner.stats.shield_max)
 
     def dash(self):
         ret = calc_vel_xy(self.handler.owner.sprite.x, self.handler.owner.sprite.y,
@@ -364,7 +384,6 @@ class LDZipZap(Skill):
             dist = math.hypot(dist_x, dist_y)
             return dist
         return False
-
 
 # Unfinished
 class LDEnergize(Skill):
