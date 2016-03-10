@@ -324,6 +324,6 @@ def enemy_drone_base(level, x, y):
             'health_on_hit': 0,
             'armor': 1 * level,
             'evade': 20,
-            'speed': 4,
+            'speed': 2,
         },
     }
