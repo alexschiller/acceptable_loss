@@ -6,6 +6,60 @@ from controller import * # noqa
 import random
 from baseskills import * # noqa
 
+class DroneController(Controller):
+    def __init__(self, *args, **kwargs):
+        super(DroneController, self).__init__(*args, **kwargs)
+        self.mx = self.puppet.sprite.x
+        self.my = self.puppet.sprite.y
+
+    def resolve_x(self, x, change=0):
+        if change:
+            x += random.randint(-1 * change, change)
+        if x < 50:
+            return 50
+        if x > window_width - 50:
+            return window_width - 50
+        return x
+
+    def resolve_y(self, y, change=0):
+        if change:
+            y += random.randint(-1 * change, change)
+        if y < 50:
+            return 50
+        if y > window_height - 50:
+            return window_height - 50
+        return y
+
+    def roll_move_target(self):
+        if self.puppet.target:
+            self.mx = self.resolve_x(self.puppet.target.sprite.x, 100)
+            self.my = self.resolve_y(self.puppet.target.sprite.y, 100)
+        else:
+            self.mx = self.resolve_x(self.puppet.sprite.x, 50)
+            self.my = self.resolve_y(self.puppet.sprite.y, 50)
+
+    def update(self):
+        if math.hypot(self.mx - self.puppet.sprite.x, self.my - self.puppet.sprite.y) <= 10:
+            self.roll_move_target()
+
+        ret = calc_vel_xy(self.mx,
+            self.my,
+            self.puppet.sprite.x,
+            self.puppet.sprite.y,
+            self.puppet.stats.speed)
+
+        self.move(ret[0], ret[1])
+        self.rotate(self.mx, self.my)
+
+        if self.puppet.target:
+            if self.puppet.stats.gun_data['range_max'] > math.hypot(
+                self.puppet.sprite.x - self.puppet.target.sprite.x,
+                self.puppet.sprite.y - self.puppet.target.sprite.y
+            ):
+                self.slot_mouse_two_fire()
+        else:
+            self.target_closest_enemy()
+
 
 enemy_skillset = {
     'core': Core,
@@ -223,7 +277,7 @@ def gen_drone_gun(level):
         'range_min': 100,
         'range_max': 400,
         'velocity': 30,
-        'accuracy': 30,
+        'accuracy': 100,
         'rof': .75,
         'recoil': 10,
         'crit': 2,
@@ -248,7 +302,7 @@ def enemy_drone_base(level, x, y):
         'friends': 'red',
         'enemies': 'blue',
         'blood_color': (140, 140, 140, 255),
-        'controller': Controller,
+        'controller': DroneController,
         'stats': {
             'level': level,
             'damage': 0,
