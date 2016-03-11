@@ -69,13 +69,13 @@ class Room(object):
             Character(
                 master,
                 random.choice([
-                    # enemy_soldier_base(
-                    #     difficulty, random.randint(room_x_min, room_x_max),
-                    #     random.randint(room_y_min, room_y_max)),
+                    enemy_soldier_base(
+                        difficulty, random.randint(room_x_min, room_x_max),
+                        random.randint(room_y_min, room_y_max)),
 
-                    # enemy_tank_base(
-                    #     difficulty, random.randint(room_x_min, room_x_max),
-                    #     random.randint(room_y_min, room_y_max)),
+                    enemy_tank_base(
+                        difficulty, random.randint(room_x_min, room_x_max),
+                        random.randint(room_y_min, room_y_max)),
 
                     enemy_zombie_base(
                         difficulty, random.randint(room_x_min, room_x_max),

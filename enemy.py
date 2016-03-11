@@ -110,18 +110,18 @@ def gen_tank_gun(level):
     return {
         'gun_class': 'Rifle',
         'level': level,
-        'damage_min': 4 * level,
-        'damage_max': 9 * level,
+        'damage_min': 3 * level,
+        'damage_max': 6 * level,
         'travel': 800,
         'range_min': 200,
-        'range_max': 700,
+        'range_max': 500,
         'velocity': 30,
         'recoil': 10,
         'accuracy': 70,
         'rof': .25,
         'crit': 2,
         'crit_damage': 2,
-        'armor_pierce': 10,
+        'armor_pierce': 3,
         'image': load_image('tank_gun.png'), # noqa
         'gun_fire_sound': load_sound('laser.wav'), # noqa
         'on_hit_sound': load_sound('on_hit.wav'), # noqa
@@ -144,7 +144,7 @@ def gen_soldier_gun(level):
         'recoil': 10,
         'crit': 2,
         'crit_damage': 2,
-        'armor_pierce': 1,
+        'armor_pierce': 0,
         'image': load_image('snipe.png'), # noqa
         'gun_fire_sound': load_sound('laser.wav'), # noqa
         'on_hit_sound': load_sound('on_hit.wav'), # noqa

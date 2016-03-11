@@ -170,21 +170,6 @@ class LDBreaker(Skill):
             play_sound(self.shield_sound)
             self.handler.owner.stats.add_shield(self.handler.owner.stats.shield_max)
 
-    def dash(self):
-        ret = calc_vel_xy(self.handler.owner.sprite.x, self.handler.owner.sprite.y,
-        self.handler.owner.target.sprite.x, self.handler.owner.target.sprite.y, 45)
-        self.handler.owner.controller.move_to(self.handler.owner.target.sprite.x + ret[0],
-            self.handler.owner.target.sprite.y + ret[1], 1)
-
-    def get_enemy_dist(self):
-        if self.handler.owner.target:
-            dist_x = self.handler.owner.sprite.x - self.handler.owner.target.sprite.x
-            dist_y = self.handler.owner.sprite.y - self.handler.owner.target.sprite.y
-            dist = math.hypot(dist_x, dist_y)
-            return dist
-        return False
-
-
 # Unfinished
 class LDCurrent(Skill):
     def __init__(self, master, level, handler):
@@ -212,20 +197,6 @@ class LDCurrent(Skill):
         except:
             return False
 
-    def dash(self):
-        ret = calc_vel_xy(self.handler.owner.sprite.x, self.handler.owner.sprite.y,
-        self.handler.owner.target.sprite.x, self.handler.owner.target.sprite.y, 45)
-        self.handler.owner.controller.move_to(self.handler.owner.target.sprite.x + ret[0],
-            self.handler.owner.target.sprite.y + ret[1], 1)
-
-    def get_enemy_dist(self):
-        if self.handler.owner.target:
-            dist_x = self.handler.owner.sprite.x - self.handler.owner.target.sprite.x
-            dist_y = self.handler.owner.sprite.y - self.handler.owner.target.sprite.y
-            dist = math.hypot(dist_x, dist_y)
-            return dist
-        return False
-
 # Unfinished
 class LDZap(Skill):
     def __init__(self, master, level, handler):
@@ -234,7 +205,7 @@ class LDZap(Skill):
 
     def fire(self):
         dist = self.get_enemy_dist()
-        if dist and dist <= (50 + 700 * self.handler.core.plasma / self.handler.core.plasma_max):
+        if dist and dist <= 600:
             self.handler.core.lightning_counter = 3
             self.handler.core.create_lightning(
                 self.handler.owner.sprite.x,
@@ -255,14 +226,6 @@ class LDZap(Skill):
             return True
         return False
 
-    def get_enemy_dist(self):
-        if self.handler.owner.target:
-            dist_x = self.handler.owner.sprite.x - self.handler.owner.target.sprite.x
-            dist_y = self.handler.owner.sprite.y - self.handler.owner.target.sprite.y
-            dist = math.hypot(dist_x, dist_y)
-            return dist
-        return False
-
 # Unfinished
 class LDSpark(Skill):
     def __init__(self, master, level, handler):
@@ -270,23 +233,22 @@ class LDSpark(Skill):
         self.gun_fire_sound = load_sound('lightning_bolt.wav')
 
     def fire(self):
-        if self.handler.core.plasma >= 50:
-            dist = self.get_enemy_dist()
-            if dist:
-                if dist <= 100:
-
-                    self.handler.core.plasma -= 50
-                    gun = self.handler.copy_gun()
-                    gun['accuracy'] += 100
-                    gun['damage_min'] = int(max(gun['damage_min'] * .1, 1))
-                    gun['damage_max'] = int(max(gun['damage_max'] * .1, 2))
-                    gun['gun_fire_sound'] = self.gun_fire_sound
-                    self.add_strike(gun, dist)
-                    self.handler.delayed.append([10, partial(self.add_strike, gun, dist)])
-                    self.handler.delayed.append([20, partial(self.add_strike, gun, dist)])
-                    return True
-                else:
-                    self.dash()
+        dist = self.get_enemy_dist()
+        if dist:
+            if dist <= 150:
+                gun = self.handler.copy_gun()
+                gun['accuracy'] += 100
+                gun['gun_fire_sound'] = self.gun_fire_sound
+                pmod = self.handler.core.plasma / self.handler.core.plasma_max
+                gun['damage_min'] = int(max(gun['damage_min'] * pmod, 1))
+                gun['damage_max'] = int(max(gun['damage_max'] * pmod, 2))
+                self.add_strike(gun, dist)
+                self.handler.delayed.append([10, partial(self.add_strike, gun, dist)])
+                self.handler.delayed.append([20, partial(self.add_strike, gun, dist)])
+                self.handler.core.plasma = 0
+                return True
+            else:
+                self.dash()
         return False
 
     def add_strike(self, gun, dist):
@@ -299,20 +261,6 @@ class LDSpark(Skill):
                 [self.handler.owner.target.sprite.x, self.handler.owner.target.sprite.y]
             )
             Gunshot(self.master, self.handler, self, dict.copy(gun), self.handler.owner.target.sprite.x, self.handler.owner.target.sprite.y)
-
-    def dash(self):
-        ret = calc_vel_xy(self.handler.owner.sprite.x, self.handler.owner.sprite.y,
-        self.handler.owner.target.sprite.x, self.handler.owner.target.sprite.y, 45)
-        self.handler.owner.controller.move_to(self.handler.owner.target.sprite.x + ret[0],
-            self.handler.owner.target.sprite.y + ret[1], 1)
-
-    def get_enemy_dist(self):
-        if self.handler.owner.target:
-            dist_x = self.handler.owner.sprite.x - self.handler.owner.target.sprite.x
-            dist_y = self.handler.owner.sprite.y - self.handler.owner.target.sprite.y
-            dist = math.hypot(dist_x, dist_y)
-            return dist
-        return False
 
 # Unfinished
 class LDChainLightning(Skill):
@@ -358,9 +306,6 @@ class LDZipZap(Skill):
                 gun = self.handler.copy_gun()
                 gun['image'] = self.img
                 gun['gun_fire_sound'] = self.sound
-                # pmod = 1
-                # gun['damage_min'] = int(max(gun['damage_min'] * pmod, 1))
-                # gun['damage_max'] = int(max(gun['damage_max'] * pmod, 2))
                 LightningMelee(self.master, self.handler, self, gun, self.handler.owner.sprite.x, self.handler.owner.sprite.y)
                 return True
             else:
@@ -376,14 +321,6 @@ class LDZipZap(Skill):
         self.handler.owner.target.sprite.x, self.handler.owner.target.sprite.y, 45)
         self.handler.owner.controller.move_to(self.handler.owner.target.sprite.x + ret[0],
             self.handler.owner.target.sprite.y + ret[1], 1)
-
-    def get_enemy_dist(self):
-        if self.handler.owner.target:
-            dist_x = self.handler.owner.sprite.x - self.handler.owner.target.sprite.x
-            dist_y = self.handler.owner.sprite.y - self.handler.owner.target.sprite.y
-            dist = math.hypot(dist_x, dist_y)
-            return dist
-        return False
 
 # Unfinished
 class LDEnergize(Skill):

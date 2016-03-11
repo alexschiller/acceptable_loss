@@ -48,6 +48,20 @@ class Skill(object):
     def kill(self):
         pass
 
+    def dash(self):
+        ret = calc_vel_xy(self.handler.owner.sprite.x, self.handler.owner.sprite.y,
+        self.handler.owner.target.sprite.x, self.handler.owner.target.sprite.y, 45)
+        self.handler.owner.controller.move_to(self.handler.owner.target.sprite.x + ret[0],
+            self.handler.owner.target.sprite.y + ret[1], 1)
+
+    def get_enemy_dist(self):
+        if self.handler.owner.target:
+            dist_x = self.handler.owner.sprite.x - self.handler.owner.target.sprite.x
+            dist_y = self.handler.owner.sprite.y - self.handler.owner.target.sprite.y
+            dist = math.hypot(dist_x, dist_y)
+            return dist
+        return False
+
 class Transmission(object):
     def __init__(self, master, ability, skill, package, start_x, start_y):
         self.master = master

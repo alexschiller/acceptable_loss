@@ -232,17 +232,18 @@ class RoomManager(object):
             room_x_max = room_x_min + room.sprite.width
             room_y_min = room.sprite.y
             room_y_max = room_y_min + room.sprite.height
-            for i in range(2):
+            for i in range(1):
                 Character(
                     self.master,
-                    random.choice([
-                        # enemy_soldier_base(
-                        #     difficulty, random.randint(room_x_min, room_x_max),
-                        #     random.randint(room_y_min, room_y_max)),
 
-                        # enemy_tank_base(
-                        #     difficulty, random.randint(room_x_min, room_x_max),
-                        #     random.randint(room_y_min, room_y_max)),
+                    random.choice([
+                        enemy_soldier_base(
+                            difficulty, random.randint(room_x_min, room_x_max),
+                            random.randint(room_y_min, room_y_max)),
+
+                        enemy_tank_base(
+                            difficulty, random.randint(room_x_min, room_x_max),
+                            random.randint(room_y_min, room_y_max)),
 
                         enemy_zombie_base(
                             difficulty, random.randint(room_x_min, room_x_max),
