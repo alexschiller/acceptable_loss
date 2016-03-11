@@ -343,14 +343,21 @@ class NumMenu(ClickMenu):
         print self.cords
 
     def alert(self, ide):
-        if ide != 'set' and ide != 'c':
+        if ide != 'set' and ide != 'c' and ide != 'x' and ide != 'y':
             self.cords += str(ide)
             print self.cords
         else:
             if ide == 'set':
-                self.set()
+                pass
+                # self.set()
             if ide == 'c':
                 self.clear()
+            if ide == 'x':
+                self.select = 0
+                self.set()
+            if ide == 'y':
+                self.select = 1
+                self.set()
 
     def setup(self):
         size = 50
@@ -372,6 +379,18 @@ class NumMenu(ClickMenu):
             self.sprite.x + self.sprite.width / 2 + (size + 5) * ((11 % 3) - 1), 300 + (size + 5) * (11 / 3), batch=self.batches[1]
         )
         self.buttons.append(MenuButton(sprite, self, 'set', 'set', self.batches[2]))
+
+        sprite = pyglet.sprite.Sprite(
+            back,
+            self.sprite.x + self.sprite.width / 2 + (size + 5) * ((12 % 3) - 1), 300 + (size + 5) * (12 / 3), batch=self.batches[1]
+        )
+        self.buttons.append(MenuButton(sprite, self, 'x', 'x', self.batches[2]))
+
+        sprite = pyglet.sprite.Sprite(
+            back,
+            self.sprite.x + self.sprite.width / 2 + (size + 5) * ((13 % 3) - 1), 300 + (size + 5) * (13 / 3), batch=self.batches[1]
+        )
+        self.buttons.append(MenuButton(sprite, self, 'y', 'y', self.batches[2]))
 
     def update(self):
         if self.flag:
