@@ -94,7 +94,7 @@ class PlasmaCore(Core):
         self.lightning_counter = 0
         self.white_dot = pyglet.image.create(2, 2, white_sprite)
         self.plasma = 100
-        self.plasma_max = 100
+        self.plasma_max = 100.0
 
     def create_dot(self, x, y):
         self.lightning.append(pyglet.sprite.Sprite(self.white_dot, x, y, batch=BarBatch))
