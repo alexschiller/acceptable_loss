@@ -205,7 +205,7 @@ class LDZap(Skill):
 
     def fire(self):
         dist = self.get_enemy_dist()
-        if dist and dist <= 600:
+        if dist and dist <= 600:        
             self.handler.core.lightning_counter = 3
             self.handler.core.create_lightning(
                 self.handler.owner.sprite.x,
@@ -219,10 +219,13 @@ class LDZap(Skill):
             gun['accuracy'] += 100
             pmod = self.handler.core.plasma / self.handler.core.plasma_max * 3
             gun['gun_fire_sound'] = self.gun_fire_sound
+            if self.level >= 7 and self.handler.core.plasma / self.handler.core.plasma_max >= .9:
+                pmod *= 1.2
             gun['damage_min'] = int(max(gun['damage_min'] * pmod, 1))
             gun['damage_max'] = int(max(gun['damage_max'] * pmod, 2))
             Gunshot(self.master, self.handler, self, dict.copy(gun), self.handler.owner.target.sprite.x, self.handler.owner.target.sprite.y)
-            self.handler.core.plasma = 0
+            if self.level >= 4 and random.choice([0, 1]):
+                self.handler.core.plasma = 0
             return True
         return False
 

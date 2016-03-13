@@ -48,6 +48,15 @@ class Skill(object):
     def kill(self):
         pass
 
+    def four(self):
+        pass
+
+    def seven(self):
+        pass
+
+    def ten(self):
+        pass        
+
     def dash(self):
         ret = calc_vel_xy(self.handler.owner.sprite.x, self.handler.owner.sprite.y,
         self.handler.owner.target.sprite.x, self.handler.owner.target.sprite.y, 45)
