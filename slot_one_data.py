@@ -39,7 +39,7 @@ player_base = {
     'build': {
         'slot_mouse_two': ['1', 4],
         'slot_one': ['3', 5],
-        'slot_two': ['4', 1],
+        'slot_two': ['4', 10],
         'slot_three': ['7', 1],
         'slot_four': ['2', 1],
         'slot_q': ['9', 1],

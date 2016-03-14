@@ -202,10 +202,11 @@ class LDZap(Skill):
     def __init__(self, master, level, handler):
         super(LDZap, self).__init__(master, level, handler)
         self.gun_fire_sound = load_sound('lightning_bolt.wav')
+        self.max_distance = 600
 
     def fire(self):
         dist = self.get_enemy_dist()
-        if dist and dist <= 600:        
+        if dist and dist <= self.max_distance:        
             self.handler.core.lightning_counter = 3
             self.handler.core.create_lightning(
                 self.handler.owner.sprite.x,
@@ -214,13 +215,14 @@ class LDZap(Skill):
                 [self.handler.owner.target.sprite.x, self.handler.owner.target.sprite.y]
             )
 
-            # self.handler.core.bullets -= 1
             gun = self.handler.copy_gun()
             gun['accuracy'] += 100
             pmod = self.handler.core.plasma / self.handler.core.plasma_max * 3
             gun['gun_fire_sound'] = self.gun_fire_sound
             if self.level >= 7 and self.handler.core.plasma / self.handler.core.plasma_max >= .9:
                 pmod *= 1.2
+            if self.level >= 10:
+                pmod *= 1 + (1 - dist / self.max_distance) * .2
             gun['damage_min'] = int(max(gun['damage_min'] * pmod, 1))
             gun['damage_max'] = int(max(gun['damage_max'] * pmod, 2))
             Gunshot(self.master, self.handler, self, dict.copy(gun), self.handler.owner.target.sprite.x, self.handler.owner.target.sprite.y)
@@ -230,9 +232,9 @@ class LDZap(Skill):
         return False
 
 # Unfinished
-class LDSpark(Skill):
+class LDElectrocute(Skill):
     def __init__(self, master, level, handler):
-        super(LDSpark, self).__init__(master, level, handler)
+        super(LDElectrocute, self).__init__(master, level, handler)
         self.gun_fire_sound = load_sound('lightning_bolt.wav')
 
     def fire(self):
@@ -246,8 +248,14 @@ class LDSpark(Skill):
                 gun['damage_min'] = int(max(gun['damage_min'] * pmod, 1))
                 gun['damage_max'] = int(max(gun['damage_max'] * pmod, 2))
                 self.add_strike(gun, dist)
-                self.handler.delayed.append([10, partial(self.add_strike, gun, dist)])
-                self.handler.delayed.append([20, partial(self.add_strike, gun, dist)])
+                self.handler.delayed.append([3, partial(self.add_strike, gun, dist)])
+                if self.level >= 4:
+                    self.handler.delayed.append([6, partial(self.add_strike, gun, dist)])
+                if self.level >= 7:
+                    self.handler.delayed.append([9, partial(self.add_strike, gun, dist)])
+                if self.level >= 10:
+                    self.handler.delayed.append([12, partial(self.add_strike, gun, dist)])
+                    self.handler.delayed.append([15, partial(self.add_strike, gun, dist)])
                 self.handler.core.plasma = 0
                 return True
             else:
@@ -345,7 +353,7 @@ plasmaslinger_skillset = {
     '1': LDBreaker,
     '2': LDCurrent,
     '3': LDZap,
-    '4': LDSpark,
+    '4': LDElectrocute,
     '5': LDChainLightning,
     '6': LDBallLightning,
     '7': LDRepurpose,
