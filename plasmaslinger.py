@@ -291,6 +291,12 @@ class LDRepurpose(Skill):
 
     def fire(self):
         if self.handler.owner.stats.shield and self.handler.core.plasma != self.handler.core.plasma_max:
+            if self.level >= 4:
+                self.handler.owner.stats.temp_stat_change(360, 'accuracy', 20)
+            if self.level >= 7:
+                self.handler.owner.stats.temp_stat_change(120, 'speed', self.handler.owner.stats.speed * 2)
+            if self.level >= 10:
+                self.handler.owner.stats.add_health(self.handler.owner.stats.health_max / 3.0)
             play_sound(self.sound)
             self.master.spriteeffect.teleport(self.handler.owner.sprite.x, self.handler.owner.sprite.y)
             self.handler.core.plasma += 50 * (self.handler.owner.stats.shield / self.handler.owner.stats.shield_max)

@@ -106,6 +106,15 @@ class StatsManager(object):
         if self._shield > int(self.shield_max):
             self._shield = int(self.shield_max)
 
+    def add_health(self, amount):
+        if self._health < int(self.health_max):
+            self._health += amount
+        else:
+            self._health = int(self.health_max)
+
+        if self._health > int(self.health_max):
+            self._health = int(self.health_max)
+
     def update_stats(self):
         if self.shield_cooldown:
             self.shield_cooldown -= 1
