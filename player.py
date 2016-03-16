@@ -7,6 +7,7 @@ import itertools
 from functools import partial # noqa
 from controller import Controller
 from plasmaslinger import * # noqa
+from rlongbow import * # noqa
 
 class Player(Character):
     def __init__(self, *args, **kwargs):
@@ -261,6 +262,8 @@ def read_data(data):
     data['controller'] = PlayerController
     if data['class'] == 'plasmaslinger':
         data['skillset'] = plasmaslinger_skillset
+    if data['class'] == 'longbow':
+        data['skillset'] = longbow_skillset        
 
     data['sprite'] = load_image(data['sprite'])
     data['gun']['image'] = load_image(data['gun']['image'])

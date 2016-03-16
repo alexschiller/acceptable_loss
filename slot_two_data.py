@@ -1,0 +1,82 @@
+player_base = {
+    'class': 'longbow',
+    'sprite': 'plasmaslinger.png',
+    'coord': None,
+    'gun': {
+        'level': 1,
+        'damage_min': 8,
+        'damage_max': 13,
+        'travel': 1000,
+        'range_min': 100,
+        'range_max': 700,
+        'velocity': 20,
+        'accuracy': 55,
+        'rof': 10,
+        'recoil': 5,
+        'crit': 10,
+        'crit_damage': 1.5,
+        'armor_pierce': 1,
+        'image': 'autocannon.png', # noqa
+        'gun_fire_sound': 'shot.wav', # noqa
+        'on_hit_sound': 'on_hit.wav', # noqa
+        'effects': [],
+        'gem_slots': {
+            '1': {
+                'color': 'topaz',
+                'current_gem': {'color': 'diamond', 'level': 4, 'stats': {'accuracy': 6, 'shield_regen': 2, 'shield_on_hit': 1, 'health_max_perc': 8}, 'rarity': 3} # noqa
+            },
+        },
+    },
+    'armor': {
+    'gem_slots': {
+        '1': {
+            'color': 'topaz',
+            'current_gem': {'color': 'diamond', 'level': 4, 'stats': {'damage': 3, 'accuracy': 6, 'shield_regen': 2, 'shield_on_hit': 1, 'health_max_perc': 8}, 'rarity': 3} # noqa
+            },
+        },
+    },
+    # 'skillset': None,
+    'build': {
+        'slot_mouse_two': ['1', 4],
+        'slot_one': ['3', 5],
+        'slot_two': ['4', 10],
+        'slot_three': ['7', 1],
+        'slot_four': ['2', 1],
+        'slot_q': ['9', 1],
+        'slot_e': ['11', 1],
+        'passive_one': ['1', 1],
+        'passive_two': ['1', 1],
+        'passive_three': ['1', 1],
+    },
+    'color': 'blue',
+    'friends': 'blue',
+    'enemies': 'red',
+    'blood_color': (30, 30, 30, 255),
+    # 'controller': None,
+    'stats': {
+        'level': 1,
+        'damage': 0,
+        'damage_min': 0,
+        'damage_max': 0,
+        'damage_perc': 0,
+        'attack_speed_perc': 0,
+        'crit': 5,
+        'crit_damage': .1,
+        'accuracy': 0,
+        'armor_pierce': 0,
+        'shield_max': 50,
+        'shield_max_perc': 0,
+        'shield_regen': .50,
+        'shield_on_hit': 0,
+        'health_max': 300,
+        'health_max_perc': 0,
+        'health_regen': 0,
+        'health_on_hit': 0,
+        'armor': 5,
+        'evade': 0,
+        'speed': 3,
+    },
+    'gem_inventory': [],
+    'gun_inventory': [],
+    'shield_inventory': [],
+}

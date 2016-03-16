@@ -209,7 +209,7 @@ class StatsManager(object):
 
     @property
     def accuracy(self):
-        return self._accuracy + self._accuracy_move + self.mod['accuracy']
+        return self._accuracy + self._accuracy_move + self.mod['accuracy'] - self.recoil
 
     @property
     def armor(self):

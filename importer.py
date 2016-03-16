@@ -5,7 +5,8 @@ from player import * # noqa
 from utility import * # noqa
 from loot import * # noqa
 from button import * # noqa
-from slot_one_data import player_base
+# from slot_one_data import player_base
+from slot_two_data import player_base
 
 
 def teleport(master, mouse_position):
