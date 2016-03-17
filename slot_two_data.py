@@ -1,6 +1,6 @@
 player_base = {
     'class': 'longbow',
-    'sprite': 'plasmaslinger.png',
+    'sprite': 'longbow.png',
     'coord': None,
     'gun': {
         'level': 1,
@@ -9,15 +9,15 @@ player_base = {
         'travel': 1000,
         'range_min': 100,
         'range_max': 700,
-        'velocity': 20,
+        'velocity': 10,
         'accuracy': 55,
         'rof': 10,
         'recoil': 5,
         'crit': 10,
         'crit_damage': 1.5,
-        'armor_pierce': 1,
-        'image': 'autocannon.png', # noqa
-        'gun_fire_sound': 'shot.wav', # noqa
+        'armor_pierce': 30,
+        'image': 'smi.png', # noqa
+        'gun_fire_sound': 'gunshot.wav', # noqa
         'on_hit_sound': 'on_hit.wav', # noqa
         'effects': [],
         'gem_slots': {
