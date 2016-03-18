@@ -79,7 +79,6 @@ class MissileCore(Core):
 class LBBarrage(Skill):
     def __init__(self, master, level, handler):
         super(LBBarrage, self).__init__(master, level, handler)
-        self.img = load_image('autocannon.png')
 
     def fire(self):
         enemy_range = self.get_enemy_dist()
@@ -109,9 +108,22 @@ class LBBarrage(Skill):
 
 
 # Unfinished
-class LBCurrent(Skill):
+class LBSingle(Skill):
     def __init__(self, master, level, handler):
         super(LBCurrent, self).__init__(master, level, handler)
+
+ def fire(self):
+        enemy_range = self.get_enemy_dist()
+        try:
+            gun = self.handler.copy_gun()
+            pmod = self.level * .05
+            gun['damage_min'] = int(max(gun['damage_min'] * pmod, 1))
+            gun['damage_max'] = int(max(gun['damage_max'] * pmod, 2))
+            play_sound(gun['gun_fire_sound'])
+            PlayerGunshot(self.master, self.handler, self, dict.copy(gun), m.sprite.x, m.sprite.y)            
+            return True
+        except:
+            return False
 
 # Unfinished
 class LBZap(Skill):
